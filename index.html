@@ -1060,16 +1060,19 @@
     .settings-ind-row {
       display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
       padding: 10px 14px; background: var(--surface); border-radius: var(--radius-sm);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-light); flex-wrap: wrap;
     }
     .settings-ind-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
-    .settings-ind-select {
-      font-family: inherit; font-size: 13px; color: var(--text);
-      background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
-      padding: 5px 10px; cursor: pointer; flex: 1; min-width: 0;
-      outline: none;
+    .settings-ind-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .settings-ind-pill {
+      font-family: inherit; font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border-radius: 20px; cursor: pointer;
+      border: 1.5px solid var(--border); background: var(--bg);
+      color: var(--text-secondary); transition: all 0.15s; white-space: nowrap;
     }
-    .settings-ind-select:focus { border-color: var(--accent); }
+    .settings-ind-pill:hover { border-color: var(--accent); color: var(--accent); background: #fff8f2; }
+    .settings-ind-pill.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .settings-ind-pill.active:hover { background: var(--navy); border-color: var(--navy); color: #fff; }
 
     .param-section-group { margin-bottom: 24px; }
     .param-section-group-header {
@@ -3356,13 +3359,19 @@ view_formula_for:'Vis formler for:'}
   function closeSettings(){document.getElementById('settings-overlay').style.display='none';}
 
   function buildIndustrySelect(currentVal, onchangeFn) {
-    var opts = '<option value="">'+t('param_follow_active')+'</option>';
+    var pills = '<button type="button" class="settings-ind-pill'+((!currentVal)?' active':'')+'"'
+      +' onclick="'+onchangeFn+'(\'\')">'
+      +t('param_follow_active').replace(/^—\s*/,'').replace(/\s*—$/,'')
+      +'</button>';
     Object.keys(industryMeta).forEach(function(ind) {
       var m = industryMeta[ind];
-      opts += '<option value="'+ind+'"'+(currentVal===ind?' selected':'')+'>'+m.icon+' '+(m[currentLang]||m.en)+'</option>';
+      pills += '<button type="button" class="settings-ind-pill'+(currentVal===ind?' active':'')+'"'
+        +' onclick="'+onchangeFn+'(\''+ind+'\')">'
+        +m.icon+' '+(m[currentLang]||m.en)
+        +'</button>';
     });
     return '<div class="settings-ind-row"><label class="settings-ind-label">'+t('param_view_for')+'</label>'
-      +'<select class="settings-ind-select" onchange="'+onchangeFn+'(this.value)">'+opts+'</select></div>';
+      +'<div class="settings-ind-pills">'+pills+'</div></div>';
   }
 
   function changeParamViewIndustry(val) {
@@ -4970,22 +4979,4 @@ view_formula_for:'Vis formler for:'}
               <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
                 <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
                 <div style="display:flex;gap:8px">
-                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
-                  <button class="io-reset-go-btn" onclick="resetToDefaults()" data-i18n="io_reset_go">Yes, reset everything</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer class="site-copyright">
-  &copy; <span id="copyright-year"></span> SOA People Nordic &nbsp;&middot;&nbsp; All rights reserved.
-</footer>
-<script>document.getElementById('copyright-year').textContent=new Date().getFullYear();</script>
-</body>
-</html>
-                            
+                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_canc
