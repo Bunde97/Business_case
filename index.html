@@ -1533,7 +1533,7 @@
 
     /* ── Landing page ── */
     .landing-section {
-      min-height: calc(100vh - 52px - 44px);
+      min-height: calc(100vh - 52px);
       background: var(--navy);
       display: flex;
       flex-direction: column;
@@ -1879,10 +1879,9 @@
     </div>
 
     <div class="landing-footer">
-      <span class="landing-footer-badge" data-i18n="landing_badge1">Live model — all values update in real time</span>
-      <span class="landing-footer-badge" data-i18n="landing_badge2">Export &amp; import your session</span>
-      <span class="landing-footer-badge" data-i18n="landing_badge3">Custom parameters &amp; formulas</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.03em">&copy; <span id="landing-copyright-year"></span> SOA People Nordic &nbsp;&middot;&nbsp; All rights reserved.</span>
     </div>
+    <script>document.getElementById('landing-copyright-year').textContent=new Date().getFullYear();</script>
   </div>
 </div>
 
@@ -4979,4 +4978,5 @@ view_formula_for:'Vis formler for:'}
               <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
                 <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
                 <div style="display:flex;gap:8px">
-                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_res
+                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
+       
