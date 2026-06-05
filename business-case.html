@@ -1732,6 +1732,614 @@
     /* Logo clickable */
     .site-header .logo { cursor: pointer; }
 
+
+    /* ── Investment Case ── */
+    .ic-setup-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px 32px;
+    }
+    .ic-setup-inner { max-width: 640px; }
+    .ic-setup-card {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+    }
+    .ic-setup-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 20px;
+    }
+    .ic-setup-row {
+      display: flex;
+      gap: 32px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .ic-setup-field { display: flex; flex-direction: column; gap: 8px; }
+    .ic-setup-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+    .ic-duration-select-wrap { position: relative; }
+    .ic-duration-select {
+      appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 36px 9px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      font-family: inherit;
+      cursor: pointer;
+      min-width: 130px;
+      transition: border-color var(--transition);
+    }
+    .ic-duration-select:focus { outline: none; border-color: var(--accent); }
+    .ic-period-toggle {
+      display: flex;
+      background: var(--border-light);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .ic-period-btn {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+    }
+    .ic-period-btn.active {
+      background: #fff;
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .ic-setup-info { margin-top: 16px; }
+    .ic-setup-summary {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--border-light);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    /* ── IC Timeline ── */
+    .ic-timeline-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+    .ic-section-inner { width: 100%; }
+    .ic-section-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .ic-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .ic-add-phase-btn {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .ic-add-phase-btn:hover { background: var(--accent); color: #fff; }
+    .ic-timeline-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+    }
+    .ic-timeline-table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+      font-size: 12px;
+    }
+    /* Name column — sticky */
+    .ic-name-col {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      min-width: 240px;
+      max-width: 240px;
+      background: #fff;
+      border-right: 2px solid var(--border-light);
+    }
+    .ic-yr-row .ic-name-col { background: var(--navy); }
+    .ic-period-row .ic-name-col { background: var(--surface); }
+    /* Year header */
+    .ic-yr-th {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.05em;
+      padding: 8px 4px;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    /* Period header */
+    .ic-period-row { background: var(--surface); }
+    .ic-th-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .ic-period-th {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 6px 0;
+      min-width: 30px;
+      width: 30px;
+      border-right: 1px solid var(--border-light);
+    }
+    /* Phase rows */
+    .ic-phase-row { background: #fafafa; }
+    .ic-phase-row:hover { background: #f5f5f7; }
+    .ic-subphase-row { background: #fff; }
+    .ic-subphase-row:hover { background: #fafcff; }
+    /* Name cells */
+    .ic-phase-name-cell, .ic-subphase-name-cell {
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .ic-name-inner {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ic-sub-inner { padding-left: 18px; }
+    .ic-toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 0 2px;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 16px;
+    }
+    .ic-toggle-spacer { width: 16px; flex-shrink: 0; display: inline-block; }
+    .ic-color-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      transition: transform 0.12s;
+    }
+    .ic-color-swatch:hover { transform: scale(1.25); }
+    .ic-color-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+    .ic-name-input {
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+      padding: 3px 4px;
+      border-radius: 4px;
+      font-family: inherit;
+      outline: none;
+    }
+    .ic-phase-row .ic-name-input { font-weight: 600; }
+    .ic-name-input:focus { background: #fff; box-shadow: 0 0 0 2px rgba(240,120,0,0.2); }
+    .ic-row-actions {
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .ic-phase-row:hover .ic-row-actions,
+    .ic-subphase-row:hover .ic-row-actions { opacity: 1; }
+    .ic-row-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      line-height: 1;
+      font-family: inherit;
+    }
+    .ic-add-sub-btn { color: var(--accent); }
+    .ic-add-sub-btn:hover { background: rgba(240,120,0,0.1); }
+    .ic-del-btn { color: #c0392b; }
+    .ic-del-btn:hover { background: rgba(192,57,43,0.1); }
+    /* Cells */
+    .ic-cell {
+      width: 30px;
+      min-width: 30px;
+      height: 32px;
+      border-right: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: opacity 0.1s;
+    }
+    .ic-cell:hover { opacity: 0.75; }
+    .ic-painted { }
+    .ic-yr-boundary { border-right: 2px solid var(--border) !important; }
+    /* Empty state */
+    .ic-empty-row td {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+
+    /* ── IC Resources ── */
+    .ic-resources-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px 40px;
+    }
+    .ic-res-table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+      font-size: 12px;
+    }
+    .ic-res-name-col {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      min-width: 200px;
+      max-width: 200px;
+      background: #fff;
+      border-right: 1px solid var(--border-light);
+    }
+    .ic-res-rate-col {
+      position: sticky;
+      left: 200px;
+      z-index: 3;
+      min-width: 88px;
+      max-width: 88px;
+      background: #fff;
+      border-right: 2px solid var(--border-light);
+    }
+    .ic-period-row .ic-res-name-col,
+    .ic-period-row .ic-res-rate-col { background: var(--surface); }
+    .ic-yr-row .ic-res-name-col,
+    .ic-yr-row .ic-res-rate-col { background: var(--navy); }
+    .ic-res-yr-th {
+      background: #f0f4f8;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--navy);
+      padding: 6px 4px;
+      min-width: 90px;
+      border-left: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .ic-res-row { background: #fff; }
+    .ic-res-row:hover { background: #fafcff; }
+    .ic-res-name-cell, .ic-res-rate-cell {
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .ic-res-name-inner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ic-rate-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      font-family: inherit;
+      text-align: right;
+      padding: 3px 4px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .ic-rate-input::-webkit-outer-spin-button,
+    .ic-rate-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .ic-rate-input:focus { background: #fff; box-shadow: 0 0 0 2px rgba(240,120,0,0.2); border-radius:3px; }
+    .ic-res-cell {
+      width: 30px;
+      min-width: 30px;
+      border-right: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0;
+    }
+    .ic-hrs-input {
+      width: 100%;
+      height: 32px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      text-align: center;
+      color: var(--text);
+      font-family: inherit;
+      padding: 0 2px;
+      outline: none;
+      -moz-appearance: textfield;
+      display: block;
+    }
+    .ic-hrs-input::-webkit-outer-spin-button,
+    .ic-hrs-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .ic-hrs-input:focus { background: rgba(240,120,0,0.07); }
+    .ic-hrs-filled { font-weight: 600; color: var(--navy); }
+    .ic-res-yr-cell {
+      min-width: 90px;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      padding: 0 10px;
+      border-left: 2px solid var(--border);
+      border-bottom: 1px solid var(--border-light);
+      background: #f8fafc;
+      white-space: nowrap;
+    }
+    .ic-res-total-cell {
+      font-weight: 700;
+      background: #eef2f7;
+      color: var(--navy);
+    }
+    .ic-res-grand-total {
+      background: #e8eef6;
+      font-size: 13px;
+    }
+    .ic-res-totals-row { background: var(--surface); }
+    .ic-res-totals-row .ic-res-name-col,
+    .ic-res-totals-row .ic-res-rate-col { background: var(--surface); }
+    .ic-res-total-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      padding: 6px 10px;
+    }
+    .ic-res-totals-row .ic-res-cell {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 4px 2px;
+      height: 28px;
+    }
+
+
+    .ic-res-sum-th{background:var(--navy);color:#fff;font-size:11px;font-weight:700;text-align:center;letter-spacing:.05em;padding:8px 4px;}
+    .ic-res-sumcol-th{background:#eef2f7;font-size:10px;font-weight:700;text-align:center;color:var(--navy);padding:6px 6px;min-width:82px;border-left:2px solid var(--border);white-space:nowrap;}
+    .ic-res-grandtotal-th{background:#e0e8f0;font-weight:800;}
+    .ic-res-sumcol{min-width:82px;text-align:right;font-size:12px;color:var(--text-secondary);padding:0 10px;border-left:2px solid var(--border);border-bottom:1px solid var(--border-light);background:#fafcff;white-space:nowrap;height:32px;vertical-align:middle;}
+    .ic-sum-filled{color:var(--navy);font-weight:600;background:#eef2f7;}
+    .ic-res-grandtotal-cell{background:#e0e8f0!important;font-weight:700;font-size:12px;color:var(--navy);}
+    .ic-totrow-sum{font-weight:700!important;background:#dde5f0!important;font-size:12px;}
+
+    .ic-cost-group-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-secondary);
+      margin: 16px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .ic-cost-group-label:first-child { margin-top: 0; }
+    .ic-yr-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .ic-yr-stat:last-child { border-bottom: none; }
+    .ic-yr-stat-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .ic-yr-stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .ic-addcost-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .ic-addcost-header .savings-title { margin-bottom:0; }
+    .ic-addcost-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .ic-addcost-table th { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-secondary); padding:0 6px 8px; text-align:right; }
+    .ic-addcost-table th:first-child { text-align:left; padding-left:0; }
+    .ic-addcost-table td { padding:4px 6px; border-bottom:1px solid var(--border-light); vertical-align:middle; }
+    .ic-addcost-table td:first-child { padding-left:0; }
+    .ic-addcost-table tr:last-child td { border-bottom:none; }
+    .ic-addcost-name-input { border:none; background:transparent; font-size:13px; font-weight:500; color:var(--text); font-family:inherit; width:100%; outline:none; padding:2px 0; }
+    .ic-addcost-name-input:focus { background:#fff; box-shadow:0 0 0 2px rgba(240,120,0,.2); border-radius:3px; padding:2px 4px; }
+    .ic-addcost-val-input { border:1px solid var(--border-light); background:#fff; border-radius:6px; font-size:12px; font-weight:500; color:var(--text); font-family:inherit; text-align:right; padding:4px 6px; width:100%; outline:none; -moz-appearance:textfield; }
+    .ic-addcost-val-input::-webkit-outer-spin-button, .ic-addcost-val-input::-webkit-inner-spin-button { -webkit-appearance:none; }
+    .ic-addcost-val-input:focus { border-color:var(--accent); }
+    .ic-addcost-total-cell { text-align:right; font-weight:700; color:var(--navy); font-size:12px; white-space:nowrap; }
+    .ic-addcost-totrow td { background:var(--surface); font-weight:700; font-size:12px; color:var(--navy); padding:6px 6px; border-top:2px solid var(--border-light) !important; border-bottom:none !important; }
+    .ic-addcost-totrow td:first-child { padding-left:0; }
+    .ic-addcost-del-btn { background:none; border:none; cursor:pointer; color:#c0392b; font-size:13px; padding:2px 4px; border-radius:4px; opacity:0; font-family:inherit; line-height:1; }
+    tr:hover .ic-addcost-del-btn { opacity:1; }
+    .ic-addcost-del-btn:hover { background:rgba(192,57,43,.1); }
+
+    /* ── IC Sanity Check ── */
+    .ic-sanity-input-row { margin-bottom:14px; }
+    .ic-sanity-label { display:block; font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px; }
+    .ic-sanity-input {
+      width:100%; border:1.5px solid var(--border); border-radius:8px;
+      padding:9px 12px; font-size:14px; font-weight:500; color:var(--text);
+      font-family:inherit; outline:none; -moz-appearance:textfield;
+      transition:border-color var(--transition);
+    }
+    .ic-sanity-input::-webkit-outer-spin-button,
+    .ic-sanity-input::-webkit-inner-spin-button { -webkit-appearance:none; }
+    .ic-sanity-input:focus { border-color:var(--accent); }
+    .ic-sanity-view-toggle { display:flex; background:var(--border-light); border-radius:8px; padding:3px; gap:2px; margin-top:18px; width:fit-content; }
+    .ic-sanity-row { margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--border-light); }
+    .ic-sanity-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .ic-sanity-row-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .ic-sanity-row-title { font-size:13px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.05em; }
+    .ic-sanity-badge {
+      font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;
+      text-transform:uppercase; letter-spacing:.04em;
+    }
+    .badge-ok  { background:#e8f8ed; color:#1a7a3a; }
+    .badge-over{ background:#fff0e6; color:#c25000; }
+    .badge-zero{ background:var(--surface); color:var(--text-secondary); }
+    .ic-sanity-stat { display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; }
+    .ic-sanity-stat-label { color:var(--text-secondary); }
+    .ic-sanity-stat-value { font-weight:600; color:var(--text); }
+    .ic-sanity-bar-wrap { margin-top:10px; }
+    .ic-sanity-bar-label { font-size:11px; color:var(--text-secondary); margin-bottom:4px; }
+    .ic-sanity-track { height:8px; background:var(--border-light); border-radius:4px; overflow:hidden; position:relative; }
+    .ic-sanity-alloc { height:100%; border-radius:4px; transition:width .4s cubic-bezier(.4,0,.2,1); }
+    .ic-sanity-marker { position:absolute; top:0; height:100%; width:2px; background:var(--navy); }
+    .ic-sanity-yr-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+    .ic-sanity-yr-table th { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-secondary); padding:0 0 8px; text-align:right; }
+    .ic-sanity-yr-table th:first-child { text-align:left; }
+    .ic-sanity-yr-table td { padding:7px 0; border-bottom:1px solid var(--border-light); text-align:right; font-weight:500; }
+    .ic-sanity-yr-table td:first-child { text-align:left; color:var(--text-secondary); }
+    .ic-sanity-yr-table tr:last-child td { border-bottom:none; }
+    .ic-sanity-yr-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; }
+
+    /* ── SD Strategic Value ── */
+    .sd-strategic-section {
+      background: var(--surface);
+      padding: 64px 48px;
+      margin-top: 0;
+    }
+    .sd-strategic-inner { max-width: 1280px; margin: 0 auto; }
+    .sd-strategic-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .sd-strategic-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .sd-strategic-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+    .sd-strategic-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 1100px) { .sd-strategic-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .sd-strategic-grid { grid-template-columns: 1fr 1fr; } }
+    .sd-strat-card {
+      background: #fff;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 22px 18px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      user-select: none;
+    }
+    .sd-strat-card:hover { border-color: var(--accent); }
+    .sd-strat-card.active {
+      border-color: var(--accent);
+      background: #fff9f5;
+    }
+    .sd-strat-check {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .sd-strat-card.active .sd-strat-check { opacity: 1; }
+    .sd-strat-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .sd-strat-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .sd-strat-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .sd-strat-card:not(.active) .sd-strat-card-title { color: var(--text-secondary); }
+    .sd-strat-card:not(.active) .sd-strat-icon { opacity: 0.35; }
+
+    .sd-param-table{display:flex;flex-direction:column;margin-top:12px;}
+    .sd-param-table-header{display:grid;grid-template-columns:1fr 110px 70px;gap:8px;padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);border-bottom:2px solid var(--border-light);}
+    .sd-param-row{display:grid;grid-template-columns:1fr 110px 70px;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--border-light);}
+    .sd-param-row:hover{background:var(--surface);}
+    .sd-param-label{font-size:13px;color:var(--text);}
+    .sd-param-input{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit;text-align:right;width:100%;outline:none;-moz-appearance:textfield;}
+    .sd-param-input::-webkit-outer-spin-button,.sd-param-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+    .sd-param-input:focus{border-color:var(--accent);}
+    .sd-param-unit{font-size:11px;color:var(--text-secondary);}
     @media (max-width: 860px) {
       .landing-cards { grid-template-columns: 1fr; }
       .landing-h1 { font-size: 44px; }
@@ -1883,6 +2491,38 @@
         <span class="landing-card-cta" data-i18n="landing_cta">Open calculator →</span>
       </div>
 
+
+      <!-- IC Card -->
+      <div class="landing-card" onclick="selectArea('ic')">
+        <span class="landing-card-icon">📋</span>
+        <div class="landing-card-label" data-i18n="landing_ic_label">Module 3</div>
+        <div class="landing-card-title" data-i18n="landing_ic_title">Investment Case</div>
+        <div class="landing-card-desc" data-i18n="landing_ic_desc">Plan your project investment — timeline, resource allocation, and cost breakdown across IT and business teams.</div>
+        <div class="landing-card-features">
+          <span class="landing-card-feature" data-i18n="landing_ic_f1">Visual project timeline with colour-coded phases</span>
+          <span class="landing-card-feature" data-i18n="landing_ic_f2">IT &amp; Business resource cost allocation</span>
+          <span class="landing-card-feature" data-i18n="landing_ic_f3">Additional costs per year (licence, travel, AMS)</span>
+          <span class="landing-card-feature" data-i18n="landing_ic_f4">Bottom-up hours sanity check</span>
+        </div>
+        <span class="landing-card-cta" data-i18n="landing_cta">Open planner →</span>
+      </div>
+
+
+      <!-- SD Card -->
+      <div class="landing-card" onclick="selectArea('sd')">
+        <span class="landing-card-icon">🌍</span>
+        <div class="landing-card-label" data-i18n="landing_sd_label">Module 4</div>
+        <div class="landing-card-title" data-i18n="landing_sd_title">SAP SD &amp; Sales</div>
+        <div class="landing-card-desc" data-i18n="landing_sd_desc">Quantify the value of SAP SD for global sales expansion — market entry speed, Order-to-Cash automation, working capital, and cost avoidance.</div>
+        <div class="landing-card-features">
+          <span class="landing-card-feature" data-i18n="landing_sd_f1">Market entry speed &amp; global template value</span>
+          <span class="landing-card-feature" data-i18n="landing_sd_f2">Order-to-Cash automation savings</span>
+          <span class="landing-card-feature" data-i18n="landing_sd_f3">Working capital &amp; cost avoidance</span>
+          <span class="landing-card-feature" data-i18n="landing_sd_f4">ROI break-even analysis</span>
+        </div>
+        <span class="landing-card-cta" data-i18n="landing_cta">Open calculator →</span>
+      </div>
+
     </div>
 
     <div class="landing-footer">
@@ -1897,6 +2537,8 @@
   <div class="area-tabs-inner">
     <button class="area-tab active" id="tab-hr" onclick="selectArea('hr')" data-i18n="area_hr">HR &amp; Recruitment</button>
     <button class="area-tab" id="tab-sc" onclick="selectArea('sc')" data-i18n="area_sc">Supply Chain</button>
+    <button class="area-tab" id="tab-ic" onclick="selectArea('ic')" data-i18n="area_ic">Investment Case</button>
+    <button class="area-tab" id="tab-sd" onclick="selectArea('sd')" data-i18n="area_sd">SD &amp; Sales</button>
   </div>
 </div>
 
@@ -2479,6 +3121,8 @@
   var t2ImplCosts  = [4000000,  2000000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   var t3ImplCosts  = [5000000,  2500000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   var t4ImplCosts  = [6000000,  3000000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var sdImplCosts  = [10000000, 5000000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var sdYearRange  = 5;
 
   // ── ROI Calculations ──
   function calcROI() {
@@ -2979,6 +3623,474 @@
 <div style="text-align:center;padding:14px 24px;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.03em;">© 2026 SOA People Nordic &nbsp;&middot;&nbsp; All rights reserved.</div>
 </section>
 
+<!-- ── Investment Case Section ── -->
+<div id="ic-section" style="display:none">
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-eyebrow" data-i18n="ic_eyebrow">Project Investment</div>
+  <h1 data-i18n="ic_hero_h1">Investment Case<br>Planner</h1>
+  <p data-i18n="ic_hero_p">Define your project scope, allocate resources, and model the full investment cost across IT and business teams.</p>
+</section>
+
+<!-- ── Project Setup Card ── -->
+<section class="ic-setup-section">
+  <div class="ic-setup-inner">
+    <div class="ic-setup-card">
+      <div class="ic-setup-title" data-i18n="ic_setup_title">Project Setup</div>
+      <div class="ic-setup-row">
+        <div class="ic-setup-field">
+          <label class="ic-setup-label" data-i18n="ic_duration_label">Project duration</label>
+          <div class="ic-duration-select-wrap">
+            <select id="ic-duration" class="ic-duration-select" onchange="icSetup()">
+              <option value="1">1 year</option>
+              <option value="2" selected>2 years</option>
+              <option value="3">3 years</option>
+              <option value="4">4 years</option>
+              <option value="5">5 years</option>
+            </select>
+          </div>
+        </div>
+        <div class="ic-setup-field">
+          <label class="ic-setup-label" data-i18n="ic_period_label">Period view</label>
+          <div class="ic-period-toggle">
+            <button class="ic-period-btn active" id="ic-btn-months" onclick="icSetPeriod('months')" data-i18n="ic_btn_months">Months</button>
+            <button class="ic-period-btn" id="ic-btn-weeks" onclick="icSetPeriod('weeks')" data-i18n="ic_btn_weeks">Weeks</button>
+          </div>
+        </div>
+      </div>
+      <div class="ic-setup-info">
+        <span id="ic-setup-summary" class="ic-setup-summary"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Timeline ── -->
+<section class="ic-timeline-section">
+  <div class="ic-section-inner">
+    <div class="ic-section-hdr">
+      <div class="ic-section-title" data-i18n="ic_timeline_title">Project Timeline</div>
+      <button class="ic-add-phase-btn" onclick="icAddPhase()">+ Add phase</button>
+    </div>
+    <div class="ic-timeline-wrap">
+      <table class="ic-timeline-table" id="ic-timeline-table"></table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── IT Resources ── -->
+<section class="ic-resources-section">
+  <div class="ic-section-inner">
+    <div class="ic-section-hdr">
+      <div class="ic-section-title" data-i18n="ic_it_title">IT Resources (External)</div>
+      <button class="ic-add-phase-btn" onclick="icAddResource('it')">+ Add person</button>
+    </div>
+    <div class="ic-timeline-wrap">
+      <table class="ic-res-table" id="ic-res-it-table"></table>
+    </div>
+  </div>
+</section>
+
+<!-- ── Business Resources ── -->
+<section class="ic-resources-section">
+  <div class="ic-section-inner">
+    <div class="ic-section-hdr">
+      <div class="ic-section-title" data-i18n="ic_biz_title">Business Resources (Internal)</div>
+      <button class="ic-add-phase-btn" onclick="icAddResource('biz')">+ Add person</button>
+    </div>
+    <div class="ic-timeline-wrap">
+      <table class="ic-res-table" id="ic-res-biz-table"></table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── Cost Breakdown ── -->
+<div class="main-grid" style="padding-top:0">
+
+  <!-- LEFT: totals + year stats -->
+  <div class="params-col">
+
+    <div class="total-card">
+      <div class="total-label" data-i18n="ic_cost_total_label">Total Project Investment</div>
+      <div class="total-amount" id="ic-total-investment">DKK &ndash;</div>
+      <div class="total-subtitle" data-i18n="ic_cost_total_sub">Based on allocated resources</div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="ic_cost_it_label">IT Resources</div>
+        <div class="metric-value" id="ic-total-it">&ndash;</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="ic_cost_biz_label">Business Resources</div>
+        <div class="metric-value" id="ic-total-biz">&ndash;</div>
+      </div>
+    </div>
+
+    <div class="savings-section">
+      <div class="savings-title" data-i18n="ic_cost_yr_label">Year by Year</div>
+      <div id="ic-year-breakdown"></div>
+    </div>
+
+    <!-- Additional Costs -->
+    <div class="savings-section">
+      <div class="ic-addcost-header">
+        <div class="savings-title" data-i18n="ic_addcost_title">Additional Costs</div>
+        <button class="ic-add-phase-btn" style="font-size:11px;padding:4px 10px" onclick="icAddCostType()">+ Add row</button>
+      </div>
+      <div id="ic-addcost-wrap"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: cost bars -->
+  <div class="results-col">
+    <div class="savings-section">
+      <div class="savings-title" data-i18n="ic_cost_breakdown">Cost Breakdown</div>
+      <div id="ic-cost-bars">
+        <div style="color:var(--text-secondary);font-size:13px;padding:12px 0">Allocate hours to resources above to see the cost breakdown.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /cost grid -->
+
+<!-- ── Bottom-Up Sanity Check ── -->
+<div class="main-grid" style="padding-top:0;padding-bottom:80px">
+
+  <!-- LEFT: category table -->
+  <div class="params-col">
+    <div class="savings-section">
+      <div class="ic-addcost-header">
+        <div class="savings-title" data-i18n="ic_sanity_title">IT Bottom-Up Estimate</div>
+        <button class="ic-add-phase-btn" style="font-size:11px;padding:4px 10px" onclick="icAddSanityCategory()">+ Add category</button>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.5" data-i18n="ic_sanity_sub">Enter estimated IT hours per activity. The total is compared against allocated IT hours above.</p>
+      <div id="ic-sanity-cats"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: comparison -->
+  <div class="results-col">
+    <div class="savings-section" id="ic-sanity-result">
+      <div style="color:var(--text-secondary);font-size:13px">Enter estimates on the left to see the comparison.</div>
+    </div>
+  </div>
+
+</div><!-- /sanity grid -->
+
+</div><!-- /ic-section -->
+
+
+<!-- ── SD Section ── -->
+<div id="sd-section" style="display:none">
+
+<section class="hero">
+  <div class="hero-eyebrow" data-i18n="sd_eyebrow">SAP SD &amp; Sales</div>
+  <h1 data-i18n="sd_hero_h1">Annual Savings<br>Calculator</h1>
+  <p data-i18n="sd_hero_p">Model the business value of SAP SD — from accelerating global market entry to automating Order-to-Cash and reducing working capital.</p>
+</section>
+
+<div class="main-grid">
+  <div class="params-col" id="sd-params-col">
+
+    <div class="param-section">
+      <div class="section-header">
+        <div class="section-icon blue">🌍</div>
+        <div class="section-title" data-i18n="sd_sec_profile">Company Profile</div>
+      </div>
+      <div class="section-body">
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_entities">Sales entities today</span><span class="slider-value" id="disp-sdEntities">3</span></div>
+          <input type="range" id="sl-sdEntities" min="1" max="20" step="1" value="3">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_entitiesPerYear">New entities per year</span><span class="slider-value" id="disp-sdEntitiesPerYear">1</span></div>
+          <input type="range" id="sl-sdEntitiesPerYear" min="0" max="5" step="1" value="1">
+          <div class="slider-hint" data-i18n="sd_hint_entitiesPerYear">How many new sales companies you plan to establish per year</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_ordersPerYear">Orders per year</span><span class="slider-value" id="disp-sdOrdersPerYear">50,000</span></div>
+          <input type="range" id="sl-sdOrdersPerYear" min="1000" max="500000" step="1000" value="50000">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_avgRevenue">Avg monthly revenue per entity (DKK)</span><span class="slider-value" id="disp-sdAvgRevenue">2,000,000</span></div>
+          <input type="range" id="sl-sdAvgRevenue" min="100000" max="50000000" step="100000" value="2000000">
+        </div>
+      </div>
+    </div>
+
+    <div class="param-section">
+      <div class="section-header">
+        <div class="section-icon orange">⚙️</div>
+        <div class="section-title" data-i18n="sd_sec_efficiency">Efficiency &amp; Rates</div>
+      </div>
+      <div class="section-body">
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_monthsSaved">Months saved per market entry</span><span class="slider-value" id="disp-sdMonthsSaved">8</span></div>
+          <input type="range" id="sl-sdMonthsSaved" min="1" max="12" step="1" value="8">
+          <div class="slider-hint" data-i18n="sd_hint_monthsSaved">Without SAP: 6-12 months. With SAP template: 1-3 months</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_minPerOrder">Minutes saved per order</span><span class="slider-value" id="disp-sdMinPerOrder">5</span></div>
+          <input type="range" id="sl-sdMinPerOrder" min="1" max="30" step="1" value="5">
+          <div class="slider-hint" data-i18n="sd_hint_minPerOrder">Reduction in manual order processing time</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_fteRate">FTE annual cost (DKK)</span><span class="slider-value" id="disp-sdFteRate">500,000</span></div>
+          <input type="range" id="sl-sdFteRate" min="200000" max="1200000" step="10000" value="500000">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_inventoryValue">Inventory value at 3PL (DKK)</span><span class="slider-value" id="disp-sdInventoryValue">50,000,000</span></div>
+          <input type="range" id="sl-sdInventoryValue" min="1000000" max="500000000" step="1000000" value="50000000">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_invCarrying">Carrying cost (% p.a.)</span><span class="slider-value" id="disp-sdInvCarrying">20%</span></div>
+          <input type="range" id="sl-sdInvCarrying" min="5" max="35" step="1" value="20">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_invReduction">Inventory reduction from better visibility</span><span class="slider-value" id="disp-sdInvReduction">10%</span></div>
+          <input type="range" id="sl-sdInvReduction" min="2" max="30" step="1" value="10">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_localErpCost">Local ERP cost avoided per entity (DKK/yr)</span><span class="slider-value" id="disp-sdLocalErpCost">1,500,000</span></div>
+          <input type="range" id="sl-sdLocalErpCost" min="100000" max="10000000" step="100000" value="1500000">
+          <div class="slider-hint" data-i18n="sd_hint_localErpCost">Annual cost of local ERP systems each entity avoids by using central SAP</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_margin">Contribution margin (%)</span><span class="slider-value" id="disp-sdMargin">15%</span></div>
+          <input type="range" id="sl-sdMargin" min="3" max="40" step="1" value="15">
+          <div class="slider-hint" data-i18n="sd_hint_margin">Used to calculate value of accelerated revenue from faster market entry</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_monthEndHrs">Hours saved per month-end close</span><span class="slider-value" id="disp-sdMonthEndHrs">40</span></div>
+          <input type="range" id="sl-sdMonthEndHrs" min="0" max="200" step="5" value="40">
+          <div class="slider-hint" data-i18n="sd_hint_monthEndHrs">Finance hours saved monthly from standardised reporting across all entities</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-label" data-i18n="sd_lbl_financeRate">Finance team hourly rate (DKK/hr)</span><span class="slider-value" id="disp-sdFinanceRate">800</span></div>
+          <input type="range" id="sl-sdFinanceRate" min="300" max="2000" step="50" value="800">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="results-col" id="sd-results-col">
+    <div class="total-card">
+      <div class="total-label" data-i18n="sd_total_label">Total Annual Savings</div>
+      <div class="total-amount" id="sd-total-savings">DKK &ndash;</div>
+      <div class="total-subtitle" data-i18n="sd_total_sub">Based on current parameters</div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="sd_metric_fte">FTE hours freed</div>
+        <div class="metric-value" id="sd-metric-fte">&ndash;</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="sd_metric_entry">Entities accelerated</div>
+        <div class="metric-value" id="sd-metric-entry">&ndash;</div>
+      </div>
+    </div>
+
+    <div class="savings-section">
+      <div class="savings-title" data-i18n="sd_breakdown">Savings breakdown</div>
+
+      <div class="saving-bar">
+        <div class="saving-bar-header">
+          <span class="saving-bar-name" data-i18n="sd_s1_name">Market entry speed</span>
+          <span class="saving-bar-amount" id="sd-s1-amt">&ndash;</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="sd-s1-bar" style="width:0%;background:#4A90D9"></div></div>
+      </div>
+
+      <div class="saving-bar">
+        <div class="saving-bar-header">
+          <span class="saving-bar-name" data-i18n="sd_s2_name">Order-to-Cash automation</span>
+          <span class="saving-bar-amount" id="sd-s2-amt">&ndash;</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="sd-s2-bar" style="width:0%;background:#F07800"></div></div>
+      </div>
+
+      <div class="saving-bar">
+        <div class="saving-bar-header">
+          <span class="saving-bar-name" data-i18n="sd_s3_name">Working capital reduction</span>
+          <span class="saving-bar-amount" id="sd-s3-amt">&ndash;</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="sd-s3-bar" style="width:0%;background:#30d158"></div></div>
+      </div>
+
+      <div class="saving-bar">
+        <div class="saving-bar-header">
+          <span class="saving-bar-name" data-i18n="sd_s4_name">Financial reporting efficiency</span>
+          <span class="saving-bar-amount" id="sd-s4-amt">&ndash;</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="sd-s4-bar" style="width:0%;background:#9b59b6"></div></div>
+      </div>
+
+      <div class="saving-bar">
+        <div class="saving-bar-header">
+          <span class="saving-bar-name" data-i18n="sd_s5_name">Cost avoidance (local ERP)</span>
+          <span class="saving-bar-amount" id="sd-s5-amt">&ndash;</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="sd-s5-bar" style="width:0%;background:#e67e22"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Strategic Value ── -->
+<section class="sd-strategic-section">
+  <div class="sd-strategic-inner">
+    <div class="sd-strategic-header">
+      <div>
+        <div class="sd-strategic-eyebrow" data-i18n="sd_strat_eyebrow">Beyond the Numbers</div>
+        <h2 class="sd-strategic-title" data-i18n="sd_strat_title">Strategic Value</h2>
+        <p class="sd-strategic-sub" data-i18n="sd_strat_sub">These benefits are difficult to quantify directly, but are often decisive for leadership buy-in and long-term ROI. Toggle the ones relevant to your case.</p>
+      </div>
+    </div>
+    <div class="sd-strategic-grid" id="sd-strategic-grid">
+
+      <div class="sd-strat-card active" onclick="sdToggleCard(this)">
+        <div class="sd-strat-check">✓</div>
+        <div class="sd-strat-icon">🔍</div>
+        <div class="sd-strat-card-title" data-i18n="sd_strat_1_title">Audit Trail &amp; Compliance</div>
+        <div class="sd-strat-card-desc" data-i18n="sd_strat_1_desc">Complete digital audit trail for all SD transactions. Supports SOX, IFRS, and local compliance requirements across every sales entity.</div>
+      </div>
+
+      <div class="sd-strat-card active" onclick="sdToggleCard(this)">
+        <div class="sd-strat-check">✓</div>
+        <div class="sd-strat-icon">🛡</div>
+        <div class="sd-strat-card-title" data-i18n="sd_strat_2_title">Segregation of Duties</div>
+        <div class="sd-strat-card-desc" data-i18n="sd_strat_2_desc">Automated SOD controls enforce proper approval workflows and prevent fraud. Eliminates manual segregation errors across all markets.</div>
+      </div>
+
+      <div class="sd-strat-card active" onclick="sdToggleCard(this)">
+        <div class="sd-strat-check">✓</div>
+        <div class="sd-strat-icon">📈</div>
+        <div class="sd-strat-card-title" data-i18n="sd_strat_3_title">Investor &amp; M&amp;A Readiness</div>
+        <div class="sd-strat-card-desc" data-i18n="sd_strat_3_desc">Standardised processes and clean data across entities dramatically accelerates due diligence for investors or acquirers. A significant premium in a transaction.</div>
+      </div>
+
+      <div class="sd-strat-card active" onclick="sdToggleCard(this)">
+        <div class="sd-strat-check">✓</div>
+        <div class="sd-strat-icon">🌍</div>
+        <div class="sd-strat-card-title" data-i18n="sd_strat_4_title">Global Process Standardisation</div>
+        <div class="sd-strat-card-desc" data-i18n="sd_strat_4_desc">One process, one system, one truth. Eliminates local workarounds and ensures a consistent customer experience and reporting language across all markets.</div>
+      </div>
+
+      <div class="sd-strat-card active" onclick="sdToggleCard(this)">
+        <div class="sd-strat-check">✓</div>
+        <div class="sd-strat-icon">🚀</div>
+        <div class="sd-strat-card-title" data-i18n="sd_strat_5_title">Scalability Without Headcount</div>
+        <div class="sd-strat-card-desc" data-i18n="sd_strat_5_desc">Add new sales markets without proportionally adding back-office staff. The platform scales with volume — the team does not have to.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</div><!-- /sd-section -->
+
+<section class="roi-wrapper" id="sd-roi-section" style="display:none">
+  <div class="roi-inner">
+
+    <div class="roi-hero-text">
+      <div class="eyebrow" data-i18n="roi_eyebrow">Return on Investment</div>
+      <h2 data-i18n="sd_roi_h2">Break-Even Analysis</h2>
+      <p data-i18n="sd_roi_p">Model the total SAP SD investment against cumulative savings to see when the project pays for itself.</p>
+    </div>
+
+    <div class="roi-layout">
+
+      <!-- LEFT: costs -->
+      <div class="roi-params-col">
+
+        <div class="roi-param-section">
+          <div class="roi-section-header">
+            <div class="section-icon blue" style="background:#1a1e50">💰</div>
+            <div class="roi-section-title" data-i18n="sd_roi_sec_license">Annual License Costs</div>
+          </div>
+          <div class="roi-section-body">
+            <div class="roi-input-cell">
+              <label data-i18n="sd_roi_sdLicense">SAP SD / S4HANA license (DKK/year)</label>
+              <input type="number" id="sd-roi-license" value="4500000" min="0" oninput="drawSDROIChart()">
+            </div>
+          </div>
+        </div>
+
+        <div class="roi-param-section">
+          <div class="roi-section-header">
+            <div class="section-icon orange" style="background:#231808">🔧</div>
+            <div class="roi-section-title" data-i18n="sd_roi_sec_impl">Implementation Cost</div>
+          </div>
+          <div class="roi-section-body">
+            <div class="impl-cost-row">
+              <span class="impl-cost-label" data-i18n="sd_roi_impl_total">Total implementation cost</span>
+              <span class="impl-cost-total" id="sd-impl-total">—</span>
+            </div>
+            <button class="impl-toggle-btn" data-i18n="btn_edit_by_year" id="sd-impl-btn" onclick="toggleImplGrid('sd')">▸ Edit by year</button>
+            <div class="impl-grid-wrap" id="sd-impl-grid"></div>
+          </div>
+        </div>
+
+        <!-- Summary stats -->
+        <div class="roi-summary-row">
+          <div class="roi-stat">
+            <div class="roi-stat-label" data-i18n="stat_invest">Total investment</div>
+            <div class="roi-stat-value orange" id="sd-stat-invest">—</div>
+          </div>
+          <div class="roi-stat">
+            <div class="roi-stat-label" data-i18n="stat_annual">Annual savings</div>
+            <div class="roi-stat-value green" id="sd-stat-annual">—</div>
+          </div>
+          <div class="roi-stat">
+            <div class="roi-stat-label" id="sd-net-label" data-i18n="stat_net">5-year net benefit</div>
+            <div class="roi-stat-value" id="sd-stat-net">—</div>
+          </div>
+        </div>
+
+      </div><!-- /roi-params-col -->
+
+      <!-- RIGHT: chart -->
+      <div>
+        <div class="year-range-bar">
+          <span class="year-range-label" data-i18n="yr_label">Horizon</span>
+          <button class="yr-btn" onclick="setSDYearRange(3)" id="sd-yr-3">3 yr</button>
+          <button class="yr-btn active" onclick="setSDYearRange(5)" id="sd-yr-5">5 yr</button>
+          <button class="yr-btn" onclick="setSDYearRange(7)" id="sd-yr-7">7 yr</button>
+          <button class="yr-btn" onclick="setSDYearRange(10)" id="sd-yr-10">10 yr</button>
+        </div>
+        <div class="roi-chart-card">
+          <div class="chart-topbar">
+            <div>
+              <div class="chart-title" data-i18n="chart_title">Cumulative Investment vs. Savings</div>
+              <div class="chart-subtitle" id="sd-chart-sub" data-i18n="sd_chart_sub">DKK — Years 0 through 5</div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div><span data-i18n="legend_invest">Cumulative Investment</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#30d158"></div><span data-i18n="legend_save">Cumulative Savings</span></div>
+            </div>
+          </div>
+          <canvas id="sd-roi-canvas" height="320"></canvas>
+          <div class="breakeven-banner" id="sd-breakeven-banner">
+            <span class="breakeven-icon">🎯</span>
+            <span class="breakeven-text" id="sd-breakeven-text">Calculating…</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /roi-layout -->
+  </div><!-- /roi-inner -->
+  <div style="text-align:center;padding:14px 24px;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.03em;">© 2026 SOA People Nordic &nbsp;&middot;&nbsp; All rights reserved.</div>
+</section>
+
 
 <!-- ── Industry Modal ── -->
 <div id="industry-modal" class="modal-overlay" style="display:none">
@@ -3024,6 +4136,12 @@
     document.getElementById('sc-section').style.display='none';
     var scRoi=document.getElementById('sc-roi-section');
     if(scRoi) scRoi.style.display='none';
+    var icEl=document.getElementById('ic-section');
+    if(icEl) icEl.style.display='none';
+    var sdEl2=document.getElementById('sd-section');
+    if(sdEl2) sdEl2.style.display='none';
+    var sdRoi2=document.getElementById('sd-roi-section');
+    if(sdRoi2) sdRoi2.style.display='none';
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
@@ -3041,21 +4159,983 @@
       var hrEl = document.getElementById('hr-section');
       var scEl = document.getElementById('sc-section');
       var scRoiEl = document.getElementById('sc-roi-section');
+      var icEl = document.getElementById('ic-section');
       hrEl.style.display = a==='hr' ? '' : 'none';
       scEl.style.display = a==='sc' ? '' : 'none';
       if(scRoiEl) scRoiEl.style.display = a==='sc' ? '' : 'none';
+      if(icEl) icEl.style.display = a==='ic' ? '' : 'none';
+      var sdEl=document.getElementById('sd-section');
+      if(sdEl) sdEl.style.display = a==='sd' ? '' : 'none';
+      var sdRoiEl=document.getElementById('sd-roi-section');
+      if(sdRoiEl) sdRoiEl.style.display = a==='sd' ? '' : 'none';
       // Trigger fade+slide animation on the active section
-      var activeEl = a==='hr' ? hrEl : scEl;
-      activeEl.classList.remove('module-enter');
-      void activeEl.offsetWidth; // force reflow
-      activeEl.classList.add('module-enter');
+      var activeEl = a==='hr' ? hrEl : (a==='sc' ? scEl : (a==='ic' ? icEl : sdEl));
+      if(activeEl){ activeEl.classList.remove('module-enter'); void activeEl.offsetWidth; activeEl.classList.add('module-enter'); }
       document.getElementById('tab-hr').classList.toggle('active',a==='hr');
       document.getElementById('tab-sc').classList.toggle('active',a==='sc');
+      document.getElementById('tab-ic').classList.toggle('active',a==='ic');
+      document.getElementById('tab-sd').classList.toggle('active',a==='sd');
       if(a==='hr'){recalculate(); setTimeout(drawROIChart,50);}
       if(a==='sc'&&!currentIndustry) showIndustryModal();
       if(a==='sc'&&currentIndustry) setTimeout(drawSCROIChart,50);
+      if(a==='ic') icSetup();
+      if(a==='sd') sdInit();
       window.scrollTo({top:0, behavior:'instant'});
     }, 200);
+  }
+
+
+  // ── Investment Case ──
+  var icPeriod = 'months';
+  var icPhases = [
+    {id:'ph1',name:'Prepare & Design',color:'#4A90D9',expanded:true,painted:{},subPhases:[
+      {id:'sp1a',name:'Phase 0',color:null,painted:{}},
+      {id:'sp1b',name:'Phase 1',color:null,painted:{}}
+    ]},
+    {id:'ph2',name:'Solution Implementation',color:'#F07800',expanded:true,painted:{},subPhases:[
+      {id:'sp2a',name:'Phase 2',color:null,painted:{}}
+    ]},
+    {id:'ph3',name:'Deployment',color:'#30d158',expanded:true,painted:{},subPhases:[]}
+  ];
+  var icNextPhId=4, icNextSpId=10;
+
+  function icSetPeriod(p){
+    icPeriod=p;
+    document.getElementById('ic-btn-months').classList.toggle('active',p==='months');
+    document.getElementById('ic-btn-weeks').classList.toggle('active',p==='weeks');
+    icSetup();
+  }
+
+  function icSetup(){
+    var years=parseInt(document.getElementById('ic-duration').value)||2;
+    var periods=icPeriod==='months'?years*12:years*52;
+    var label=icPeriod==='months'?(currentLang==='da'?'måneder':'months'):(currentLang==='da'?'uger':'weeks');
+    var yLabel=currentLang==='da'?' år · ':(years===1?' year · ':' years · ');
+    var el=document.getElementById('ic-setup-summary');
+    if(el) el.textContent=years+yLabel+periods+' '+label;
+    icRenderTimeline();
+    icRenderResources('it');
+    icRenderResources('biz');
+    icRenderAddCosts();
+    icRenderCostChart();
+    icRenderSanityCats();
+    icRenderSanityCheck();
+  }
+
+  function icGetPeriods(){
+    var years=parseInt(document.getElementById('ic-duration').value)||2;
+    var isWeeks=icPeriod==='weeks';
+    var count=isWeeks?years*52:years*12;
+    var perYear=isWeeks?52:12;
+    var labels=[];
+    for(var i=0;i<count;i++) labels.push(isWeeks?'W'+(i+1):'M'+(i+1));
+    return {count:count,perYear:perYear,labels:labels,years:years};
+  }
+
+  function icRenderTimeline(){
+    var tbl=document.getElementById('ic-timeline-table');
+    if(!tbl) return;
+    var p=icGetPeriods();
+
+    // thead
+    var h='<thead>';
+    h+='<tr class="ic-yr-row"><th class="ic-name-col"></th>';
+    for(var y=0;y<p.years;y++){
+      h+='<th class="ic-yr-th" colspan="'+p.perYear+'">'+(currentLang==='da'?'År':'Year')+' '+(y+1)+'</th>';
+    }
+    h+='</tr>';
+    h+='<tr class="ic-period-row"><th class="ic-name-col ic-th-name">Phase</th>';
+    for(var i=0;i<p.count;i++){
+      var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+      h+='<th class="ic-period-th'+boundary+'">'+p.labels[i]+'</th>';
+    }
+    h+='</tr></thead>';
+
+    // tbody — use data-* attributes, NO escaped quotes in onclick
+    var b='<tbody>';
+    if(!icPhases.length){
+      b+='<tr class="ic-empty-row"><td colspan="'+(p.count+1)+'">'
+        +(currentLang==='da'?'Tilføj en fase for at starte':'Add a phase to get started')
+        +'</td></tr>';
+    } else {
+      icPhases.forEach(function(ph,phIdx){
+        var hasSubs=ph.subPhases&&ph.subPhases.length>0;
+        var phColor=ph.color||'#999';
+        var toggleHtml=hasSubs
+          ? '<button class="ic-toggle-btn" data-action="toggle-phase" data-phid="'+ph.id+'">'+(ph.expanded?'&#9660;':'&#9658;')+'</button>'
+          : '<span class="ic-toggle-spacer"></span>';
+
+        b+='<tr class="ic-phase-row">';
+        b+='<td class="ic-name-col ic-phase-name-cell">';
+        b+='<div class="ic-name-inner">'+toggleHtml;
+        b+='<div class="ic-color-swatch" style="background:'+phColor+'" data-action="open-cp" data-cpid="ic-cp-'+ph.id+'" title="Pick colour"></div>';
+        b+='<input type="color" id="ic-cp-'+ph.id+'" class="ic-color-input" value="'+phColor+'" data-phid="'+ph.id+'" data-spid="" data-action="set-color">';
+        b+='<input type="text" class="ic-name-input" value="'+ph.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="" data-action="rename">';
+        b+='<div class="ic-row-actions">';
+        b+='<button class="ic-row-btn ic-add-sub-btn" data-action="add-sub" data-phid="'+ph.id+'" title="Add sub-phase">&#65291;</button>';
+        b+='<button class="ic-row-btn ic-del-btn" data-action="del-phase" data-phid="'+ph.id+'" title="Delete">&#10005;</button>';
+        b+='</div></div></td>';
+        for(var i=0;i<p.count;i++){
+          var painted=ph.painted[i];
+          var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+          var cls='ic-cell'+boundary+(painted?' ic-painted':'');
+          var sty=painted?'background:'+phColor+';':'';
+          b+='<td class="'+cls+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="" data-idx="'+i+'"></td>';
+        }
+        b+='</tr>';
+
+        // sub-phases
+        if(ph.subPhases) ph.subPhases.forEach(function(sp){
+          var spColor=sp.color||phColor;
+          var vis=ph.expanded?'':'display:none;';
+          b+='<tr class="ic-subphase-row" style="'+vis+'">';
+          b+='<td class="ic-name-col ic-subphase-name-cell">';
+          b+='<div class="ic-name-inner ic-sub-inner">';
+          b+='<div class="ic-color-swatch" style="background:'+spColor+'" data-action="open-cp" data-cpid="ic-cp-'+sp.id+'" title="Pick colour"></div>';
+          b+='<input type="color" id="ic-cp-'+sp.id+'" class="ic-color-input" value="'+spColor+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-action="set-color">';
+          b+='<input type="text" class="ic-name-input" value="'+sp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-action="rename">';
+          b+='<div class="ic-row-actions">';
+          b+='<button class="ic-row-btn ic-del-btn" data-action="del-sub" data-phid="'+ph.id+'" data-spid="'+sp.id+'" title="Delete">&#10005;</button>';
+          b+='</div></div></td>';
+          for(var i=0;i<p.count;i++){
+            var painted=sp.painted[i];
+            var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+            var cls='ic-cell'+boundary+(painted?' ic-painted':'');
+            var sty=painted?'background:'+spColor+';':'';
+            b+='<td class="'+cls+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-idx="'+i+'"></td>';
+          }
+          b+='</tr>';
+        });
+      });
+    }
+    b+='</tbody>';
+    tbl.innerHTML=h+b;
+
+    // Attach all handlers after innerHTML is set
+    tbl.querySelectorAll('[data-action="toggle-phase"]').forEach(function(el){
+      el.onclick=function(){ icTogglePhase(this.getAttribute('data-phid')); };
+    });
+    tbl.querySelectorAll('[data-action="open-cp"]').forEach(function(el){
+      el.onclick=function(){
+        var cp=document.getElementById(this.getAttribute('data-cpid'));
+        if(cp) cp.click();
+      };
+    });
+    tbl.querySelectorAll('[data-action="set-color"]').forEach(function(el){
+      el.oninput=function(){ icSetColor(this.getAttribute('data-phid'),this.getAttribute('data-spid')||null,this.value); };
+    });
+    tbl.querySelectorAll('[data-action="rename"]').forEach(function(el){
+      el.onchange=el.onblur=function(){ icRename(this.getAttribute('data-phid'),this.getAttribute('data-spid')||null,this.value); };
+    });
+    tbl.querySelectorAll('[data-action="add-sub"]').forEach(function(el){
+      el.onclick=function(){ icAddSubPhase(this.getAttribute('data-phid')); };
+    });
+    tbl.querySelectorAll('[data-action="del-phase"]').forEach(function(el){
+      el.onclick=function(){ icDeletePhase(this.getAttribute('data-phid')); };
+    });
+    tbl.querySelectorAll('[data-action="del-sub"]').forEach(function(el){
+      el.onclick=function(){ icDeleteSubPhase(this.getAttribute('data-phid'),this.getAttribute('data-spid')); };
+    });
+    tbl.querySelectorAll('[data-action="paint"]').forEach(function(el){
+      el.onclick=function(){
+        icToggleCell(this.getAttribute('data-phid'),this.getAttribute('data-spid')||null,parseInt(this.getAttribute('data-idx')));
+      };
+    });
+  }
+
+  function icToggleCell(phId,spId,idx){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(!ph) return;
+    if(spId){
+      var sp=ph.subPhases.find(function(s){return s.id===spId;});
+      if(!sp) return;
+      if(sp.painted[idx]) delete sp.painted[idx]; else sp.painted[idx]=true;
+    } else {
+      if(ph.painted[idx]) delete ph.painted[idx]; else ph.painted[idx]=true;
+    }
+    icRenderTimeline();
+  }
+
+  function icSetColor(phId,spId,color){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(!ph) return;
+    if(spId){var sp=ph.subPhases.find(function(s){return s.id===spId;});if(sp) sp.color=color;}
+    else ph.color=color;
+    icRenderTimeline();
+  }
+
+  function icRename(phId,spId,name){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(!ph) return;
+    if(spId){var sp=ph.subPhases.find(function(s){return s.id===spId;});if(sp) sp.name=name;}
+    else ph.name=name;
+  }
+
+  function icTogglePhase(phId){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(ph){ph.expanded=!ph.expanded;icRenderTimeline();}
+  }
+
+  function icAddPhase(){
+    var colors=['#4A90D9','#F07800','#30d158','#9b59b6','#e74c3c','#16a085','#f39c12','#2980b9'];
+    icPhases.push({id:'ph'+(icNextPhId++),name:'New phase',color:colors[icPhases.length%colors.length],expanded:true,painted:{},subPhases:[]});
+    icRenderTimeline();
+  }
+
+  function icAddSubPhase(phId){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(!ph) return;
+    ph.expanded=true;
+    ph.subPhases.push({id:'sp'+(icNextSpId++),name:'Sub-phase',color:null,painted:{}});
+    icRenderTimeline();
+  }
+
+  function icDeletePhase(phId){
+    icPhases=icPhases.filter(function(p){return p.id!==phId;});
+    icRenderTimeline();
+  }
+
+  function icDeleteSubPhase(phId,spId){
+    var ph=icPhases.find(function(p){return p.id===phId;});
+    if(ph) ph.subPhases=ph.subPhases.filter(function(s){return s.id!==spId;});
+    icRenderTimeline();
+  }
+
+
+  // ── IC Resources ──
+  var icITResources = [
+    {id:'it1',name:'Project Manager',rate:1200,hours:{}},
+    {id:'it2',name:'Solution Architect',rate:1400,hours:{}},
+    {id:'it3',name:'Developer',rate:1000,hours:{}}
+  ];
+  var icBizResources = [
+    {id:'biz1',name:'Business Owner',rate:900,hours:{}},
+    {id:'biz2',name:'Key User',rate:700,hours:{}}
+  ];
+  var icNextResId=20;
+
+  // Wire the "Add person" buttons (outside the table, so set once)
+
+
+  function icGetResourceArr(type){ return type==='it'?icITResources:icBizResources; }
+
+  function icFmtDKK(v){
+    return Math.round(v).toLocaleString('da-DK')+' kr';
+  }
+
+  function icRenderResources(type){
+    var resources=icGetResourceArr(type);
+    var tbl=document.getElementById('ic-res-'+(type==='it'?'it':'biz')+'-table');
+    if(!tbl) return;
+    var p=icGetPeriods();
+    var yr=currentLang==='da'?'År':'Year';
+
+    var h='<thead>';
+    h+='<tr class="ic-yr-row"><th class="ic-res-name-col"></th><th class="ic-res-rate-col"></th>';
+    for(var y=0;y<p.years;y++) h+='<th class="ic-yr-th" colspan="'+p.perYear+'">'+yr+' '+(y+1)+'</th>';
+    h+='<th class="ic-res-sum-th" colspan="'+(p.years+3)+'">'+(currentLang==='da'?'Opsummering':'Summary')+'</th>';
+    h+='</tr>';
+    h+='<tr class="ic-period-row"><th class="ic-res-name-col ic-th-name">'+(currentLang==='da'?'Navn':'Name')+'</th>';
+    h+='<th class="ic-res-rate-col ic-th-name">DKK/hr</th>';
+    for(var i=0;i<p.count;i++){
+      var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+      h+='<th class="ic-period-th'+bnd+'">'+p.labels[i]+'</th>';
+    }
+    h+='<th class="ic-res-sumcol-th">'+(currentLang==='da'?'Timer i alt':'Alloc. Hours')+'</th>';
+    h+='<th class="ic-res-sumcol-th">'+(currentLang==='da'?'Dage i alt':'Alloc. Days')+'</th>';
+    for(var y=0;y<p.years;y++) h+='<th class="ic-res-sumcol-th">'+yr+' '+(y+1)+' DKK</th>';
+    h+='<th class="ic-res-sumcol-th ic-res-grandtotal-th">'+(currentLang==='da'?'Pris i alt':'Total DKK')+'</th>';
+    h+='</tr></thead>';
+
+    var b='<tbody>';
+    if(!resources.length){
+      b+='<tr class="ic-empty-row"><td colspan="'+(p.count+p.years+5)+'">'+(currentLang==='da'?'Tilføj en person for at starte':'Add a person to get started')+'</td></tr>';
+    } else {
+      for(var ri=0;ri<resources.length;ri++){
+        var res=resources[ri];
+        var totalHrs=0;
+        for(var i=0;i<p.count;i++) totalHrs+=(res.hours[i]||0);
+        var totalDays=totalHrs>0?(totalHrs/7.5).toFixed(1):'';
+        b+='<tr class="ic-res-row">';
+        b+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner">';
+        b+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
+        b+='<div class="ic-row-actions"><button class="ic-row-btn ic-del-btn" data-action="del-res" data-type="'+type+'" data-resid="'+res.id+'" title="Delete">&#10005;</button></div>';
+        b+='</div></td>';
+        b+='<td class="ic-res-rate-col ic-res-rate-cell"><input type="number" class="ic-rate-input" value="'+res.rate+'" min="0" step="50" data-action="res-rate" data-type="'+type+'" data-resid="'+res.id+'"></td>';
+        for(var i=0;i<p.count;i++){
+          var hrs=res.hours[i]||0;
+          var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+          b+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+'" '+(hrs>0?'value="'+hrs+'"':'placeholder="&#8212;"')+' min="0" step="8" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
+        }
+        b+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'">'+( totalHrs>0?totalHrs:'&mdash;')+'</td>';
+        b+='<td class="ic-res-sumcol'+(totalDays?' ic-sum-filled':'')+'">'+( totalDays||'&mdash;')+'</td>';
+        var grand=0;
+        for(var y=0;y<p.years;y++){
+          var yt=0;
+          for(var m=0;m<p.perYear;m++) yt+=(res.hours[y*p.perYear+m]||0)*res.rate;
+          grand+=yt;
+          b+='<td class="ic-res-sumcol'+(yt>0?' ic-sum-filled':'')+'">'+( yt>0?icFmtDKK(yt):'&mdash;')+'</td>';
+        }
+        b+='<td class="ic-res-sumcol ic-res-grandtotal-cell">'+(grand>0?icFmtDKK(grand):'&mdash;')+'</td>';
+        b+='</tr>';
+      }
+      var totHrs=0,totGrand=0;
+      for(var i=0;i<p.count;i++){for(var ri=0;ri<resources.length;ri++) totHrs+=(resources[ri].hours[i]||0);}
+      for(var ri=0;ri<resources.length;ri++){for(var i=0;i<p.count;i++) totGrand+=(resources[ri].hours[i]||0)*resources[ri].rate;}
+      b+='<tr class="ic-res-totals-row">';
+      b+='<td class="ic-res-name-col ic-res-total-label">Total</td><td class="ic-res-rate-col"></td>';
+      for(var i=0;i<p.count;i++){
+        var tot=0; for(var ri=0;ri<resources.length;ri++) tot+=(resources[ri].hours[i]||0);
+        var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
+        b+='<td class="ic-res-cell'+bnd+'">'+(tot>0?tot:'')+'</td>';
+      }
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum">'+(totHrs>0?totHrs:'&mdash;')+'</td>';
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum">'+(totHrs>0?(totHrs/7.5).toFixed(1):'&mdash;')+'</td>';
+      for(var y=0;y<p.years;y++){
+        var yt=0;
+        for(var ri=0;ri<resources.length;ri++){for(var m=0;m<p.perYear;m++) yt+=(resources[ri].hours[y*p.perYear+m]||0)*resources[ri].rate;}
+        b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum">'+(yt>0?icFmtDKK(yt):'&mdash;')+'</td>';
+      }
+      b+='<td class="ic-res-sumcol ic-res-grandtotal-cell ic-totrow-sum">'+(totGrand>0?icFmtDKK(totGrand):'&mdash;')+'</td>';
+      b+='</tr>';
+    }
+    b+='</tbody>';
+    tbl.innerHTML=h+b;
+
+    tbl.querySelectorAll('[data-action="res-name"]').forEach(function(el){
+      el.onchange=el.onblur=function(){var r=icGetResourceArr(this.getAttribute('data-type')).find(function(x){return x.id===el.getAttribute('data-resid');});if(r){r.name=this.value;icRenderCostChart();}};
+    });
+    tbl.querySelectorAll('[data-action="res-rate"]').forEach(function(el){
+      el.onchange=el.onblur=function(){var t=this.getAttribute('data-type'),id=this.getAttribute('data-resid');var r=icGetResourceArr(t).find(function(x){return x.id===id;});if(r){r.rate=parseFloat(this.value)||0;icRenderResources(t);}};
+    });
+    tbl.querySelectorAll('[data-action="res-hours"]').forEach(function(el){
+      el.oninput=function(){
+        var t=this.getAttribute('data-type'),id=this.getAttribute('data-resid'),idx=parseInt(this.getAttribute('data-idx'));
+        var r=icGetResourceArr(t).find(function(x){return x.id===id;});
+        if(!r) return;
+        var v=parseFloat(this.value)||0;
+        if(v<=0) delete r.hours[idx]; else r.hours[idx]=v;
+        icRenderCostChart();
+        this.classList.toggle('ic-hrs-filled', v>0);
+      };
+      el.onblur=function(){
+        var t=this.getAttribute('data-type');
+        icRenderResources(t);
+      };
+    });
+    tbl.querySelectorAll('[data-action="del-res"]').forEach(function(el){
+      el.onclick=function(){var t=this.getAttribute('data-type'),id=this.getAttribute('data-resid');icDeleteResource(t,id);};
+    });
+    // Always refresh cost chart + sanity check after any table re-render
+    setTimeout(function(){ icRenderCostChart(); icRenderSanityCheck(); }, 0);
+  }
+
+  function icAddResource(type){
+    
+    
+    
+    var arr=icGetResourceArr(type);
+    var def={name:'New resource',rate:1000};
+    arr.push({id:(type==='it'?'it':'biz')+(icNextResId++),name:def.name,rate:def.rate,hours:{}});
+    icRenderResources(type);
+  }
+
+  function icDeleteResource(type,id){
+    if(type==='it') icITResources=icITResources.filter(function(r){return r.id!==id;});
+    else icBizResources=icBizResources.filter(function(r){return r.id!==id;});
+    icRenderResources(type);
+    icRenderCostChart();
+  }
+
+
+  // ── IC Cost Chart ──
+  var icItColors  = ['#4A90D9','#2980b9','#1565c0','#0288d1','#039be5','#01579b'];
+  var icBizColors = ['#F07800','#16a085','#27ae60','#8e44ad','#e67e22','#c0392b'];
+  var icAcColors  = ['#7f8c8d','#95a5a6','#bdc3c7','#aab7b8','#717d7e','#566573'];
+
+  function icRenderCostChart(){
+    var p=icGetPeriods();
+
+    function personTotal(res){
+      var t=0; for(var i=0;i<p.count;i++) t+=(res.hours[i]||0)*res.rate; return t;
+    }
+
+    var itTotals  = icITResources.map(function(r){return {name:r.name,cost:personTotal(r)};});
+    var bizTotals = icBizResources.map(function(r){return {name:r.name,cost:personTotal(r)};});
+    var totalIT   = itTotals.reduce(function(s,r){return s+r.cost;},0);
+    var totalBiz  = bizTotals.reduce(function(s,r){return s+r.cost;},0);
+    var totalAC   = icTotalAddCosts();
+    var grand     = totalIT+totalBiz+totalAC;
+
+    var allCostVals = itTotals.map(function(r){return r.cost;})
+      .concat(bizTotals.map(function(r){return r.cost;}))
+      .concat(icAddCosts.map(function(ac){
+        var t=0; Object.keys(ac.years).forEach(function(y){t+=ac.years[y]||0;}); return t;
+      }));
+    var maxCost = Math.max.apply(null, allCostVals.concat([1]));
+
+    // Update summary cards
+    var totEl=document.getElementById('ic-total-investment');
+    if(totEl) totEl.textContent=grand>0?icFmtDKK(grand):'DKK –';
+    var itEl=document.getElementById('ic-total-it');
+    if(itEl) itEl.textContent=totalIT>0?icFmtDKK(totalIT):'–';
+    var bizEl=document.getElementById('ic-total-biz');
+    if(bizEl) bizEl.textContent=totalBiz>0?icFmtDKK(totalBiz):'–';
+
+    // Year breakdown
+    var yrEl=document.getElementById('ic-year-breakdown');
+    if(yrEl){
+      var yh='';
+      var yr=currentLang==='da'?'År':'Year';
+      for(var y=0;y<p.years;y++){
+        var yt=0;
+        var allRes=icITResources.concat(icBizResources);
+        for(var ri=0;ri<allRes.length;ri++){
+          for(var m=0;m<p.perYear;m++) yt+=(allRes[ri].hours[y*p.perYear+m]||0)*allRes[ri].rate;
+        }
+        yt += icTotalAddCosts(y);
+        yh+='<div class="ic-yr-stat"><span class="ic-yr-stat-label">'+yr+' '+(y+1)+'</span>';
+        yh+='<span class="ic-yr-stat-value">'+(yt>0?icFmtDKK(yt):'—')+'</span></div>';
+      }
+      yrEl.innerHTML=yh||'<div style="color:var(--text-secondary);font-size:13px">No costs yet.</div>';
+    }
+
+    // Cost bars
+    var barsEl=document.getElementById('ic-cost-bars');
+    if(!barsEl) return;
+    if(grand===0){
+      barsEl.innerHTML='<div style="color:var(--text-secondary);font-size:13px;padding:12px 0">'+(currentLang==='da'?'Alloker timer eller tilføj omkostninger for at se fordelingen.':'Allocate hours or add costs above to see the breakdown.')+'</div>';
+      return;
+    }
+
+    var bh='';
+
+    // IT bars
+    if(itTotals.length){
+      bh+='<div class="ic-cost-group-label">'+(currentLang==='da'?'IT Ressourcer (Ekstern)':'IT Resources (External)')+'</div>';
+      for(var i=0;i<itTotals.length;i++){
+        var r=itTotals[i]; var w=maxCost>0?(r.cost/maxCost*100).toFixed(1):0;
+        var col=icItColors[i%icItColors.length];
+        bh+='<div class="saving-bar"><div class="saving-bar-header">';
+        bh+='<span class="saving-bar-name">'+r.name.replace(/&/g,'&amp;')+'</span>';
+        bh+='<span class="saving-bar-amount">'+(r.cost>0?icFmtDKK(r.cost):'—')+'</span></div>';
+        bh+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+col+'"></div></div></div>';
+      }
+    }
+
+    // Business bars
+    if(bizTotals.length){
+      bh+='<div class="ic-cost-group-label"'+(itTotals.length?' style="margin-top:16px"':'')+'>'+( currentLang==='da'?'Forretningsressourcer (Intern)':'Business Resources (Internal)')+'</div>';
+      for(var i=0;i<bizTotals.length;i++){
+        var r=bizTotals[i]; var w=maxCost>0?(r.cost/maxCost*100).toFixed(1):0;
+        var col=icBizColors[i%icBizColors.length];
+        bh+='<div class="saving-bar"><div class="saving-bar-header">';
+        bh+='<span class="saving-bar-name">'+r.name.replace(/&/g,'&amp;')+'</span>';
+        bh+='<span class="saving-bar-amount">'+(r.cost>0?icFmtDKK(r.cost):'—')+'</span></div>';
+        bh+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+col+'"></div></div></div>';
+      }
+    }
+
+    // Additional cost bars
+    var acWithCost = icAddCosts.filter(function(ac){
+      var t=0; Object.keys(ac.years).forEach(function(y){t+=ac.years[y]||0;}); return t>0;
+    });
+    if(acWithCost.length){
+      bh+='<div class="ic-cost-group-label" style="margin-top:16px">'+(currentLang==='da'?'Yderligere omkostninger':'Additional Costs')+'</div>';
+      for(var i=0;i<acWithCost.length;i++){
+        var ac=acWithCost[i]; var t=0;
+        Object.keys(ac.years).forEach(function(y){t+=ac.years[y]||0;});
+        var w=maxCost>0?(t/maxCost*100).toFixed(1):0;
+        var col=icAcColors[i%icAcColors.length];
+        bh+='<div class="saving-bar"><div class="saving-bar-header">';
+        bh+='<span class="saving-bar-name">'+ac.name.replace(/&/g,'&amp;')+'</span>';
+        bh+='<span class="saving-bar-amount">'+icFmtDKK(t)+'</span></div>';
+        bh+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+col+'"></div></div></div>';
+      }
+    }
+
+    barsEl.innerHTML=bh;
+  }
+
+
+  // ── IC Additional Costs ──
+  var icAddCosts = [
+    {id:'ac1', name:'Licence',     years:{}},
+    {id:'ac2', name:'Travel',      years:{}},
+    {id:'ac3', name:'Maintenance', years:{}},
+    {id:'ac4', name:'AMS',         years:{}}
+  ];
+  var icNextAcId = 10;
+
+  function icTotalAddCosts(yearIdx){
+    if(yearIdx===undefined){
+      var t=0;
+      for(var i=0;i<icAddCosts.length;i++){
+        var keys=Object.keys(icAddCosts[i].years);
+        for(var k=0;k<keys.length;k++) t+=icAddCosts[i].years[keys[k]]||0;
+      }
+      return t;
+    }
+    var t=0;
+    for(var i=0;i<icAddCosts.length;i++) t+=(icAddCosts[i].years[yearIdx]||0);
+    return t;
+  }
+
+  function icRenderAddCosts(){
+    var wrap=document.getElementById('ic-addcost-wrap');
+    if(!wrap) return;
+    var p=icGetPeriods();
+    var yr=currentLang==='da'?'År':'Year';
+
+    var h='<table class="ic-addcost-table"><thead><tr>';
+    h+='<th>'+(currentLang==='da'?'Omkostningstype':'Cost type')+'</th>';
+    for(var y=0;y<p.years;y++) h+='<th>'+yr+' '+(y+1)+'</th>';
+    h+='<th>Total</th><th></th></tr></thead><tbody>';
+
+    for(var ri=0;ri<icAddCosts.length;ri++){
+      var ac=icAddCosts[ri];
+      var rowTotal=0;
+      for(var y=0;y<p.years;y++) rowTotal+=(ac.years[y]||0);
+      h+='<tr>';
+      h+='<td><input type="text" class="ic-addcost-name-input" value="'+ac.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="ac-name" data-acid="'+ac.id+'"></td>';
+      for(var y=0;y<p.years;y++){
+        var v=ac.years[y]||0;
+        h+='<td><input type="number" class="ic-addcost-val-input" '+(v>0?'value="'+v+'"':'placeholder="0"')+' min="0" step="10000" data-action="ac-val" data-acid="'+ac.id+'" data-yr="'+y+'"></td>';
+      }
+      h+='<td class="ic-addcost-total-cell">'+(rowTotal>0?icFmtDKK(rowTotal):'—')+'</td>';
+      h+='<td><button class="ic-addcost-del-btn" data-action="del-ac" data-acid="'+ac.id+'" title="Delete">&#10005;</button></td>';
+      h+='</tr>';
+    }
+
+    // totals row
+    h+='<tr class="ic-addcost-totrow"><td>Total</td>';
+    var grandAC=0;
+    for(var y=0;y<p.years;y++){
+      var yt=0;
+      for(var ri=0;ri<icAddCosts.length;ri++) yt+=(icAddCosts[ri].years[y]||0);
+      grandAC+=yt;
+      h+='<td style="text-align:right">'+(yt>0?icFmtDKK(yt):'—')+'</td>';
+    }
+    h+='<td class="ic-addcost-total-cell">'+(grandAC>0?icFmtDKK(grandAC):'—')+'</td><td></td></tr>';
+    h+='</tbody></table>';
+    wrap.innerHTML=h;
+
+    wrap.querySelectorAll('[data-action="ac-name"]').forEach(function(el){
+      el.onchange=el.onblur=function(){
+        var ac=icAddCosts.find(function(a){return a.id===el.getAttribute('data-acid');});
+        if(ac){ac.name=this.value; icRenderCostChart();}
+      };
+    });
+    wrap.querySelectorAll('[data-action="ac-val"]').forEach(function(el){
+      el.onchange=el.onblur=function(){
+        var ac=icAddCosts.find(function(a){return a.id===el.getAttribute('data-acid');});
+        if(!ac) return;
+        var y=parseInt(el.getAttribute('data-yr'));
+        var v=parseFloat(this.value)||0;
+        if(v<=0) delete ac.years[y]; else ac.years[y]=v;
+        icRenderAddCosts();
+        icRenderCostChart();
+      };
+    });
+    wrap.querySelectorAll('[data-action="del-ac"]').forEach(function(el){
+      el.onclick=function(){
+        var id=el.getAttribute('data-acid');
+        icAddCosts=icAddCosts.filter(function(a){return a.id!==id;});
+        icRenderAddCosts();
+        icRenderCostChart();
+      };
+    });
+  }
+
+  function icAddCostType(){
+    icAddCosts.push({id:'ac'+(icNextAcId++),name:'New cost',years:{}});
+    icRenderAddCosts();
+  }
+
+
+  // ── IC Sanity Check ──
+  var icSanityCategories = [
+    {id:'sc1',  name:'Detail design',  hours:0},
+    {id:'sc2',  name:'Meetings',       hours:0},
+    {id:'sc3',  name:'Config',         hours:0},
+    {id:'sc4',  name:'Program',        hours:0},
+    {id:'sc5',  name:'Documentation',  hours:0},
+    {id:'sc6',  name:'Unit test',      hours:0},
+    {id:'sc7',  name:'UAT support',    hours:0},
+    {id:'sc8',  name:'SU training',    hours:0},
+    {id:'sc9',  name:'Master data',    hours:0},
+    {id:'sc10', name:'Final prep',     hours:0},
+    {id:'sc11', name:'HC support',     hours:0},
+    {id:'sc12', name:'Status meeting', hours:0}
+  ];
+  var icNextScId = 20;
+
+  function icGetAllocated(type, yearIdx){
+    var p = icGetPeriods();
+    var resources = type==='it' ? icITResources : type==='biz' ? icBizResources : icITResources.concat(icBizResources);
+    var total = 0;
+    if(yearIdx===undefined){
+      for(var ri=0;ri<resources.length;ri++)
+        for(var i=0;i<p.count;i++) total += (resources[ri].hours[i]||0);
+    } else {
+      for(var ri=0;ri<resources.length;ri++)
+        for(var m=0;m<p.perYear;m++) total += (resources[ri].hours[yearIdx*p.perYear+m]||0);
+    }
+    return total;
+  }
+
+  function icSanityTotal(){
+    return icSanityCategories.reduce(function(s,c){return s+(c.hours||0);},0);
+  }
+
+  function icRenderSanityCats(){
+    var wrap = document.getElementById('ic-sanity-cats');
+    if(!wrap) return;
+    var total = icSanityTotal();
+
+    var h = '<table class="ic-addcost-table">';
+    h += '<thead><tr><th style="text-align:left">'+(currentLang==='da'?'Aktivitet':'Activity')+'</th>';
+    h += '<th style="text-align:right">'+(currentLang==='da'?'Timer':'Hours')+'</th>';
+    h += '<th></th></tr></thead><tbody>';
+
+    for(var i=0;i<icSanityCategories.length;i++){
+      var c = icSanityCategories[i];
+      var pct = total>0 ? (c.hours/total*100).toFixed(0)+'%' : '';
+      h += '<tr>';
+      h += '<td><input type="text" class="ic-addcost-name-input" value="'+c.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="sc-name" data-scid="'+c.id+'"></td>';
+      h += '<td style="text-align:right;padding-right:6px">';
+      h += '<input type="number" class="ic-addcost-val-input" style="width:90px;text-align:right" '+(c.hours>0?'value="'+c.hours+'"':'placeholder="0"')+' min="0" step="10" data-action="sc-hours" data-scid="'+c.id+'">';
+      h += '</td>';
+      h += '<td><button class="ic-addcost-del-btn" data-action="del-sc" data-scid="'+c.id+'" title="Delete">&#10005;</button></td>';
+      h += '</tr>';
+    }
+
+    // total row
+    h += '<tr class="ic-addcost-totrow">';
+    h += '<td>'+(currentLang==='da'?'Total':'Total')+'</td>';
+    h += '<td style="text-align:right;padding-right:6px;font-weight:700;color:var(--navy)">'+(total>0?total:'—')+'</td>';
+    h += '<td></td></tr>';
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+
+    wrap.querySelectorAll('[data-action="sc-name"]').forEach(function(el){
+      el.onchange=el.onblur=function(){
+        var c=icSanityCategories.find(function(x){return x.id===el.getAttribute('data-scid');});
+        if(c) c.name=this.value;
+      };
+    });
+    wrap.querySelectorAll('[data-action="sc-hours"]').forEach(function(el){
+      el.oninput=function(){
+        var c=icSanityCategories.find(function(x){return x.id===el.getAttribute('data-scid');});
+        if(c){c.hours=parseFloat(this.value)||0; icRenderSanityCheck();}
+      };
+      el.onchange=el.onblur=function(){
+        var c=icSanityCategories.find(function(x){return x.id===el.getAttribute('data-scid');});
+        if(c){c.hours=parseFloat(this.value)||0; icRenderSanityCats(); icRenderSanityCheck();}
+      };
+    });
+    wrap.querySelectorAll('[data-action="del-sc"]').forEach(function(el){
+      el.onclick=function(){
+        var id=el.getAttribute('data-scid');
+        icSanityCategories=icSanityCategories.filter(function(x){return x.id!==id;});
+        icRenderSanityCats(); icRenderSanityCheck();
+      };
+    });
+  }
+
+  function icAddSanityCategory(){
+    icSanityCategories.push({id:'sc'+(icNextScId++),name:'New activity',hours:0});
+    icRenderSanityCats();
+  }
+
+  function icSanityBadge(allocated, estimated){
+    if(estimated<=0) return '<span class="ic-sanity-badge badge-zero">No estimate</span>';
+    if(allocated<=estimated) return '<span class="ic-sanity-badge badge-ok">On track</span>';
+    return '<span class="ic-sanity-badge badge-over">Over estimate</span>';
+  }
+
+  function icSanityBarColor(allocated, estimated){
+    if(estimated<=0) return '#c7c7cc';
+    return allocated<=estimated ? '#30d158' : '#F07800';
+  }
+
+  function icRenderSanityCheck(){
+    var el = document.getElementById('ic-sanity-result');
+    if(!el) return;
+    var estimated = icSanityTotal();
+    var itAlloc   = icGetAllocated('it');
+
+    if(estimated===0){
+      el.innerHTML='<div style="color:var(--text-secondary);font-size:13px">Enter estimated hours on the left to see the comparison.</div>';
+      return;
+    }
+
+    var diff = itAlloc - estimated;
+    var diffStr = diff===0 ? 'Exact match' : (diff>0?'+':'')+diff+' hrs ('+(diff>0?'over':'under')+')';
+    var maxVal = Math.max(itAlloc, estimated, 1);
+    var allocPct = (itAlloc/maxVal*100).toFixed(1);
+    var estPct   = (estimated/maxVal*100).toFixed(1);
+    var color    = icSanityBarColor(itAlloc, estimated);
+
+    // Category breakdown bars
+    var catBars = '';
+    var hasAny  = icSanityCategories.some(function(c){return c.hours>0;});
+    if(hasAny){
+      catBars += '<div class="savings-title" style="margin-top:20px;margin-bottom:12px">'+(currentLang==='da'?'Fordeling':'Breakdown')+'</div>';
+      for(var i=0;i<icSanityCategories.length;i++){
+        var c = icSanityCategories[i];
+        if(c.hours<=0) continue;
+        var w = estimated>0?(c.hours/estimated*100).toFixed(1):0;
+        catBars += '<div class="saving-bar">';
+        catBars += '<div class="saving-bar-header">';
+        catBars += '<span class="saving-bar-name">'+c.name.replace(/&/g,'&amp;')+'</span>';
+        catBars += '<span class="saving-bar-amount">'+c.hours+' hrs</span>';
+        catBars += '</div>';
+        catBars += '<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:#4A90D9"></div></div>';
+        catBars += '</div>';
+      }
+    }
+
+    var html2 = '';
+    html2 += '<div class="ic-sanity-row">';
+    html2 += '<div class="ic-sanity-row-header">';
+    html2 += '<span class="ic-sanity-row-title">'+(currentLang==='da'?'IT Ressourcer':'IT Resources')+'</span>';
+    html2 += icSanityBadge(itAlloc, estimated);
+    html2 += '</div>';
+    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Allokeret':'Allocated')+'</span><span class="ic-sanity-stat-value">'+itAlloc+' hrs</span></div>';
+    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Estimeret (bottom-up)':'Estimated (bottom-up)')+'</span><span class="ic-sanity-stat-value">'+estimated+' hrs</span></div>';
+    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Forskel':'Difference')+'</span><span class="ic-sanity-stat-value" style="color:'+(diff>0?'#c25000':'#1a7a3a')+'">'+diffStr+'</span></div>';
+    html2 += '<div class="ic-sanity-bar-wrap">';
+    html2 += '<div class="ic-sanity-bar-label">'+(currentLang==='da'?'Allokeret vs Estimeret':'Allocated vs Estimated')+'</div>';
+    html2 += '<div class="ic-sanity-track">';
+    html2 += '<div class="ic-sanity-alloc" style="width:'+allocPct+'%;background:'+color+'"></div>';
+    html2 += '</div>';
+    html2 += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:4px">';
+    html2 += '<span>'+(currentLang==='da'?'Allokeret: ':'Allocated: ')+itAlloc+' hrs</span>';
+    html2 += '<span>'+(currentLang==='da'?'Estimeret: ':'Estimated: ')+estimated+' hrs</span>';
+    html2 += '</div>';
+    html2 += '</div></div>';
+    html2 += catBars;
+    el.innerHTML = html2;
+  }
+
+
+  // ── SAP SD & Sales ──
+  var sdP = {
+    entities:3, entitiesPerYear:1, ordersPerYear:50000, avgRevenue:2000000,
+    monthsSaved:8, minPerOrder:5, fteRate:500000,
+    inventoryValue:50000000, invCarrying:20, invReduction:10, localErpCost:1500000,
+    margin:15, monthEndHrs:40, financeRate:800
+  };
+
+  function sdFmt(n){ return Math.round(n).toLocaleString('da-DK'); }
+
+  function sdInit(){
+    var sliders=[
+      {id:'sdEntities',        key:'entities',         fmt:function(v){return v;}},
+      {id:'sdEntitiesPerYear', key:'entitiesPerYear',  fmt:function(v){return v;}},
+      {id:'sdOrdersPerYear',   key:'ordersPerYear',    fmt:function(v){return sdFmt(v);}},
+      {id:'sdAvgRevenue',      key:'avgRevenue',       fmt:function(v){return sdFmt(v);}},
+      {id:'sdMonthsSaved',     key:'monthsSaved',      fmt:function(v){return v;}},
+      {id:'sdMinPerOrder',     key:'minPerOrder',      fmt:function(v){return v;}},
+      {id:'sdFteRate',         key:'fteRate',          fmt:function(v){return sdFmt(v);}},
+      {id:'sdInventoryValue',  key:'inventoryValue',   fmt:function(v){return sdFmt(v);}},
+      {id:'sdInvCarrying',     key:'invCarrying',      fmt:function(v){return v+'%';}},
+      {id:'sdInvReduction',    key:'invReduction',     fmt:function(v){return v+'%';}},
+      {id:'sdLocalErpCost',    key:'localErpCost',     fmt:function(v){return sdFmt(v);}},
+      {id:'sdMargin',          key:'margin',           fmt:function(v){return v+'%';}},
+      {id:'sdMonthEndHrs',     key:'monthEndHrs',      fmt:function(v){return v;}},
+      {id:'sdFinanceRate',     key:'financeRate',      fmt:function(v){return sdFmt(v);}}
+    ];
+    sliders.forEach(function(s){
+      var sl=document.getElementById('sl-'+s.id);
+      var dp=document.getElementById('disp-'+s.id);
+      if(!sl||!dp) return;
+      sl.value=sdP[s.key];
+      dp.textContent=s.fmt(sdP[s.key]);
+      sl.oninput=function(){
+        var v=parseFloat(this.value)||0;
+        sdP[s.key]=v;
+        dp.textContent=s.fmt(v);
+        sdRecalculate();
+      };
+    });
+    sdRecalculate();
+    setTimeout(drawSDROIChart,50);
+  }
+
+  function sdRecalculate(){
+    var p = sdP;
+    // Helper: get value (formula override or default calc)
+    function sdSavingVal(id, def){
+      if(hiddenSavings.sd && hiddenSavings.sd[id]) return 0;
+      var fo = formulaOverrides.sd && formulaOverrides.sd[id];
+      if(fo){ var v=evalFormula(fo,'sd'); return isNaN(v)?def:v; }
+      return def;
+    }
+
+    // 1. Market entry speed — revenue earned earlier from faster deployment
+    //    entitiesPerYear × monthsSaved × avgRevenue/month × margin%
+    var s1 = sdSavingVal('sd_s1', p.entitiesPerYear * p.monthsSaved * p.avgRevenue * (p.margin/100));
+
+    // 2. Order-to-Cash automation — FTE time saved on order processing
+    //    ordersPerYear × (minSaved/60 hrs) × (fteRate / 1800 working hrs/yr)
+    var hourlyFte = p.fteRate / 1800;
+    var s2 = sdSavingVal('sd_s2', p.ordersPerYear * (p.minPerOrder / 60) * hourlyFte);
+
+    // 3. Working capital reduction — carrying cost saved on reduced inventory
+    //    inventoryValue × carryingCost% × reductionPct%
+    var s3 = sdSavingVal('sd_s3', p.inventoryValue * (p.invCarrying/100) * (p.invReduction/100));
+
+    // 4. Financial reporting efficiency — hours saved on month-end close
+    //    monthEndHrs × 12 months × financeRate DKK/hr
+    var s4 = sdSavingVal('sd_s4', p.monthEndHrs * 12 * p.financeRate);
+
+    // 5. Cost avoidance — local ERP cost avoided for each new entity
+    //    entitiesPerYear × localErpCost per entity per year
+    var s5 = sdSavingVal('sd_s5', p.entitiesPerYear * p.localErpCost);
+
+    var total = s1 + s2 + s3 + s4 + s5;
+
+    // Store for use by savings bars (Iteration 3)
+    sdP._s1=s1; sdP._s2=s2; sdP._s3=s3; sdP._s4=s4; sdP._s5=s5; sdP._total=total;
+
+    var totalEl = document.getElementById('sd-total-savings');
+    if(totalEl) totalEl.textContent = total>0 ? 'DKK '+sdFmt(total) : 'DKK –';
+
+    // Update savings bars
+    var maxS = Math.max(s1,s2,s3,s4,s5,1);
+    function sdSetBar(id,val,max){
+      var bar=document.getElementById(id+'-bar');
+      var amt=document.getElementById(id+'-amt');
+      if(bar) bar.style.width=(val/max*100).toFixed(1)+'%';
+      if(amt) amt.textContent=val>0?'DKK '+sdFmt(val):'—';
+    }
+    sdSetBar('sd-s1',s1,maxS);
+    sdSetBar('sd-s2',s2,maxS);
+    sdSetBar('sd-s3',s3,maxS);
+    sdSetBar('sd-s4',s4,maxS);
+    sdSetBar('sd-s5',s5,maxS);
+
+    // Update metric cards
+    var fteHrs = Math.round(p.ordersPerYear * (p.minPerOrder/60));
+    var fteEl = document.getElementById('sd-metric-fte');
+    if(fteEl) fteEl.textContent = fteHrs>0 ? sdFmt(fteHrs)+' hrs/yr' : '—';
+
+    var entryEl = document.getElementById('sd-metric-entry');
+    if(entryEl) entryEl.textContent = p.entitiesPerYear>0 ? p.entitiesPerYear+' × '+p.monthsSaved+' months earlier' : '—';
+    if(typeof drawSDROIChart==='function') drawSDROIChart();
+  }
+
+
+  // ── SD ROI ──
+  function setSDYearRange(n){
+    sdYearRange=n;
+    [3,5,7,10].forEach(function(y){
+      var btn=document.getElementById('sd-yr-'+y);
+      if(btn) btn.classList.toggle('active',y===n);
+    });
+    var lbl=document.getElementById('sd-net-label');
+    if(lbl) lbl.textContent=n+(currentLang==='da'?'-års nettoudbytte':'-year net benefit');
+    var sub=document.getElementById('sd-chart-sub');
+    if(sub) sub.textContent='DKK — '+(currentLang==='da'?'År':'Years')+' 0 through '+n;
+    var gridEl=document.getElementById('sd-impl-grid');
+    if(gridEl&&gridEl.classList.contains('open')) buildImplGrid('sd');
+    drawSDROIChart();
+  }
+
+  function calcSDROI(){
+    var annualSavings = sdP._total || 0;
+    var annualLicense = parseFloat(document.getElementById('sd-roi-license').value)||0;
+    var nY = sdYearRange||5;
+    var cumInvest=[0], cumSavings=[0];
+    for(var y=0;y<=nY;y++){
+      var yCost = annualLicense + (sdImplCosts[y]||0);
+      var ySave = y===0 ? 0 : annualSavings;
+      cumInvest.push(cumInvest[cumInvest.length-1]+yCost);
+      cumSavings.push(cumSavings[cumSavings.length-1]+ySave);
+    }
+    var breakevenYear=null;
+    for(var i=1;i<cumInvest.length;i++){
+      if(cumSavings[i]>=cumInvest[i]){
+        var prevDiff=cumInvest[i-1]-cumSavings[i-1];
+        var currDiff=cumInvest[i]-cumSavings[i];
+        breakevenYear=(i-1)+prevDiff/(prevDiff-currDiff);
+        break;
+      }
+    }
+    var totalInvest=cumInvest[cumInvest.length-1];
+    var totalSave=cumSavings[cumSavings.length-1];
+    return {cumInvest:cumInvest,cumSavings:cumSavings,breakevenYear:breakevenYear,
+            annualSavings:annualSavings,totalInvest:totalInvest,net:totalSave-totalInvest};
+  }
+
+  function drawSDROIChart(){
+    var d=calcSDROI();
+    var nY=sdYearRange||5;
+    if(typeof drawGenericChart==='function'){
+      drawGenericChart('sd-roi-canvas',d.cumInvest,d.cumSavings,nY,'sd-breakeven-text',
+        {breakevenYear:d.breakevenYear,annualSavings:d.annualSavings});
+    }
+    var inv=document.getElementById('sd-stat-invest');
+    var ann=document.getElementById('sd-stat-annual');
+    var net=document.getElementById('sd-stat-net');
+    if(inv) inv.textContent=fmtDKKshort(d.totalInvest);
+    if(ann) ann.textContent=fmtDKKshort(d.annualSavings);
+    if(net){
+      net.textContent=(d.net>=0?'+':'')+fmtDKKshort(d.net);
+      net.style.color=d.net>=0?'#30d158':'#ff453a';
+    }
+  }
+
+
+  function sdToggleCard(el){
+    el.classList.toggle('active');
+  }
+
+
+  function renderSDParamEditor(){
+    var el=document.getElementById('param-area-sd');
+    if(!el) return;
+    var params=[
+      {key:'entities',        label:'Sales entities today',                    unit:'',       min:1,        max:20,        step:1},
+      {key:'entitiesPerYear', label:'New entities per year',                   unit:'',       min:0,        max:10,        step:1},
+      {key:'ordersPerYear',   label:'Orders per year',                         unit:'',       min:1000,     max:500000,    step:1000},
+      {key:'avgRevenue',      label:'Avg monthly revenue per entity (DKK)',    unit:'DKK',    min:100000,   max:50000000,  step:100000},
+      {key:'monthsSaved',     label:'Months saved per market entry',           unit:'months', min:1,        max:12,        step:1},
+      {key:'minPerOrder',     label:'Minutes saved per order',                 unit:'min',    min:1,        max:60,        step:1},
+      {key:'fteRate',         label:'FTE annual cost (DKK)',                   unit:'DKK',    min:200000,   max:1200000,   step:10000},
+      {key:'inventoryValue',  label:'Inventory value at 3PL (DKK)',            unit:'DKK',    min:1000000,  max:500000000, step:1000000},
+      {key:'invCarrying',     label:'Carrying cost (% p.a.)',                  unit:'%',      min:5,        max:35,        step:1},
+      {key:'invReduction',    label:'Inventory reduction (%)',                 unit:'%',      min:2,        max:30,        step:1},
+      {key:'localErpCost',    label:'Local ERP cost avoided per entity (DKK)', unit:'DKK',    min:100000,   max:10000000,  step:100000},
+      {key:'margin',          label:'Contribution margin (%)',                 unit:'%',      min:3,        max:40,        step:1},
+      {key:'monthEndHrs',     label:'Hours saved per month-end close',         unit:'hrs',    min:0,        max:200,       step:5},
+      {key:'financeRate',     label:'Finance team hourly rate (DKK/hr)',       unit:'DKK/hr', min:300,      max:2000,      step:50}
+    ];
+    var h='<div class="sd-param-table">';
+    h+='<div class="sd-param-table-header"><span>Parameter</span><span style="text-align:right">Value</span><span>Unit</span></div>';
+    for(var i=0;i<params.length;i++){
+      var pm=params[i], val=sdP[pm.key]||0;
+      h+='<div class="sd-param-row">';
+      h+='<span class="sd-param-label">'+pm.label+'</span>';
+      h+='<input type="number" class="sd-param-input" value="'+val+'" min="'+pm.min+'" max="'+pm.max+'" step="'+pm.step+'" data-sdkey="'+pm.key+'">';
+      h+='<span class="sd-param-unit">'+pm.unit+'</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+    el.innerHTML=h;
+    el.querySelectorAll('.sd-param-input').forEach(function(inp){
+      inp.onchange=inp.onblur=function(){
+        var k=this.getAttribute('data-sdkey'), v=parseFloat(this.value)||0;
+        sdP[k]=v;
+        var cap=k.charAt(0).toUpperCase()+k.slice(1);
+        var sl=document.getElementById('sl-sd'+cap); if(sl) sl.value=v;
+        var dp=document.getElementById('disp-sd'+cap);
+        if(dp) dp.textContent=v+(k==='invCarrying'||k==='invReduction'||k==='margin'?'%':'');
+        sdRecalculate();
+      };
+    });
   }
 
   function showIndustryModal(){document.getElementById('industry-modal').style.display='flex';}
@@ -3263,7 +5343,7 @@
     for(var v=0;v<=yMx;v+=yTk)ctx.fillText(fmtMillions(v),mg.left-8,toY(v)+4);
     ctx.textAlign='center';
     for(var i=1;i<nPts;i++)ctx.fillText(labels[i],toX(i),mg.top+cH+20);
-    if(cfg.breakevenYear!==null&&cfg.breakevenYear<=nY){
+    if(cfg.breakevenYear!==null&&cfg.breakevenYear<nPts){
       var bx=mg.left+cfg.breakevenYear/(nPts-1)*cW;
       ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(240,120,0,0.5)';ctx.lineWidth=1.5;
       ctx.beginPath();ctx.moveTo(bx,mg.top);ctx.lineTo(bx,mg.top+cH);ctx.stroke();ctx.setLineDash([]);
@@ -3275,7 +5355,7 @@
     ctx.lineTo(toX(nPts-1),mg.top+cH);ctx.lineTo(toX(0),mg.top+cH);ctx.closePath();ctx.fillStyle='rgba(48,209,88,0.06)';ctx.fill();
     drawLine(ctx,ci,toX,toY,'#F07800',2.5);drawLine(ctx,cs,toX,toY,'#30d158',2.5);
     drawDots(ctx,ci,toX,toY,'#F07800');drawDots(ctx,cs,toX,toY,'#30d158');
-    if(cfg.breakevenYear!==null&&cfg.breakevenYear<=nY){
+    if(cfg.breakevenYear!==null&&cfg.breakevenYear<nPts){
       var bx=mg.left+cfg.breakevenYear/(nPts-1)*cW;
       var iF=Math.floor(cfg.breakevenYear),fr=cfg.breakevenYear-iF;
       var bv=cs[iF]*(1-fr)+(cs[iF+1]!=null?cs[iF+1]:cs[iF])*fr;
@@ -3306,7 +5386,7 @@
   window.addEventListener('resize',function(){drawROIChart();if(currentArea==='sc')drawSCROIChart();});
 
   var translations={
-    en:{live_model:'Live model',area_hr:'HR &amp; Recruitment',area_sc:'Supply Chain',btn_export:'Export',btn_import:'Import',set_title:'Customise',set_sub:'Parameters, savings & formulas',set_tab_params:'Parameters',set_tab_savings:'Savings',set_tab_formulas:'Formulas',set_tab_io:'Import / Export',set_params_title:'Parameter Editor',set_params_sub:'View and edit all parameters. Built-in parameters show their defaults; custom parameters can be fully edited or removed.',set_savings_title:'Savings Editor',set_savings_sub:'View, add or edit saving categories. Each saving bar can be renamed or have its formula changed.',set_formulas_title:'Formula Builder',set_formulas_sub:'Click a parameter to insert it into a formula. Use operator buttons to build expressions.',set_io_title:'Import / Export',set_io_sub:'Export all customisations to a JSON file to save your session, then import it later to restore everything.',hero_eyebrow:'Recruitment & Onboarding',hero_h1:'Annual Savings<br>Calculator',hero_p:'Adjust the parameters below to model the financial impact of improving your recruitment and onboarding process.',sec_volume:'Recruitment Volume',lbl_hires:'Hires per year',hint_hires:'Total new hires annually (B2)',lbl_turnover:'Turnover within first year',hint_turnover:'Percentage of hires who leave within 12 months',lbl_salary:'Average monthly salary',sec_rates:'Hourly Rates & Time per Hire',lbl_rateManager:'Manager rate (DKK/hr)',lbl_hrsManager:'Manager hours per hire',lbl_rateHRRek:'HR Recruitment rate (DKK/hr)',lbl_hrsHRRek:'HR Recruitment hours per hire',lbl_rateHRService:'HR Service rate (DKK/hr)',lbl_hrsHRService:'HR Service hours per hire',sec_fixed:'Fixed Costs per Hire',lbl_buddy:'Buddy training (DKK)',lbl_equip:'Equipment & uniform (DKK)',sec_ramp:'Onboarding Ramp-Up (Inefficiency %)',hint_ramp:'Monthly salary cost of reduced productivity. Month 12 = fully productive.',btn_ramp_edit:'▸ Edit monthly rates',btn_ramp_hide:'▾ Hide monthly rates',lbl_onboard_total:'Total onboarding cost per hire',sec_eff:'Efficiency Improvements',lbl_redHires:'Reduction in new hires',hint_redHires:'Fewer positions to fill (D3)',lbl_redRehires:'Reduction in re-hires (yr 1 leavers)',hint_redRehires:'Fewer replacements within first year (D5)',lbl_effHRRek:'HR Recruitment time saving',hint_effHRRek:'Direct access to job posting information (E10)',lbl_effHRService:'HR Service time saving',hint_effHRService:'Direct access to job posting information',lbl_effOnboarding:'Onboarding efficiency improvement',hint_effOnboarding:'Faster ramp-up through better onboarding',res_total_label:'Total Annual Savings',res_total_sub:'Based on current parameters',res_cph:'Cost per hire',res_annual:'Annual recruitment cost',res_breakdown:'Savings breakdown',s1_name:'Fewer new hires',s2_name:'Fewer re-hires (yr 1 leavers)',s3_name:'HR Recruitment efficiency',s4_name:'HR Service efficiency',s5_name:'Faster onboarding ramp-up',res_cph_title:'Cost per hire breakdown',c_manager:'Manager time',c_hrrek:'HR Recruitment time',c_hrservice:'HR Service time',c_buddy:'Buddy training',c_equip:'Equipment & uniform',c_onboard:'Onboarding ramp-up cost',c_total:'Total per hire',roi_eyebrow:'Return on Investment',roi_h2:'Break-Even Analysis',roi_p:'Model total investment against savings to see when the project pays for itself.',roi_sec_license:'Annual License Costs',roi_sfEC:'SuccessFactors EC license (DKK/year)',roi_sfOnb:'SuccessFactors Onboarding license (DKK/year)',roi_sec_impl:'One-Time Implementation (Year 0)',roi_itYr0:'IT implementation — Year 0 (DKK)',roi_itYr1:'IT implementation — Year 1 (DKK)',roi_hrOverhead:'Increased HR operating cost (DKK)',roi_sec_extra:'Additional Annual Savings',roi_sapIT:'SAP HR IT headcount reduction',roi_sapIT_hint:'Annual saving from reduced SAP HR IT staffing',roi_hrServiceEff:'HR Service team efficiency',roi_hrServiceEff_hint:'Effektivisering HR Serviceteam (row 8)',roi_dataSave:'Data transparency savings',roi_dataSave_hint:'Value of improved data access and reporting',stat_invest:'Total investment',stat_annual:'Annual savings',stat_net:'5-year net benefit',chart_title:'Cumulative Investment vs. Savings',chart_sub:'DKK — Years 0 through 5',legend_invest:'Cumulative Investment',legend_save:'Cumulative Savings',breakeven_label:'Break-even',yr0:'Yr 0',yr1:'Yr 1',yr2:'Yr 2',yr3:'Yr 3',yr4:'Yr 4',yr5:'Yr 5',be_no_savings:'Add savings to see break-even',be_not_reached:'Break-even not reached within range',be_yr0:'Savings exceed investment from <span>Year 0</span>',be_reached:'Break-even reached after',be_and:'and',be_month:'month',be_months:'months',be_year:'Year',yr_label:'Horizon',yr_prefix:'Yr ',sc_industry_label:'Industry:',sc_change_industry:'Change industry',sc_eyebrow:'Supply Chain & Logistics',sc_hero_h1:'Annual Savings<br>Calculator',sc_hero_p:'Select an industry and configure your parameters.',sc_modal_eyebrow:'Supply Chain',sc_modal_title:'Select your industry',sc_modal_sub:'Parameters and saving categories will adapt to your selection.',ind_pharma:'Pharma &amp; Life Science',ind_pharma_desc:'GMP compliance, batch quality, and regulated asset management.',ind_food:'Food &amp; Beverage',ind_food_desc:'Shelf life, spoilage reduction, and high-volume batch production.',ind_discrete:'Discrete Manufacturing',ind_discrete_desc:'Complex BOMs, asset-heavy production lines, and MRO procurement.',ind_retail:'Retail &amp; Distribution',ind_retail_desc:'High-volume procurement, warehouse efficiency, and inventory planning.',tier_label:'SAP Module Scope',tier1_name:'Core S/4HANA',tier1_tag:'ERP',tier2_name:'+ IBP',tier2_tag:'Planning',tier3_name:'+ APM',tier3_tag:'Predictive',sc_sec_proc:'Procurement Automation',sc_posPerYear:'POs per year',sc_poCostManual:'Manual PO cost (DKK)',sc_financeSaving:'Finance efficiency saving (DKK/yr)',sc_poAuto:'PO automation improvement',sc_poAuto_hint:'% more POs processed automatically',sc_sec_maint:'Plant Maintenance',sc_maintBudget:'Annual maintenance budget (DKK)',sc_maintEff:'Efficiency improvement',sc_maintEff_hint:'Reduction in reactive maintenance',sc_sec_quality:'Batch Quality',sc_batchesPerYear:'Batches per year',sc_avgBatchValue:'Avg batch value (DKK)',sc_rejectionRate:'Rejection rate (%)',sc_rejRed:'Rejection reduction',sc_rejRed_hint:'Relative reduction in batch failures',sc_sec_compliance:'Regulatory Compliance',sc_complianceHrs:'Audit hours/yr',sc_complianceHrCost:'Cost/hr (DKK)',sc_compEff:'Compliance efficiency',sc_compEff_hint:'Less effort for GMP/FDA/EMA audits',sc_sec_spoilage:'Spoilage & Write-offs',sc_spoilageValue:'Annual spoilage value (DKK)',sc_spoilRed:'Spoilage reduction',sc_spoilRed_hint:'Better shelf-life and demand-driven production',sc_sec_warehouse:'Warehouse Operations',sc_warehouseFTEs:'Warehouse FTEs',sc_avgFTECost:'Avg FTE cost (DKK/yr)',sc_whEff:'Efficiency improvement',sc_whEff_hint:'Pick/pack/ship productivity from integrated WM',sc_sec_inventory:'Inventory & Planning (IBP)',sc_inventoryValue:'Inventory value (DKK)',sc_carryingCostPct:'Carrying cost (%/yr)',sc_invRed:'Inventory reduction',sc_invRed_hint:'Better demand forecasting lowers stock',sc_sec_safetystock:'Safety Stock Optimisation',sc_safetyStockValue:'Safety stock value (DKK)',sc_ssRed:'Safety stock reduction',sc_ssRed_hint:'Freed working capital from tighter planning',sc_sec_markdown:'Markdown Reduction',sc_markdownSaving:'Annual markdown loss (DKK)',sc_markdown_hint:'Better planning reduces end-of-season markdowns',sc_sec_predictive:'Predictive Maintenance (APM)',sc_downtimeHrs:'Downtime hours/yr',sc_downtimeCostPerHr:'Cost/hr (DKK)',sc_sparePartsValue:'Spare parts value (DKK)',sc_dtRed:'Downtime reduction',sc_dtRed_hint:'IoT failure prediction prevents unplanned stops',sc_spRed:'Spare parts reduction',sc_spRed_hint:'Optimised reorder and reduced buffer stock',sc_sec_fulfillment:'Advanced Fulfilment',sc_fulfillmentOrders:'Orders per year',sc_fulfillmentCostPerOrder:'Cost per order (DKK)',sc_fulfEff:'Efficiency improvement',sc_fulfEff_hint:'Integrated WM + TM reduces per-order cost',sc_metric_license:'Annual license cost',sc_metric_ratio:'Savings / license ratio',sc_bar_procurement:'Procurement automation',sc_bar_maintenance:'Maintenance efficiency',sc_bar_quality:'Batch quality',sc_bar_compliance:'Regulatory compliance',sc_bar_spoilage:'Spoilage reduction',sc_bar_warehouse:'Warehouse efficiency',sc_bar_finance:'Finance efficiency',sc_bar_inventory:'Inventory reduction',sc_bar_safetystock:'Safety stock',sc_bar_markdown:'Markdown reduction',sc_bar_downtime:'Downtime reduction',sc_bar_spareparts:'Spare parts',sc_bar_fulfillment:'Advanced fulfilment',sc_roi_p:'Investment driven by selected industry, tier, and parameters.',sc_chart_sub:'DKK — selected tier & industry',sc_roi_t1:'Core S/4HANA — Costs',sc_roi_t1_lic:'Annual license (DKK/yr)',sc_roi_t1_y0:'Implementation Year 0 (DKK)',sc_roi_t1_y1:'Implementation Year 1 (DKK)',sc_roi_t2:'IBP Add-on — Costs',sc_roi_t2_lic:'IBP Annual license (DKK/yr)',sc_roi_t2_y0:'IBP Implementation Year 0 (DKK)',sc_roi_t2_y1:'IBP Implementation Year 1 (DKK)',sc_roi_t3:'APM Add-on — Costs',sc_roi_t3_lic:'APM Annual license (DKK/yr)',sc_roi_t3_y0:'APM Implementation Year 0 (DKK)',sc_roi_t3_y1:'APM Implementation Year 1 (DKK)',landing_eyebrow:'SAP Business Case',landing_h1:'Financial Impact<br><span>Calculator</span>',landing_sub:'Model the business case for SAP solutions across HR, Supply Chain, and more. Adjust parameters, build custom formulas, and see the ROI in real time.',landing_hr_label:'Module 1',landing_hr_title:'HR &amp; Recruitment',landing_hr_desc:'Quantify the financial return from improving your recruitment, onboarding, and HR service processes through SuccessFactors.',landing_hr_f1:'Annual savings from reduced hiring volume',landing_hr_f2:'HR Recruitment &amp; Service efficiency gains',landing_hr_f3:'Onboarding ramp-up cost reduction',landing_hr_f4:'ROI break-even analysis',landing_cta:'Open calculator →',landing_sc_label:'Module 2',landing_sc_title:'Supply Chain &amp; Logistics',landing_sc_desc:'Calculate the value of S/4HANA across procurement, maintenance, quality, compliance, and predictive operations for your industry.',landing_sc_f1:'Pharma, Food, Discrete &amp; Retail industry profiles',landing_sc_f2:'Tiered scope: Core S/4HANA, IBP, APM and DM',landing_sc_f3:'Procurement, maintenance &amp; quality savings',landing_sc_f4:'ROI break-even analysis',landing_badge1:'Live model — all values update in real time',landing_badge2:'Export &amp; import your session',landing_badge3:'Custom parameters &amp; formulas',tier4_name:'+ DM',tier4_tag:'Mfg',dm_sec_oee:'Digital Manufacturing — OEE',dm_oeeHours:'Annual production hours',dm_oeeCostPerHour:'Production cost per hour (DKK)',dm_oeeImp:'OEE improvement',dm_sec_scrap:'Digital Manufacturing — Scrap &amp; Setup',dm_scrapValue:'Annual scrap / rework cost (DKK)',dm_setupHrs:'Setup hours per year',dm_setupCostPerHr:'Setup labor cost per hour (DKK)',dm_scrapRed:'Scrap / rework reduction',dm_setupRed:'Setup time reduction',sc_bar_dm_oee:'OEE improvement',sc_bar_dm_scrap:'Scrap / rework reduction',sc_bar_dm_setup:'Setup time reduction',month_label:'Month',
+    en:{live_model:'Live model',area_hr:'HR &amp; Recruitment',area_sc:'Supply Chain',btn_export:'Export',btn_import:'Import',set_title:'Customise',set_sub:'Parameters, savings & formulas',set_tab_params:'Parameters',set_tab_savings:'Savings',set_tab_formulas:'Formulas',set_tab_io:'Import / Export',set_params_title:'Parameter Editor',set_params_sub:'View and edit all parameters. Built-in parameters show their defaults; custom parameters can be fully edited or removed.',set_savings_title:'Savings Editor',set_savings_sub:'View, add or edit saving categories. Each saving bar can be renamed or have its formula changed.',set_formulas_title:'Formula Builder',set_formulas_sub:'Click a parameter to insert it into a formula. Use operator buttons to build expressions.',set_io_title:'Import / Export',set_io_sub:'Export all customisations to a JSON file to save your session, then import it later to restore everything.',hero_eyebrow:'Recruitment & Onboarding',hero_h1:'Annual Savings<br>Calculator',hero_p:'Adjust the parameters below to model the financial impact of improving your recruitment and onboarding process.',sec_volume:'Recruitment Volume',lbl_hires:'Hires per year',hint_hires:'Total new hires annually (B2)',lbl_turnover:'Turnover within first year',hint_turnover:'Percentage of hires who leave within 12 months',lbl_salary:'Average monthly salary',sec_rates:'Hourly Rates & Time per Hire',lbl_rateManager:'Manager rate (DKK/hr)',lbl_hrsManager:'Manager hours per hire',lbl_rateHRRek:'HR Recruitment rate (DKK/hr)',lbl_hrsHRRek:'HR Recruitment hours per hire',lbl_rateHRService:'HR Service rate (DKK/hr)',lbl_hrsHRService:'HR Service hours per hire',sec_fixed:'Fixed Costs per Hire',lbl_buddy:'Buddy training (DKK)',lbl_equip:'Equipment & uniform (DKK)',sec_ramp:'Onboarding Ramp-Up (Inefficiency %)',hint_ramp:'Monthly salary cost of reduced productivity. Month 12 = fully productive.',btn_ramp_edit:'▸ Edit monthly rates',btn_ramp_hide:'▾ Hide monthly rates',lbl_onboard_total:'Total onboarding cost per hire',sec_eff:'Efficiency Improvements',lbl_redHires:'Reduction in new hires',hint_redHires:'Fewer positions to fill (D3)',lbl_redRehires:'Reduction in re-hires (yr 1 leavers)',hint_redRehires:'Fewer replacements within first year (D5)',lbl_effHRRek:'HR Recruitment time saving',hint_effHRRek:'Direct access to job posting information (E10)',lbl_effHRService:'HR Service time saving',hint_effHRService:'Direct access to job posting information',lbl_effOnboarding:'Onboarding efficiency improvement',hint_effOnboarding:'Faster ramp-up through better onboarding',res_total_label:'Total Annual Savings',res_total_sub:'Based on current parameters',res_cph:'Cost per hire',res_annual:'Annual recruitment cost',res_breakdown:'Savings breakdown',s1_name:'Fewer new hires',s2_name:'Fewer re-hires (yr 1 leavers)',s3_name:'HR Recruitment efficiency',s4_name:'HR Service efficiency',s5_name:'Faster onboarding ramp-up',res_cph_title:'Cost per hire breakdown',c_manager:'Manager time',c_hrrek:'HR Recruitment time',c_hrservice:'HR Service time',c_buddy:'Buddy training',c_equip:'Equipment & uniform',c_onboard:'Onboarding ramp-up cost',c_total:'Total per hire',roi_eyebrow:'Return on Investment',roi_h2:'Break-Even Analysis',roi_p:'Model total investment against savings to see when the project pays for itself.',roi_sec_license:'Annual License Costs',roi_sfEC:'SuccessFactors EC license (DKK/year)',roi_sfOnb:'SuccessFactors Onboarding license (DKK/year)',roi_sec_impl:'One-Time Implementation (Year 0)',roi_itYr0:'IT implementation — Year 0 (DKK)',roi_itYr1:'IT implementation — Year 1 (DKK)',roi_hrOverhead:'Increased HR operating cost (DKK)',roi_sec_extra:'Additional Annual Savings',roi_sapIT:'SAP HR IT headcount reduction',roi_sapIT_hint:'Annual saving from reduced SAP HR IT staffing',roi_hrServiceEff:'HR Service team efficiency',roi_hrServiceEff_hint:'Effektivisering HR Serviceteam (row 8)',roi_dataSave:'Data transparency savings',roi_dataSave_hint:'Value of improved data access and reporting',stat_invest:'Total investment',stat_annual:'Annual savings',stat_net:'5-year net benefit',chart_title:'Cumulative Investment vs. Savings',chart_sub:'DKK — Years 0 through 5',legend_invest:'Cumulative Investment',legend_save:'Cumulative Savings',breakeven_label:'Break-even',yr0:'Yr 0',yr1:'Yr 1',yr2:'Yr 2',yr3:'Yr 3',yr4:'Yr 4',yr5:'Yr 5',be_no_savings:'Add savings to see break-even',be_not_reached:'Break-even not reached within range',be_yr0:'Savings exceed investment from <span>Year 0</span>',be_reached:'Break-even reached after',be_and:'and',be_month:'month',be_months:'months',be_year:'Year',yr_label:'Horizon',yr_prefix:'Yr ',sc_industry_label:'Industry:',sc_change_industry:'Change industry',sc_eyebrow:'Supply Chain & Logistics',sc_hero_h1:'Annual Savings<br>Calculator',sc_hero_p:'Select an industry and configure your parameters.',sc_modal_eyebrow:'Supply Chain',sc_modal_title:'Select your industry',sc_modal_sub:'Parameters and saving categories will adapt to your selection.',ind_pharma:'Pharma &amp; Life Science',ind_pharma_desc:'GMP compliance, batch quality, and regulated asset management.',ind_food:'Food &amp; Beverage',ind_food_desc:'Shelf life, spoilage reduction, and high-volume batch production.',ind_discrete:'Discrete Manufacturing',ind_discrete_desc:'Complex BOMs, asset-heavy production lines, and MRO procurement.',ind_retail:'Retail &amp; Distribution',ind_retail_desc:'High-volume procurement, warehouse efficiency, and inventory planning.',tier_label:'SAP Module Scope',tier1_name:'Core S/4HANA',tier1_tag:'ERP',tier2_name:'+ IBP',tier2_tag:'Planning',tier3_name:'+ APM',tier3_tag:'Predictive',sc_sec_proc:'Procurement Automation',sc_posPerYear:'POs per year',sc_poCostManual:'Manual PO cost (DKK)',sc_financeSaving:'Finance efficiency saving (DKK/yr)',sc_poAuto:'PO automation improvement',sc_poAuto_hint:'% more POs processed automatically',sc_sec_maint:'Plant Maintenance',sc_maintBudget:'Annual maintenance budget (DKK)',sc_maintEff:'Efficiency improvement',sc_maintEff_hint:'Reduction in reactive maintenance',sc_sec_quality:'Batch Quality',sc_batchesPerYear:'Batches per year',sc_avgBatchValue:'Avg batch value (DKK)',sc_rejectionRate:'Rejection rate (%)',sc_rejRed:'Rejection reduction',sc_rejRed_hint:'Relative reduction in batch failures',sc_sec_compliance:'Regulatory Compliance',sc_complianceHrs:'Audit hours/yr',sc_complianceHrCost:'Cost/hr (DKK)',sc_compEff:'Compliance efficiency',sc_compEff_hint:'Less effort for GMP/FDA/EMA audits',sc_sec_spoilage:'Spoilage & Write-offs',sc_spoilageValue:'Annual spoilage value (DKK)',sc_spoilRed:'Spoilage reduction',sc_spoilRed_hint:'Better shelf-life and demand-driven production',sc_sec_warehouse:'Warehouse Operations',sc_warehouseFTEs:'Warehouse FTEs',sc_avgFTECost:'Avg FTE cost (DKK/yr)',sc_whEff:'Efficiency improvement',sc_whEff_hint:'Pick/pack/ship productivity from integrated WM',sc_sec_inventory:'Inventory & Planning (IBP)',sc_inventoryValue:'Inventory value (DKK)',sc_carryingCostPct:'Carrying cost (%/yr)',sc_invRed:'Inventory reduction',sc_invRed_hint:'Better demand forecasting lowers stock',sc_sec_safetystock:'Safety Stock Optimisation',sc_safetyStockValue:'Safety stock value (DKK)',sc_ssRed:'Safety stock reduction',sc_ssRed_hint:'Freed working capital from tighter planning',sc_sec_markdown:'Markdown Reduction',sc_markdownSaving:'Annual markdown loss (DKK)',sc_markdown_hint:'Better planning reduces end-of-season markdowns',sc_sec_predictive:'Predictive Maintenance (APM)',sc_downtimeHrs:'Downtime hours/yr',sc_downtimeCostPerHr:'Cost/hr (DKK)',sc_sparePartsValue:'Spare parts value (DKK)',sc_dtRed:'Downtime reduction',sc_dtRed_hint:'IoT failure prediction prevents unplanned stops',sc_spRed:'Spare parts reduction',sc_spRed_hint:'Optimised reorder and reduced buffer stock',sc_sec_fulfillment:'Advanced Fulfilment',sc_fulfillmentOrders:'Orders per year',sc_fulfillmentCostPerOrder:'Cost per order (DKK)',sc_fulfEff:'Efficiency improvement',sc_fulfEff_hint:'Integrated WM + TM reduces per-order cost',sc_metric_license:'Annual license cost',sc_metric_ratio:'Savings / license ratio',sc_bar_procurement:'Procurement automation',sc_bar_maintenance:'Maintenance efficiency',sc_bar_quality:'Batch quality',sc_bar_compliance:'Regulatory compliance',sc_bar_spoilage:'Spoilage reduction',sc_bar_warehouse:'Warehouse efficiency',sc_bar_finance:'Finance efficiency',sc_bar_inventory:'Inventory reduction',sc_bar_safetystock:'Safety stock',sc_bar_markdown:'Markdown reduction',sc_bar_downtime:'Downtime reduction',sc_bar_spareparts:'Spare parts',sc_bar_fulfillment:'Advanced fulfilment',sc_roi_p:'Investment driven by selected industry, tier, and parameters.',sc_chart_sub:'DKK — selected tier & industry',sc_roi_t1:'Core S/4HANA — Costs',sc_roi_t1_lic:'Annual license (DKK/yr)',sc_roi_t1_y0:'Implementation Year 0 (DKK)',sc_roi_t1_y1:'Implementation Year 1 (DKK)',sc_roi_t2:'IBP Add-on — Costs',sc_roi_t2_lic:'IBP Annual license (DKK/yr)',sc_roi_t2_y0:'IBP Implementation Year 0 (DKK)',sc_roi_t2_y1:'IBP Implementation Year 1 (DKK)',sc_roi_t3:'APM Add-on — Costs',sc_roi_t3_lic:'APM Annual license (DKK/yr)',sc_roi_t3_y0:'APM Implementation Year 0 (DKK)',sc_roi_t3_y1:'APM Implementation Year 1 (DKK)',landing_eyebrow:'SAP Business Case',landing_h1:'Financial Impact<br><span>Calculator</span>',landing_sub:'Model the business case for SAP solutions across HR, Supply Chain, and more. Adjust parameters, build custom formulas, and see the ROI in real time.',landing_hr_label:'Module 1',landing_hr_title:'HR &amp; Recruitment',landing_hr_desc:'Quantify the financial return from improving your recruitment, onboarding, and HR service processes through SuccessFactors.',landing_hr_f1:'Annual savings from reduced hiring volume',landing_hr_f2:'HR Recruitment &amp; Service efficiency gains',landing_hr_f3:'Onboarding ramp-up cost reduction',landing_hr_f4:'ROI break-even analysis',landing_cta:'Open calculator →',landing_sc_label:'Module 2',landing_sc_title:'Supply Chain &amp; Logistics',landing_sc_desc:'Calculate the value of S/4HANA across procurement, maintenance, quality, compliance, and predictive operations for your industry.',landing_sc_f1:'Pharma, Food, Discrete &amp; Retail industry profiles',landing_sc_f2:'Tiered scope: Core S/4HANA, IBP, APM and DM',landing_sc_f3:'Procurement, maintenance &amp; quality savings',landing_sc_f4:'ROI break-even analysis',landing_badge1:'Live model — all values update in real time',landing_badge2:'Export &amp; import your session',landing_badge3:'Custom parameters &amp; formulas',tier4_name:'+ DM',tier4_tag:'Mfg',dm_sec_oee:'Digital Manufacturing — OEE',dm_oeeHours:'Annual production hours',dm_oeeCostPerHour:'Production cost per hour (DKK)',dm_oeeImp:'OEE improvement',dm_sec_scrap:'Digital Manufacturing — Scrap &amp; Setup',dm_scrapValue:'Annual scrap / rework cost (DKK)',dm_setupHrs:'Setup hours per year',dm_setupCostPerHr:'Setup labor cost per hour (DKK)',dm_scrapRed:'Scrap / rework reduction',dm_setupRed:'Setup time reduction',sc_bar_dm_oee:'OEE improvement',sc_bar_dm_scrap:'Scrap / rework reduction',sc_bar_dm_setup:'Setup time reduction',landing_ic_label:'Module 3',landing_ic_title:'Investment Case',landing_ic_desc:'Plan your project investment — timeline, resource allocation, and cost breakdown across IT and business teams.',landing_ic_f1:'Visual project timeline with colour-coded phases',landing_ic_f2:'IT & Business resource cost allocation',landing_ic_f3:'Additional costs per year (licence, travel, AMS)',landing_ic_f4:'Bottom-up hours sanity check',area_ic:'Investment Case',ic_eyebrow:'Project Investment',ic_hero_h1:'Investment Case<br>Planner',ic_hero_p:'Define your project scope, allocate resources, and model the full investment cost across IT and business teams.',ic_setup_title:'Project Setup',ic_duration_label:'Project duration',ic_period_label:'Period view',ic_btn_months:'Months',ic_btn_weeks:'Weeks',ic_coming_title:'Timeline & Resources',ic_sanity_title:'Bottom-Up Sanity Check',ic_sanity_sub:'Enter your bottom-up hour estimates to validate against the hours allocated in the resource tables.',ic_sanity_it_lbl:'IT hours (bottom-up)',ic_sanity_biz_lbl:'Business hours (bottom-up)',ic_sanity_total:'Total',ic_sanity_year:'Per year',ic_addcost_title:'Additional Costs',ic_cost_total_label:'Total Project Investment',ic_cost_total_sub:'Based on allocated resources',ic_cost_it_label:'IT Resources',ic_cost_biz_label:'Business Resources',ic_cost_yr_label:'Year by Year',ic_cost_breakdown:'Cost Breakdown',ic_it_title:'IT Resources (External)',ic_biz_title:'Business Resources (Internal)',ic_timeline_title:'Project Timeline',ic_coming_sub:'Project timeline, resource tables, and cost breakdown coming in the next iterations.',landing_sd_label:'Module 4',landing_sd_title:'SAP SD &amp; Sales',landing_sd_desc:'Quantify the value of SAP SD for global sales expansion.',landing_sd_f1:'Market entry speed &amp; global template value',landing_sd_f2:'Order-to-Cash automation savings',landing_sd_f3:'Working capital &amp; cost avoidance',landing_sd_f4:'ROI break-even analysis',area_sd:'SD &amp; Sales',sd_eyebrow:'SAP SD &amp; Sales',sd_hero_h1:'Annual Savings<br>Calculator',sd_hero_p:'Model the business value of SAP SD.',sd_total_label:'Total Annual Savings',sd_total_sub:'Based on current parameters',sd_breakdown:'Savings breakdown',sd_placeholder:'Savings categories coming in the next iteration.',sd_sec_profile:'Company Profile',sd_lbl_entities:'Sales entities today',sd_lbl_entitiesPerYear:'New entities per year',sd_hint_entitiesPerYear:'How many new sales companies per year',sd_lbl_ordersPerYear:'Orders per year',sd_lbl_avgRevenue:'Avg monthly revenue per entity (DKK)',sd_sec_efficiency:'Efficiency and Rates',sd_lbl_monthsSaved:'Months saved per market entry',sd_hint_monthsSaved:'Without SAP: 6-12 months. With SAP template: 1-3 months',sd_lbl_minPerOrder:'Minutes saved per order',sd_hint_minPerOrder:'Reduction in manual order processing time',sd_lbl_fteRate:'FTE annual cost (DKK)',sd_lbl_inventoryValue:'Inventory value at 3PL (DKK)',sd_lbl_invCarrying:'Carrying cost pct pa',sd_lbl_invReduction:'Inventory reduction',sd_lbl_localErpCost:'Local ERP cost avoided per entity (DKK/yr)',sd_hint_localErpCost:'Annual cost of local ERP systems each entity avoids',sd_s1_name:'Market entry speed',sd_s2_name:'Order-to-Cash automation',sd_s3_name:'Working capital reduction',sd_s4_name:'Financial reporting efficiency',sd_s5_name:'Cost avoidance (local ERP)',sd_roi_h2:'Break-Even Analysis',sd_roi_p:'Model the total SAP SD investment against cumulative savings.',sd_roi_sec_license:'Annual License Costs',sd_roi_sdLicense:'SAP SD / S4HANA license (DKK/year)',sd_roi_sec_impl:'Implementation Cost',sd_roi_impl_total:'Total implementation cost',sd_chart_sub:'DKK — Years 0 through 5',sd_strat_eyebrow:'Beyond the Numbers',sd_strat_title:'Strategic Value',sd_strat_sub:'These benefits are difficult to quantify directly but are often decisive for leadership buy-in. Toggle the ones relevant to your case.',sd_strat_1_title:'Audit Trail & Compliance',sd_strat_1_desc:'Complete digital audit trail for all SD transactions. Supports SOX, IFRS, and local compliance requirements.',sd_strat_2_title:'Segregation of Duties',sd_strat_2_desc:'Automated SOD controls enforce proper approval workflows and prevent fraud across all markets.',sd_strat_3_title:'Investor & M&A Readiness',sd_strat_3_desc:'Standardised processes and clean data dramatically accelerates due diligence for investors or acquirers.',sd_strat_4_title:'Global Process Standardisation',sd_strat_4_desc:'One process, one system, one truth. Consistent customer experience and reporting across all markets.',sd_strat_5_title:'Scalability Without Headcount',sd_strat_5_desc:'Add new sales markets without proportionally adding back-office staff. The platform scales — the team does not.',sd_metric_fte:'FTE hours freed',sd_metric_entry:'Entities accelerated',sd_lbl_margin:'Contribution margin (%)',sd_hint_margin:'Used to calculate value of accelerated revenue from faster market entry',sd_lbl_monthEndHrs:'Hours saved per month-end close',sd_hint_monthEndHrs:'Finance hours saved monthly from standardised reporting across all entities',sd_lbl_financeRate:'Finance team hourly rate (DKK/hr)',month_label:'Month',
 io_export_title:'Export session',io_export_desc:'Download a JSON file with all your current parameters, savings, formulas and settings.',io_export_btn:'Download JSON',io_import_title:'Import session',io_import_desc:'Restore a previously exported session. Drag a JSON file below or click to browse.',io_drop_text:'Drop JSON file here',io_drop_or:'or',io_drop_browse:'browse',io_reset_title:'Reset to defaults',io_reset_desc:'Remove all customisations and restore every parameter, saving, and formula to its original value.',io_reset_btn:'Reset to defaults',io_reset_confirm:'Are you sure? All customisations will be permanently lost.',io_reset_cancel:'Cancel',io_reset_go:'Yes, reset everything',
 col_parameter:'PARAMETER',col_unit:'UNIT',col_default:'DEFAULT',
 param_view_for:'View parameters for:',param_follow_active:'— Follow active industry —',param_no_ind:'Select an industry above to see relevant parameters.',param_editing_for:'Editing defaults for:',param_active_lbl:'(active)',
@@ -3317,7 +5397,7 @@ asf_formula_hint:'The formula for this saving will be set in the <strong>Formula
 ind_all_tag:'All industries',sc_savings_filter:'Filter:',hr_savings_section:'HR Savings',
 fb_palette_label:'PARAMETERS — CLICK TO INSERT',fb_ops_label:'OPERATORS',fb_formula_label:'FORMULA EXPRESSION',fb_empty_msg:'Select a saving from the list to edit its formula',fb_err_syntax:'⚠ Syntax error — check formula',fb_err_preview:'Enter a formula above to see a live preview',
 view_formula_for:'View formulas for:'},
-    da:{live_model:'Live model',area_hr:'HR &amp; Rekruttering',area_sc:'Forsyningskæde',btn_export:'Eksporter',btn_import:'Importer',set_title:'Tilpas',set_sub:'Parametre, besparelser & formler',set_tab_params:'Parametre',set_tab_savings:'Besparelser',set_tab_formulas:'Formler',set_tab_io:'Import / Eksport',set_params_title:'Parametereditor',set_params_sub:'Rediger standardværdier og intervaller for indbyggede parametre, eller tilføj dine egne brugerdefinerede parametre.',set_savings_title:'Besparelseseditor',set_savings_sub:'Omdøb besparelsesbjælker, vis/skjul dem, eller tilføj brugerdefinerede besparelser. Formler sættes under Formler.',set_formulas_title:'Formelbygger',set_formulas_sub:'Klik på en parameter for at indsætte den i en formel. Brug operatorknapperne til at bygge udtryk.',set_io_title:'Import / Eksport',set_io_sub:'Eksporter alle tilpasninger til en JSON-fil for at gemme din session, og importer den senere for at gendanne alt.',hero_eyebrow:'Rekruttering & Onboarding',hero_h1:'Årlig Besparelse<br>Beregner',hero_p:'Juster parametrene nedenfor for at modellere den finansielle effekt af en forbedret rekrutterings- og onboardingproces.',sec_volume:'Rekrutteringsvolumen',lbl_hires:'Ansættelser pr. år',hint_hires:'Samlede nye ansættelser årligt (B2)',lbl_turnover:'Fratrædelse inden for første år',hint_turnover:'Andel af ansatte der forlader inden for 12 måneder',lbl_salary:'Gennemsnitlig månedlig løn',sec_rates:'Timesatser & Tid pr. ansættelse',lbl_rateManager:'Ledersats (DKK/time)',lbl_hrsManager:'Ledertimer pr. ansættelse',lbl_rateHRRek:'HR Rekruttering sats (DKK/time)',lbl_hrsHRRek:'HR Rekruttering timer pr. ansættelse',lbl_rateHRService:'HR Service sats (DKK/time)',lbl_hrsHRService:'HR Service timer pr. ansættelse',sec_fixed:'Faste omkostninger pr. ansættelse',lbl_buddy:'Buddy-træning (DKK)',lbl_equip:'Udstyr & uniform (DKK)',sec_ramp:'Onboarding indfasning (ineffektivitet %)',hint_ramp:'Månedlig lønomkostning ved reduceret produktivitet. Måned 12 = fuldt produktiv.',btn_ramp_edit:'▸ Rediger månedlige satser',btn_ramp_hide:'▾ Skjul månedlige satser',lbl_onboard_total:'Samlede onboardingomkostninger pr. ansættelse',sec_eff:'Effektivitetsforbedringer',lbl_redHires:'Reduktion i nye ansættelser',hint_redHires:'Færre stillinger at besætte (D3)',lbl_redRehires:'Reduktion i genansættelser (år 1)',hint_redRehires:'Færre genansættelser inden for første år (D5)',lbl_effHRRek:'Tidsbesparelse HR Rekruttering',hint_effHRRek:'Direkte adgang til stillingsoplysninger (E10)',lbl_effHRService:'Tidsbesparelse HR Service',hint_effHRService:'Direkte adgang til stillingsoplysninger',lbl_effOnboarding:'Onboardingeffektivitet',hint_effOnboarding:'Hurtigere indfasning via bedre onboarding',res_total_label:'Samlet Årlig Besparelse',res_total_sub:'Baseret på aktuelle parametre',res_cph:'Omkostning pr. ansættelse',res_annual:'Årlige rekrutteringsomkostninger',res_breakdown:'Besparelsesfordeling',s1_name:'Færre nye ansættelser',s2_name:'Færre genansættelser (år 1)',s3_name:'HR Rekrutteringseffektivitet',s4_name:'HR Serviceeffektivitet',s5_name:'Hurtigere onboarding-indfasning',res_cph_title:'Omkostning pr. ansættelse (fordeling)',c_manager:'Ledertid',c_hrrek:'HR Rekrutteringstid',c_hrservice:'HR Servicetid',c_buddy:'Buddy-træning',c_equip:'Udstyr & uniform',c_onboard:'Onboarding indfasningsomkostning',c_total:'Samlet pr. ansættelse',roi_eyebrow:'Return on Investment',roi_h2:'Break-Even Analyse',roi_p:'Modellér den samlede investering mod besparelser for at se, hvornår projektet tjener sig hjem.',roi_sec_license:'Årlige licensomkostninger',roi_sfEC:'SuccessFactors EC licens (DKK/år)',roi_sfOnb:'SuccessFactors Onboarding licens (DKK/år)',roi_sec_impl:'Engangsimplementering (År 0)',roi_itYr0:'IT-implementering — År 0 (DKK)',roi_itYr1:'IT-implementering — År 1 (DKK)',roi_hrOverhead:'Øgede HR-driftsomkostninger (DKK)',roi_sec_extra:'Yderligere årlige besparelser',roi_sapIT:'SAP HR IT bemandingsreduktion',roi_sapIT_hint:'Årlig besparelse ved reduceret SAP HR IT-bemanding',roi_hrServiceEff:'HR Serviceteam effektivisering',roi_hrServiceEff_hint:'Effektivisering HR Serviceteam (række 8)',roi_dataSave:'Besparelser fra dataoverblik',roi_dataSave_hint:'Værdien af forbedret dataadgang og rapportering',stat_invest:'Samlet investering',stat_annual:'Årlige besparelser',stat_net:'5-års nettoudbytte',chart_title:'Kumulativ investering vs. besparelser',chart_sub:'DKK — År 0 til 5',legend_invest:'Kumulativ investering',legend_save:'Kumulative besparelser',breakeven_label:'Break-even',yr0:'År 0',yr1:'År 1',yr2:'År 2',yr3:'År 3',yr4:'År 4',yr5:'År 5',be_no_savings:'Tilføj besparelser for at se break-even',be_not_reached:'Break-even ikke nået inden for perioden',be_yr0:'Besparelser overstiger investering fra <span>År 0</span>',be_reached:'Break-even nået efter',be_and:'og',be_month:'måned',be_months:'måneder',be_year:'År',yr_label:'Horisont',yr_prefix:'År ',sc_industry_label:'Branche:',sc_change_industry:'Skift branche',sc_eyebrow:'Supply Chain & Logistik',sc_hero_h1:'Årlig Besparelse<br>Beregner',sc_hero_p:'Vælg en branche og konfigurer dine parametre.',sc_modal_eyebrow:'Supply Chain',sc_modal_title:'Vælg din branche',sc_modal_sub:'Parametre og besparelseskategorier tilpasses dit valg.',ind_pharma:'Pharma &amp; Life Science',ind_pharma_desc:'GMP-overholdelse, batchkvalitet og reguleret aktivstyring.',ind_food:'Føde- &amp; drikkevarer',ind_food_desc:'Holdbarhed, reduktion af spild og højvolumen batchproduktion.',ind_discrete:'Diskret produktion',ind_discrete_desc:'Komplekse styklister, aktivtunge produktionslinjer og MRO-indkøb.',ind_retail:'Detail &amp; distribution',ind_retail_desc:'Højvolumen indkøb, lagereffektivitet og lagerplanlægning.',tier_label:'SAP Modulomfang',tier1_name:'Kerne S/4HANA',tier1_tag:'ERP',tier2_name:'+ IBP',tier2_tag:'Planlægning',tier3_name:'+ APM',tier3_tag:'Prædiktiv',sc_sec_proc:'Indkøbsautomatisering',sc_posPerYear:'Indkøbsordrer pr. år',sc_poCostManual:'Manuel indkøbsordreomkostning (DKK)',sc_financeSaving:'Finans effektivitetsbesparelse (DKK/år)',sc_poAuto:'Automatiseringsforbedring',sc_poAuto_hint:'% flere indkøbsordrer behandlet automatisk',sc_sec_maint:'Anlægsvedligeholdelse',sc_maintBudget:'Årligt vedligeholdelsesbudget (DKK)',sc_maintEff:'Effektivitetsforbedring',sc_maintEff_hint:'Reduktion i reaktiv vedligeholdelse',sc_sec_quality:'Batchkvalitet',sc_batchesPerYear:'Batches pr. år',sc_avgBatchValue:'Gns. batchværdi (DKK)',sc_rejectionRate:'Fejlprocent (%)',sc_rejRed:'Reduktion i fejlrate',sc_rejRed_hint:'Relativ reduktion i batchfejl',sc_sec_compliance:'Regulatorisk overholdelse',sc_complianceHrs:'Audittimer/år',sc_complianceHrCost:'Omkostning/time (DKK)',sc_compEff:'Compliance-effektivitet',sc_compEff_hint:'Mindre arbejde til GMP/FDA/EMA-audit',sc_sec_spoilage:'Spild & afskrivninger',sc_spoilageValue:'Årlig spildværdi (DKK)',sc_spoilRed:'Spildreduktion',sc_spoilRed_hint:'Bedre holdbarhedssporing og behovsbaseret produktion',sc_sec_warehouse:'Lageroperationer',sc_warehouseFTEs:'Lager-FTEer',sc_avgFTECost:'Gns. FTE-omkostning (DKK/år)',sc_whEff:'Effektivitetsforbedring',sc_whEff_hint:'Pluk/pak/afsend-produktivitet fra integreret lagerstyring',sc_sec_inventory:'Lagerbeholdning & planlægning (IBP)',sc_inventoryValue:'Lagerværdi (DKK)',sc_carryingCostPct:'Lagerholdningsomkostning (%/år)',sc_invRed:'Lagerreduktion',sc_invRed_hint:'Bedre efterspørgselsprognoser reducerer lagerniveau',sc_sec_safetystock:'Optimering af sikkerhedslager',sc_safetyStockValue:'Sikkerhedslagersværdi (DKK)',sc_ssRed:'Sikkerhedslagersreduktion',sc_ssRed_hint:'Frigivet arbejdskapital ved strammere planlægning',sc_sec_markdown:'Nedskrivningsreduktion',sc_markdownSaving:'Årligt nedskrivningstab (DKK)',sc_markdown_hint:'Bedre planlægning reducerer nedskrivninger',sc_sec_predictive:'Prædiktiv vedligeholdelse (APM)',sc_downtimeHrs:'Nedetidstimer/år',sc_downtimeCostPerHr:'Produktionstab/time (DKK)',sc_sparePartsValue:'Reservedelsværdi (DKK)',sc_dtRed:'Nedetidsreduktion',sc_dtRed_hint:'IoT-fejlforudsigelse forhindrer uplanlagte stop',sc_spRed:'Reservedelsreduktion',sc_spRed_hint:'Optimeret genbestilling og reduceret bufferlager',sc_sec_fulfillment:'Avanceret ordreudførelse',sc_fulfillmentOrders:'Ordrer pr. år',sc_fulfillmentCostPerOrder:'Omkostning pr. ordre (DKK)',sc_fulfEff:'Effektivitetsforbedring',sc_fulfEff_hint:'Integreret lager- og transportstyring reducerer ordreomkostning',sc_metric_license:'Årlig licensomkostning',sc_metric_ratio:'Besparelser / licensforhold',sc_bar_procurement:'Indkøbsautomatisering',sc_bar_maintenance:'Vedligeholdelseseffektivitet',sc_bar_quality:'Batchkvalitet',sc_bar_compliance:'Regulatorisk overholdelse',sc_bar_spoilage:'Spildreduktion',sc_bar_warehouse:'Lagereffektivitet',sc_bar_finance:'Finanseffektivitet',sc_bar_inventory:'Lagerreduktion',sc_bar_safetystock:'Sikkerhedslager',sc_bar_markdown:'Nedskrivningsreduktion',sc_bar_downtime:'Nedetidsreduktion',sc_bar_spareparts:'Reservedele',sc_bar_fulfillment:'Avanceret ordreudførelse',sc_roi_p:'Investering baseret på valgt branche, tier og parametre.',sc_chart_sub:'DKK — valgt tier & branche',sc_roi_t1:'Kerne S/4HANA — Omkostninger',sc_roi_t1_lic:'Årlig licens (DKK/år)',sc_roi_t1_y0:'Implementering År 0 (DKK)',sc_roi_t1_y1:'Implementering År 1 (DKK)',sc_roi_t2:'IBP Tillæg — Omkostninger',sc_roi_t2_lic:'IBP Årlig licens (DKK/år)',sc_roi_t2_y0:'IBP Implementering År 0 (DKK)',sc_roi_t2_y1:'IBP Implementering År 1 (DKK)',sc_roi_t3:'APM Tillæg — Omkostninger',sc_roi_t3_lic:'APM Årlig licens (DKK/år)',sc_roi_t3_y0:'APM Implementering År 0 (DKK)',sc_roi_t3_y1:'APM Implementering År 1 (DKK)',landing_eyebrow:'SAP Business Case',landing_h1:'Finansiel Impact<br><span>Beregner</span>',landing_sub:'Modellér forretningssagen for SAP-løsninger inden for HR, Supply Chain og mere. Juster parametre, byg brugerdefinerede formler og se ROI i realtid.',landing_hr_label:'Modul 1',landing_hr_title:'HR &amp; Rekruttering',landing_hr_desc:'Kvantifiér det økonomiske afkast ved at forbedre rekrutterings-, onboarding- og HR-serviceprocesser.',landing_hr_f1:'Årlige besparelser fra færre ansættelser',landing_hr_f2:'HR Rekruttering &amp; Service effektivitetsgevinster',landing_hr_f3:'Reduktion af onboarding-indfasningsomkostninger',landing_hr_f4:'ROI break-even analyse',landing_cta:'Åbn beregner →',landing_sc_label:'Modul 2',landing_sc_title:'Supply Chain &amp; Logistik',landing_sc_desc:'Beregn værdien af S/4HANA på tværs af indkøb, vedligeholdelse, kvalitet, compliance og prædiktive operationer for din branche.',landing_sc_f1:'Pharma, Fødevarer, Diskret &amp; Detail brancheprofiler',landing_sc_f2:'Niveaudelt omfang: Kerne S/4HANA, IBP, APM og DM',landing_sc_f3:'Indkøbs-, vedligeholdelses- &amp; kvalitetsbesparelser',landing_sc_f4:'ROI break-even analyse',landing_badge1:'Live model — alle værdier opdateres i realtid',landing_badge2:'Eksporter &amp; importer din session',landing_badge3:'Brugerdefinerede parametre &amp; formler',tier4_name:'+ DM',tier4_tag:'Prod.',dm_sec_oee:'Digital fremstilling — OEE',dm_oeeHours:'Årlige produktionstimer',dm_oeeCostPerHour:'Produktionsomkostning pr. time (DKK)',dm_oeeImp:'OEE-forbedring',dm_sec_scrap:'Digital fremstilling — Spild &amp; Opsætning',dm_scrapValue:'Årlig spild-/genbehandlingsomkostning (DKK)',dm_setupHrs:'Opsætningstimer pr. år',dm_setupCostPerHr:'Lønomkostning pr. opsætningstime (DKK)',dm_scrapRed:'Spild-/genbehandlingsreduktion',dm_setupRed:'Reduktion i opsætningstid',sc_bar_dm_oee:'OEE-forbedring',sc_bar_dm_scrap:'Spild-/genbehandlingsreduktion',sc_bar_dm_setup:'Reduktion i opsætningstid',month_label:'Måned',
+    da:{live_model:'Live model',area_hr:'HR &amp; Rekruttering',area_sc:'Forsyningskæde',btn_export:'Eksporter',btn_import:'Importer',set_title:'Tilpas',set_sub:'Parametre, besparelser & formler',set_tab_params:'Parametre',set_tab_savings:'Besparelser',set_tab_formulas:'Formler',set_tab_io:'Import / Eksport',set_params_title:'Parametereditor',set_params_sub:'Rediger standardværdier og intervaller for indbyggede parametre, eller tilføj dine egne brugerdefinerede parametre.',set_savings_title:'Besparelseseditor',set_savings_sub:'Omdøb besparelsesbjælker, vis/skjul dem, eller tilføj brugerdefinerede besparelser. Formler sættes under Formler.',set_formulas_title:'Formelbygger',set_formulas_sub:'Klik på en parameter for at indsætte den i en formel. Brug operatorknapperne til at bygge udtryk.',set_io_title:'Import / Eksport',set_io_sub:'Eksporter alle tilpasninger til en JSON-fil for at gemme din session, og importer den senere for at gendanne alt.',hero_eyebrow:'Rekruttering & Onboarding',hero_h1:'Årlig Besparelse<br>Beregner',hero_p:'Juster parametrene nedenfor for at modellere den finansielle effekt af en forbedret rekrutterings- og onboardingproces.',sec_volume:'Rekrutteringsvolumen',lbl_hires:'Ansættelser pr. år',hint_hires:'Samlede nye ansættelser årligt (B2)',lbl_turnover:'Fratrædelse inden for første år',hint_turnover:'Andel af ansatte der forlader inden for 12 måneder',lbl_salary:'Gennemsnitlig månedlig løn',sec_rates:'Timesatser & Tid pr. ansættelse',lbl_rateManager:'Ledersats (DKK/time)',lbl_hrsManager:'Ledertimer pr. ansættelse',lbl_rateHRRek:'HR Rekruttering sats (DKK/time)',lbl_hrsHRRek:'HR Rekruttering timer pr. ansættelse',lbl_rateHRService:'HR Service sats (DKK/time)',lbl_hrsHRService:'HR Service timer pr. ansættelse',sec_fixed:'Faste omkostninger pr. ansættelse',lbl_buddy:'Buddy-træning (DKK)',lbl_equip:'Udstyr & uniform (DKK)',sec_ramp:'Onboarding indfasning (ineffektivitet %)',hint_ramp:'Månedlig lønomkostning ved reduceret produktivitet. Måned 12 = fuldt produktiv.',btn_ramp_edit:'▸ Rediger månedlige satser',btn_ramp_hide:'▾ Skjul månedlige satser',lbl_onboard_total:'Samlede onboardingomkostninger pr. ansættelse',sec_eff:'Effektivitetsforbedringer',lbl_redHires:'Reduktion i nye ansættelser',hint_redHires:'Færre stillinger at besætte (D3)',lbl_redRehires:'Reduktion i genansættelser (år 1)',hint_redRehires:'Færre genansættelser inden for første år (D5)',lbl_effHRRek:'Tidsbesparelse HR Rekruttering',hint_effHRRek:'Direkte adgang til stillingsoplysninger (E10)',lbl_effHRService:'Tidsbesparelse HR Service',hint_effHRService:'Direkte adgang til stillingsoplysninger',lbl_effOnboarding:'Onboardingeffektivitet',hint_effOnboarding:'Hurtigere indfasning via bedre onboarding',res_total_label:'Samlet Årlig Besparelse',res_total_sub:'Baseret på aktuelle parametre',res_cph:'Omkostning pr. ansættelse',res_annual:'Årlige rekrutteringsomkostninger',res_breakdown:'Besparelsesfordeling',s1_name:'Færre nye ansættelser',s2_name:'Færre genansættelser (år 1)',s3_name:'HR Rekrutteringseffektivitet',s4_name:'HR Serviceeffektivitet',s5_name:'Hurtigere onboarding-indfasning',res_cph_title:'Omkostning pr. ansættelse (fordeling)',c_manager:'Ledertid',c_hrrek:'HR Rekrutteringstid',c_hrservice:'HR Servicetid',c_buddy:'Buddy-træning',c_equip:'Udstyr & uniform',c_onboard:'Onboarding indfasningsomkostning',c_total:'Samlet pr. ansættelse',roi_eyebrow:'Return on Investment',roi_h2:'Break-Even Analyse',roi_p:'Modellér den samlede investering mod besparelser for at se, hvornår projektet tjener sig hjem.',roi_sec_license:'Årlige licensomkostninger',roi_sfEC:'SuccessFactors EC licens (DKK/år)',roi_sfOnb:'SuccessFactors Onboarding licens (DKK/år)',roi_sec_impl:'Engangsimplementering (År 0)',roi_itYr0:'IT-implementering — År 0 (DKK)',roi_itYr1:'IT-implementering — År 1 (DKK)',roi_hrOverhead:'Øgede HR-driftsomkostninger (DKK)',roi_sec_extra:'Yderligere årlige besparelser',roi_sapIT:'SAP HR IT bemandingsreduktion',roi_sapIT_hint:'Årlig besparelse ved reduceret SAP HR IT-bemanding',roi_hrServiceEff:'HR Serviceteam effektivisering',roi_hrServiceEff_hint:'Effektivisering HR Serviceteam (række 8)',roi_dataSave:'Besparelser fra dataoverblik',roi_dataSave_hint:'Værdien af forbedret dataadgang og rapportering',stat_invest:'Samlet investering',stat_annual:'Årlige besparelser',stat_net:'5-års nettoudbytte',chart_title:'Kumulativ investering vs. besparelser',chart_sub:'DKK — År 0 til 5',legend_invest:'Kumulativ investering',legend_save:'Kumulative besparelser',breakeven_label:'Break-even',yr0:'År 0',yr1:'År 1',yr2:'År 2',yr3:'År 3',yr4:'År 4',yr5:'År 5',be_no_savings:'Tilføj besparelser for at se break-even',be_not_reached:'Break-even ikke nået inden for perioden',be_yr0:'Besparelser overstiger investering fra <span>År 0</span>',be_reached:'Break-even nået efter',be_and:'og',be_month:'måned',be_months:'måneder',be_year:'År',yr_label:'Horisont',yr_prefix:'År ',sc_industry_label:'Branche:',sc_change_industry:'Skift branche',sc_eyebrow:'Supply Chain & Logistik',sc_hero_h1:'Årlig Besparelse<br>Beregner',sc_hero_p:'Vælg en branche og konfigurer dine parametre.',sc_modal_eyebrow:'Supply Chain',sc_modal_title:'Vælg din branche',sc_modal_sub:'Parametre og besparelseskategorier tilpasses dit valg.',ind_pharma:'Pharma &amp; Life Science',ind_pharma_desc:'GMP-overholdelse, batchkvalitet og reguleret aktivstyring.',ind_food:'Føde- &amp; drikkevarer',ind_food_desc:'Holdbarhed, reduktion af spild og højvolumen batchproduktion.',ind_discrete:'Diskret produktion',ind_discrete_desc:'Komplekse styklister, aktivtunge produktionslinjer og MRO-indkøb.',ind_retail:'Detail &amp; distribution',ind_retail_desc:'Højvolumen indkøb, lagereffektivitet og lagerplanlægning.',tier_label:'SAP Modulomfang',tier1_name:'Kerne S/4HANA',tier1_tag:'ERP',tier2_name:'+ IBP',tier2_tag:'Planlægning',tier3_name:'+ APM',tier3_tag:'Prædiktiv',sc_sec_proc:'Indkøbsautomatisering',sc_posPerYear:'Indkøbsordrer pr. år',sc_poCostManual:'Manuel indkøbsordreomkostning (DKK)',sc_financeSaving:'Finans effektivitetsbesparelse (DKK/år)',sc_poAuto:'Automatiseringsforbedring',sc_poAuto_hint:'% flere indkøbsordrer behandlet automatisk',sc_sec_maint:'Anlægsvedligeholdelse',sc_maintBudget:'Årligt vedligeholdelsesbudget (DKK)',sc_maintEff:'Effektivitetsforbedring',sc_maintEff_hint:'Reduktion i reaktiv vedligeholdelse',sc_sec_quality:'Batchkvalitet',sc_batchesPerYear:'Batches pr. år',sc_avgBatchValue:'Gns. batchværdi (DKK)',sc_rejectionRate:'Fejlprocent (%)',sc_rejRed:'Reduktion i fejlrate',sc_rejRed_hint:'Relativ reduktion i batchfejl',sc_sec_compliance:'Regulatorisk overholdelse',sc_complianceHrs:'Audittimer/år',sc_complianceHrCost:'Omkostning/time (DKK)',sc_compEff:'Compliance-effektivitet',sc_compEff_hint:'Mindre arbejde til GMP/FDA/EMA-audit',sc_sec_spoilage:'Spild & afskrivninger',sc_spoilageValue:'Årlig spildværdi (DKK)',sc_spoilRed:'Spildreduktion',sc_spoilRed_hint:'Bedre holdbarhedssporing og behovsbaseret produktion',sc_sec_warehouse:'Lageroperationer',sc_warehouseFTEs:'Lager-FTEer',sc_avgFTECost:'Gns. FTE-omkostning (DKK/år)',sc_whEff:'Effektivitetsforbedring',sc_whEff_hint:'Pluk/pak/afsend-produktivitet fra integreret lagerstyring',sc_sec_inventory:'Lagerbeholdning & planlægning (IBP)',sc_inventoryValue:'Lagerværdi (DKK)',sc_carryingCostPct:'Lagerholdningsomkostning (%/år)',sc_invRed:'Lagerreduktion',sc_invRed_hint:'Bedre efterspørgselsprognoser reducerer lagerniveau',sc_sec_safetystock:'Optimering af sikkerhedslager',sc_safetyStockValue:'Sikkerhedslagersværdi (DKK)',sc_ssRed:'Sikkerhedslagersreduktion',sc_ssRed_hint:'Frigivet arbejdskapital ved strammere planlægning',sc_sec_markdown:'Nedskrivningsreduktion',sc_markdownSaving:'Årligt nedskrivningstab (DKK)',sc_markdown_hint:'Bedre planlægning reducerer nedskrivninger',sc_sec_predictive:'Prædiktiv vedligeholdelse (APM)',sc_downtimeHrs:'Nedetidstimer/år',sc_downtimeCostPerHr:'Produktionstab/time (DKK)',sc_sparePartsValue:'Reservedelsværdi (DKK)',sc_dtRed:'Nedetidsreduktion',sc_dtRed_hint:'IoT-fejlforudsigelse forhindrer uplanlagte stop',sc_spRed:'Reservedelsreduktion',sc_spRed_hint:'Optimeret genbestilling og reduceret bufferlager',sc_sec_fulfillment:'Avanceret ordreudførelse',sc_fulfillmentOrders:'Ordrer pr. år',sc_fulfillmentCostPerOrder:'Omkostning pr. ordre (DKK)',sc_fulfEff:'Effektivitetsforbedring',sc_fulfEff_hint:'Integreret lager- og transportstyring reducerer ordreomkostning',sc_metric_license:'Årlig licensomkostning',sc_metric_ratio:'Besparelser / licensforhold',sc_bar_procurement:'Indkøbsautomatisering',sc_bar_maintenance:'Vedligeholdelseseffektivitet',sc_bar_quality:'Batchkvalitet',sc_bar_compliance:'Regulatorisk overholdelse',sc_bar_spoilage:'Spildreduktion',sc_bar_warehouse:'Lagereffektivitet',sc_bar_finance:'Finanseffektivitet',sc_bar_inventory:'Lagerreduktion',sc_bar_safetystock:'Sikkerhedslager',sc_bar_markdown:'Nedskrivningsreduktion',sc_bar_downtime:'Nedetidsreduktion',sc_bar_spareparts:'Reservedele',sc_bar_fulfillment:'Avanceret ordreudførelse',sc_roi_p:'Investering baseret på valgt branche, tier og parametre.',sc_chart_sub:'DKK — valgt tier & branche',sc_roi_t1:'Kerne S/4HANA — Omkostninger',sc_roi_t1_lic:'Årlig licens (DKK/år)',sc_roi_t1_y0:'Implementering År 0 (DKK)',sc_roi_t1_y1:'Implementering År 1 (DKK)',sc_roi_t2:'IBP Tillæg — Omkostninger',sc_roi_t2_lic:'IBP Årlig licens (DKK/år)',sc_roi_t2_y0:'IBP Implementering År 0 (DKK)',sc_roi_t2_y1:'IBP Implementering År 1 (DKK)',sc_roi_t3:'APM Tillæg — Omkostninger',sc_roi_t3_lic:'APM Årlig licens (DKK/år)',sc_roi_t3_y0:'APM Implementering År 0 (DKK)',sc_roi_t3_y1:'APM Implementering År 1 (DKK)',landing_eyebrow:'SAP Business Case',landing_h1:'Finansiel Impact<br><span>Beregner</span>',landing_sub:'Modellér forretningssagen for SAP-løsninger inden for HR, Supply Chain og mere. Juster parametre, byg brugerdefinerede formler og se ROI i realtid.',landing_hr_label:'Modul 1',landing_hr_title:'HR &amp; Rekruttering',landing_hr_desc:'Kvantifiér det økonomiske afkast ved at forbedre rekrutterings-, onboarding- og HR-serviceprocesser.',landing_hr_f1:'Årlige besparelser fra færre ansættelser',landing_hr_f2:'HR Rekruttering &amp; Service effektivitetsgevinster',landing_hr_f3:'Reduktion af onboarding-indfasningsomkostninger',landing_hr_f4:'ROI break-even analyse',landing_cta:'Åbn beregner →',landing_sc_label:'Modul 2',landing_sc_title:'Supply Chain &amp; Logistik',landing_sc_desc:'Beregn værdien af S/4HANA på tværs af indkøb, vedligeholdelse, kvalitet, compliance og prædiktive operationer for din branche.',landing_sc_f1:'Pharma, Fødevarer, Diskret &amp; Detail brancheprofiler',landing_sc_f2:'Niveaudelt omfang: Kerne S/4HANA, IBP, APM og DM',landing_sc_f3:'Indkøbs-, vedligeholdelses- &amp; kvalitetsbesparelser',landing_sc_f4:'ROI break-even analyse',landing_badge1:'Live model — alle værdier opdateres i realtid',landing_badge2:'Eksporter &amp; importer din session',landing_badge3:'Brugerdefinerede parametre &amp; formler',tier4_name:'+ DM',tier4_tag:'Prod.',dm_sec_oee:'Digital fremstilling — OEE',dm_oeeHours:'Årlige produktionstimer',dm_oeeCostPerHour:'Produktionsomkostning pr. time (DKK)',dm_oeeImp:'OEE-forbedring',dm_sec_scrap:'Digital fremstilling — Spild &amp; Opsætning',dm_scrapValue:'Årlig spild-/genbehandlingsomkostning (DKK)',dm_setupHrs:'Opsætningstimer pr. år',dm_setupCostPerHr:'Lønomkostning pr. opsætningstime (DKK)',dm_scrapRed:'Spild-/genbehandlingsreduktion',dm_setupRed:'Reduktion i opsætningstid',sc_bar_dm_oee:'OEE-forbedring',sc_bar_dm_scrap:'Spild-/genbehandlingsreduktion',sc_bar_dm_setup:'Reduktion i opsætningstid',landing_ic_label:'Modul 3',landing_ic_title:'Investeringscase',landing_ic_desc:'Planlæg din projektinvestering — tidslinje, ressourceallokering og omkostningsoversigt for IT- og forretningsteams.',landing_ic_f1:'Visuel projekttidslinje med farvekodede faser',landing_ic_f2:'IT & Forretning ressourceomkostning',landing_ic_f3:'Yderligere omkostninger pr. år (licens, rejse, AMS)',landing_ic_f4:'Bottom-up timers validering',area_ic:'Investeringscase',ic_eyebrow:'Projektinvestering',ic_hero_h1:'Investeringscase<br>Planlægger',ic_hero_p:'Definer dit projektomfang, alloker ressourcer og modelér de samlede investeringsomkostninger.',ic_setup_title:'Projektopsætning',ic_duration_label:'Projektvarighed',ic_period_label:'Periodevisning',ic_btn_months:'Måneder',ic_btn_weeks:'Uger',ic_coming_title:'Tidslinje & Ressourcer',ic_sanity_title:'Bottom-Up Validering',ic_sanity_sub:'Indtast dine bottom-up timeestimater for at validere mod de allokerede timer.',ic_sanity_it_lbl:'IT timer (bottom-up)',ic_sanity_biz_lbl:'Forretnings timer (bottom-up)',ic_sanity_total:'Total',ic_sanity_year:'Pr. år',ic_addcost_title:'Yderligere omkostninger',ic_cost_total_label:'Samlet projektinvestering',ic_cost_total_sub:'Baseret på allokerede ressourcer',ic_cost_it_label:'IT Ressourcer',ic_cost_biz_label:'Forretningsressourcer',ic_cost_yr_label:'År for år',ic_cost_breakdown:'Omkostningsfordeling',ic_it_title:'IT Ressourcer (Ekstern)',ic_biz_title:'Forretningsressourcer (Intern)',ic_timeline_title:'Projekttidslinje',ic_coming_sub:'Projekttidslinje, ressourcetabeller og omkostningsoversigt kommer i de næste iterationer.',landing_sd_label:'Modul 4',landing_sd_title:'SAP SD &amp; Salg',landing_sd_desc:'Kvantifier vaerdien af SAP SD for global salgsekspansion.',landing_sd_f1:'Market entry-hastighed og global skabelonvaerdi',landing_sd_f2:'Order-to-Cash automatiseringsbesparelser',landing_sd_f3:'Arbejdskapital og omkostningsundgaaelse',landing_sd_f4:'ROI break-even analyse',area_sd:'SD &amp; Salg',sd_eyebrow:'SAP SD &amp; Salg',sd_hero_h1:'Arlig Besparelse<br>Beregner',sd_hero_p:'Modellaer forretningsvaerdien af SAP SD.',sd_total_label:'Samlet Arlig Besparelse',sd_total_sub:'Baseret pa aktuelle parametre',sd_breakdown:'Besparelsesfordeling',sd_placeholder:'Besparelseskategorier kommer i naeste iteration.',sd_sec_profile:'Virksomhedsprofil',sd_lbl_entities:'Salgsselskaber i dag',sd_lbl_entitiesPerYear:'Nye selskaber pr. ar',sd_hint_entitiesPerYear:'Antal nye salgsselskaber per ar',sd_lbl_ordersPerYear:'Ordrer pr. ar',sd_lbl_avgRevenue:'Gns. maanedlig omsaetning pr. selskab (DKK)',sd_sec_efficiency:'Effektivitet og Satser',sd_lbl_monthsSaved:'Maaneder sparet pr. market entry',sd_hint_monthsSaved:'Uden SAP: 6-12 maaneder. Med SAP-skabelon: 1-3 maaneder',sd_lbl_minPerOrder:'Minutter sparet pr. ordre',sd_hint_minPerOrder:'Reduktion i manuel ordrebehandlingstid',sd_lbl_fteRate:'Arlig FTE-omkostning (DKK)',sd_lbl_inventoryValue:'Lagervaerdi hos 3PL (DKK)',sd_lbl_invCarrying:'Lagerholdningsomkostning pct pa',sd_lbl_invReduction:'Lagerreduktion fra bedre synlighed',sd_lbl_localErpCost:'Undgaaet lokalt ERP pr. selskab (DKK/ar)',sd_hint_localErpCost:'Arlig omkostning af lokale ERP-systemer hvert selskab undgaar',sd_s1_name:'Market entry-hastighed',sd_s2_name:'Order-to-Cash automatisering',sd_s3_name:'Reduktion af arbejdskapital',sd_s4_name:'Finansiel rapporteringseffektivitet',sd_s5_name:'Omkostningsundgaaelse (lokalt ERP)',sd_roi_h2:'Break-Even Analyse',sd_roi_p:'Modellaer den samlede SAP SD investering mod kumulative besparelser.',sd_roi_sec_license:'Arlige licensomkostninger',sd_roi_sdLicense:'SAP SD / S4HANA licens (DKK/ar)',sd_roi_sec_impl:'Implementeringsomkostning',sd_roi_impl_total:'Samlet implementeringsomkostning',sd_chart_sub:'DKK - Ar 0 til 5',sd_strat_eyebrow:'Ud over tallene',sd_strat_title:'Strategisk vaerdi',sd_strat_sub:'Disse fordele er svaere at kvantificere direkte, men er ofte afgoerende for ledelsens opbakning. Aktiver dem der er relevante for din case.',sd_strat_1_title:'Revisionsspor og compliance',sd_strat_1_desc:'Komplet digitalt revisionsspor for alle SD-transaktioner. Understotter SOX, IFRS og lokale compliance-krav.',sd_strat_2_title:'Funktionsadskillelse',sd_strat_2_desc:'Automatiserede SOD-kontroller sikrer korrekte godkendelsesworkflows og forebygger svindel pa tvaers af alle markeder.',sd_strat_3_title:'Investor- og M&A-parathed',sd_strat_3_desc:'Standardiserede processer og rene data accelererer due diligence markant for investorer eller opkoebere.',sd_strat_4_title:'Global processtandisering',sd_strat_4_desc:'En proces, et system, en sandhed. Ensartet kundeoplevelse og rapportering pa tvaers af alle markeder.',sd_strat_5_title:'Skalerbarhed uden headcount',sd_strat_5_desc:'Tilfoej nye salgsmarkeder uden forholdsmaessig oegning af backoffice-medarbejdere. Platformen skalerer — teamet behoever ikke.',sd_metric_fte:'FTE-timer frigjort',sd_metric_entry:'Selskaber accelereret',sd_lbl_margin:'Bidragsmargin (%)',sd_hint_margin:'Bruges til at beregne vaerdien af accelereret omsaetning fra hurtigere market entry',sd_lbl_monthEndHrs:'Timer sparet pr. maanedsafslutning',sd_hint_monthEndHrs:'Finanstimer sparet maanedligt fra standardiseret rapportering',sd_lbl_financeRate:'Finansteamet timesat (DKK/time)',month_label:'Måned',
 io_export_title:'Eksporter session',io_export_desc:'Download en JSON-fil med alle dine aktuelle parametre, besparelser, formler og indstillinger.',io_export_btn:'Download JSON',io_import_title:'Importer session',io_import_desc:'Gendan en tidligere eksporteret session. Træk en JSON-fil herunder eller klik for at gennemse.',io_drop_text:'Træk JSON-fil hertil',io_drop_or:'eller',io_drop_browse:'gennemse',io_reset_title:'Nulstil til standarder',io_reset_desc:'Fjern alle tilpasninger og gendan alle parametre, besparelser og formler til deres oprindelige værdier.',io_reset_btn:'Nulstil til standarder',io_reset_confirm:'Er du sikker? Alle tilpasninger vil blive permanent slettet.',io_reset_cancel:'Annuller',io_reset_go:'Ja, nulstil alt',
 col_parameter:'PARAMETER',col_unit:'ENHED',col_default:'STANDARD',
 param_view_for:'Vis parametre for:',param_follow_active:'— Følg aktiv branche —',param_no_ind:'Vælg en branche ovenfor for at se relevante parametre.',param_editing_for:'Redigerer standarder for:',param_active_lbl:'(aktiv)',
@@ -3446,15 +5526,33 @@ view_formula_for:'Vis formler for:'}
       },
       customSavings: {
         hr: JSON.parse(JSON.stringify(customSavings.hr)),
-        sc: JSON.parse(JSON.stringify(customSavings.sc))
+        sc: JSON.parse(JSON.stringify(customSavings.sc)),
+        sd: JSON.parse(JSON.stringify(customSavings.sd||[]))
       },
       hiddenSavings: {
         hr: JSON.parse(JSON.stringify(hiddenSavings.hr)),
-        sc: JSON.parse(JSON.stringify(hiddenSavings.sc))
+        sc: JSON.parse(JSON.stringify(hiddenSavings.sc)),
+        sd: JSON.parse(JSON.stringify(hiddenSavings.sd||{}))
       },
       formulaOverrides: {
         hr: JSON.parse(JSON.stringify(formulaOverrides.hr)),
-        sc: JSON.parse(JSON.stringify(formulaOverrides.sc))
+        sc: JSON.parse(JSON.stringify(formulaOverrides.sc)),
+        sd: JSON.parse(JSON.stringify(formulaOverrides.sd||{}))
+      },
+      ic: {
+        period: icPeriod,
+        duration: (function(){ var el=document.getElementById('ic-duration'); return el?parseInt(el.value)||2:2; })(),
+        phases: JSON.parse(JSON.stringify(icPhases)),
+        itResources: JSON.parse(JSON.stringify(icITResources)),
+        bizResources: JSON.parse(JSON.stringify(icBizResources)),
+        addCosts: JSON.parse(JSON.stringify(icAddCosts)),
+        sanityCategories: JSON.parse(JSON.stringify(icSanityCategories))
+      },
+      sd: {
+        params: JSON.parse(JSON.stringify(sdP)),
+        implCosts: JSON.parse(JSON.stringify(sdImplCosts)),
+        yearRange: sdYearRange,
+        licenseValue: (function(){ var el=document.getElementById('sd-roi-license'); return el?parseFloat(el.value)||4500000:4500000; })()
       }
     };
     var json = JSON.stringify(data, null, 2);
@@ -3524,6 +5622,7 @@ view_formula_for:'Vis formler for:'}
     if (data.customSavings) {
       customSavings.hr = data.customSavings.hr || [];
       customSavings.sc = data.customSavings.sc || [];
+      customSavings.sd = data.customSavings.sd || [];
       customSavings.hr.forEach(function(s) {
         if (!document.getElementById('custom-sbar-hr-' + s.id)) addCustomSavingBarToMain('hr', s);
       });
@@ -3535,10 +5634,12 @@ view_formula_for:'Vis formler for:'}
     if (data.hiddenSavings) {
       hiddenSavings.hr = data.hiddenSavings.hr || {};
       hiddenSavings.sc = data.hiddenSavings.sc || {};
+      hiddenSavings.sd = data.hiddenSavings.sd || {};
     }
     if (data.formulaOverrides) {
       formulaOverrides.hr = data.formulaOverrides.hr || {};
       formulaOverrides.sc = data.formulaOverrides.sc || {};
+      formulaOverrides.sd = data.formulaOverrides.sd || {};
     }
 
     // Sync main-view DOM sliders and inputs to restored p values
@@ -3569,6 +5670,42 @@ view_formula_for:'Vis formler for:'}
     renderParamEditor(currentParamArea || 'hr');
     renderSavingEditor(currentSavingArea || 'hr');
 
+    // Restore IC data
+    if(data.ic){
+      if(data.ic.period) icPeriod=data.ic.period;
+      if(data.ic.phases) icPhases=data.ic.phases;
+      if(data.ic.itResources) icITResources=data.ic.itResources;
+      if(data.ic.bizResources) icBizResources=data.ic.bizResources;
+      if(data.ic.addCosts) icAddCosts=data.ic.addCosts;
+      if(data.ic.sanityCategories) icSanityCategories=data.ic.sanityCategories;
+      if(data.ic.duration){var durEl=document.getElementById('ic-duration');if(durEl)durEl.value=data.ic.duration;}
+      var btnM=document.getElementById('ic-btn-months'),btnW=document.getElementById('ic-btn-weeks');
+      if(btnM)btnM.classList.toggle('active',icPeriod==='months');
+      if(btnW)btnW.classList.toggle('active',icPeriod==='weeks');
+      if(currentArea==='ic')icSetup();
+    }
+    // Restore IC data
+    if(data.ic){
+      if(data.ic.period) icPeriod=data.ic.period;
+      if(data.ic.phases) icPhases=data.ic.phases;
+      if(data.ic.itResources) icITResources=data.ic.itResources;
+      if(data.ic.bizResources) icBizResources=data.ic.bizResources;
+      if(data.ic.addCosts) icAddCosts=data.ic.addCosts;
+      if(data.ic.sanityCategories) icSanityCategories=data.ic.sanityCategories;
+      if(data.ic.duration){var durEl=document.getElementById('ic-duration');if(durEl)durEl.value=data.ic.duration;}
+      var btnM=document.getElementById('ic-btn-months'),btnW=document.getElementById('ic-btn-weeks');
+      if(btnM)btnM.classList.toggle('active',icPeriod==='months');
+      if(btnW)btnW.classList.toggle('active',icPeriod==='weeks');
+      if(currentArea==='ic')icSetup();
+    }
+    // Restore SD data
+    if(data.sd){
+      if(data.sd.params) Object.keys(data.sd.params).forEach(function(k){ if(k.charAt(0)!=='_') sdP[k]=data.sd.params[k]; });
+      if(data.sd.implCosts) sdImplCosts=data.sd.implCosts;
+      if(data.sd.yearRange) sdYearRange=data.sd.yearRange;
+      if(data.sd.licenseValue){var licEl=document.getElementById('sd-roi-license');if(licEl) licEl.value=data.sd.licenseValue;}
+      if(currentArea==='sd') sdInit();
+    }
     setImportStatus('Session restored successfully!', 'ok');
   }
 
@@ -3693,9 +5830,14 @@ view_formula_for:'Vis formler for:'}
     editingParam={area:null,id:null};
     document.getElementById('param-area-hr').style.display=area==='hr'?'':'none';
     document.getElementById('param-area-sc').style.display=area==='sc'?'':'none';
+    var sdPa=document.getElementById('param-area-sd');
+    if(sdPa) sdPa.style.display=area==='sd'?'':'none';
     document.getElementById('pat-hr').classList.toggle('active',area==='hr');
     document.getElementById('pat-sc').classList.toggle('active',area==='sc');
-    renderParamEditor(area);
+    var patSd=document.getElementById('pat-sd');
+    if(patSd) patSd.classList.toggle('active',area==='sd');
+    if(area==='sd') renderSDParamEditor();
+    else renderParamEditor(area);
   }
 
   function renderParamEditor(area){
@@ -4148,8 +6290,8 @@ view_formula_for:'Vis formler for:'}
     dmSetupReduction:'sc-sl-dmSetupRed'
   };
 
-  var hiddenSavings = { hr: {}, sc: {} };
-  var customSavings = { hr: [], sc: [] };
+  var hiddenSavings = { hr: {}, sc: {}, sd: {} };
+  var customSavings = { hr: [], sc: [], sd: [] };
   var currentSavingArea = 'hr';
 
   var builtInHRSavings = [
@@ -4179,13 +6321,39 @@ view_formula_for:'Vis formler for:'}
     {id:'dm_setup', label:'Setup time reduction',    color:'#5B5EA6', tier:4, industries:'pharma,food,discrete'}
   ];
 
+  var builtInSDSavings = [
+    {id:'sd_s1', label:'Market entry speed',             color:'#4A90D9', barId:'sd-s1-bar', amtId:'sd-s1-amt'},
+    {id:'sd_s2', label:'Order-to-Cash automation',       color:'#F07800', barId:'sd-s2-bar', amtId:'sd-s2-amt'},
+    {id:'sd_s3', label:'Working capital reduction',      color:'#30d158', barId:'sd-s3-bar', amtId:'sd-s3-amt'},
+    {id:'sd_s4', label:'Financial reporting efficiency', color:'#9b59b6', barId:'sd-s4-bar', amtId:'sd-s4-amt'},
+    {id:'sd_s5', label:'Cost avoidance (local ERP)',     color:'#e67e22', barId:'sd-s5-bar', amtId:'sd-s5-amt'}
+  ];
+
+
+  function renderSDSavings(container){
+    var html='<div class="saving-section-group"><div class="saving-section-group-header">SD &amp; Sales Savings</div>';
+    builtInSDSavings.forEach(function(s){
+      var hidden=hiddenSavings.sd[s.id];
+      html+=buildSavingRow(s.id,'sd',s.label,s.color,'SD',hidden,false);
+    });
+    html+='</div>';
+    (customSavings.sd||[]).forEach(function(s){
+      var hidden=hiddenSavings.sd[s.id];
+      html+=buildSavingRow(s.id,'sd',s.label,s.color,'Custom',hidden,true);
+    });
+    html+=buildAddSavingBtn('sd');
+    container.innerHTML=html;
+  }
+
   function showSavingArea(area){
     currentSavingArea=area;
     editingSaving={area:null,id:null};
     document.getElementById('saving-area-hr').style.display=area==='hr'?'':'none';
     document.getElementById('saving-area-sc').style.display=area==='sc'?'':'none';
+    var sdSa=document.getElementById('saving-area-sd'); if(sdSa) sdSa.style.display=area==='sd'?'':'none';
     document.getElementById('sat-hr').classList.toggle('active',area==='hr');
     document.getElementById('sat-sc').classList.toggle('active',area==='sc');
+    var satSd=document.getElementById('sat-sd'); if(satSd) satSd.classList.toggle('active',area==='sd');
     renderSavingEditor(area);
   }
 
@@ -4193,6 +6361,7 @@ view_formula_for:'Vis formler for:'}
     var container=document.getElementById('saving-area-'+area);
     if(!container)return;
     if(area==='hr') renderHRSavings(container);
+    else if(area==='sd') renderSDSavings(container);
     else renderSCSavings(container);
   }
 
@@ -4323,7 +6492,7 @@ view_formula_for:'Vis formler for:'}
     var newLabel = (document.getElementById('esf-label-'+area).value||'').trim();
     var newColor = document.getElementById('esf-color-'+area).value;
     // Update the saving array entry
-    var allSavings = (area==='hr' ? builtInHRSavings : builtInSCSavings).concat(customSavings[area]);
+    var allSavings = (area==='hr' ? builtInHRSavings : (area==='sd' ? builtInSDSavings : builtInSCSavings)).concat(customSavings[area]||[]);
     var saving = allSavings.find(function(s){ return s.id===id; });
     if(saving){
       if(newLabel) saving.label = newLabel;
@@ -4340,7 +6509,7 @@ view_formula_for:'Vis formler for:'}
     ];
     fills.forEach(function(el){ if(el) el.style.background = newColor; });
     // Update i18n dict for built-in
-    var i18nKey = area==='hr' ? (id+'_name') : ('sc_bar_'+id);
+    var i18nKey = area==='hr' ? (id+'_name') : (area==='sd' ? (id+'_name') : ('sc_bar_'+id));
     if(newLabel){
       ['en','da'].forEach(function(l){ if(translations[l] && translations[l][i18nKey]!==undefined) translations[l][i18nKey]=newLabel; });
     }
@@ -4594,7 +6763,8 @@ view_formula_for:'Vis formler for:'}
     'sc-t1': { costs: function(){ return t1ImplCosts; },  nYears: function(){ return scYearRange||5; }, redraw: function(){ if(typeof drawSCROIChart==='function')drawSCROIChart(); } },
     'sc-t2': { costs: function(){ return t2ImplCosts; },  nYears: function(){ return scYearRange||5; }, redraw: function(){ if(typeof drawSCROIChart==='function')drawSCROIChart(); } },
     'sc-t3': { costs: function(){ return t3ImplCosts; },  nYears: function(){ return scYearRange||5; }, redraw: function(){ if(typeof drawSCROIChart==='function')drawSCROIChart(); } },
-    'sc-t4': { costs: function(){ return t4ImplCosts; },  nYears: function(){ return scYearRange||5; }, redraw: function(){ if(typeof drawSCROIChart==='function')drawSCROIChart(); } }
+    'sc-t4': { costs: function(){ return t4ImplCosts; },  nYears: function(){ return scYearRange||5; }, redraw: function(){ if(typeof drawSCROIChart==='function')drawSCROIChart(); } },
+    'sd':    { costs: function(){ return sdImplCosts; },  nYears: function(){ return sdYearRange||5; }, redraw: function(){ if(typeof drawSDROIChart==='function')drawSDROIChart(); } }
   };
 
   function buildImplGrid(prefix) {
@@ -4696,12 +6866,38 @@ view_formula_for:'Vis formler for:'}
     dm_setup:     'dmSetupHrs * dmSetupCostPerHr * (dmSetupReduction/100)'
   };
 
-  var formulaOverrides = { hr: {}, sc: {} };
+  var builtInSDFormulas = {
+    sd_s1: 'entitiesPerYear * monthsSaved * avgRevenue * (margin/100)',
+    sd_s2: 'ordersPerYear * (minPerOrder / 60) * (fteRate / 1800)',
+    sd_s3: 'inventoryValue * (invCarrying/100) * (invReduction/100)',
+    sd_s4: 'monthEndHrs * 12 * financeRate',
+    sd_s5: 'entitiesPerYear * localErpCost'
+  };
+
+  var builtInSDParams = [
+    {id:'entities',        label:'Sales entities today',              unit:'',       section:'Company Profile'},
+    {id:'entitiesPerYear', label:'New entities per year',             unit:'',       section:'Company Profile'},
+    {id:'ordersPerYear',   label:'Orders per year',                   unit:'',       section:'Company Profile'},
+    {id:'avgRevenue',      label:'Avg monthly revenue per entity',    unit:'DKK',    section:'Company Profile'},
+    {id:'margin',          label:'Contribution margin',               unit:'%',      section:'Company Profile'},
+    {id:'monthsSaved',     label:'Months saved per market entry',     unit:'months', section:'Efficiency & Rates'},
+    {id:'minPerOrder',     label:'Minutes saved per order',           unit:'min',    section:'Efficiency & Rates'},
+    {id:'fteRate',         label:'FTE annual cost',                   unit:'DKK',    section:'Efficiency & Rates'},
+    {id:'inventoryValue',  label:'Inventory value at 3PL',            unit:'DKK',    section:'Efficiency & Rates'},
+    {id:'invCarrying',     label:'Carrying cost (% p.a.)',            unit:'%',      section:'Efficiency & Rates'},
+    {id:'invReduction',    label:'Inventory reduction',               unit:'%',      section:'Efficiency & Rates'},
+    {id:'localErpCost',    label:'Local ERP cost avoided per entity', unit:'DKK',    section:'Efficiency & Rates'},
+    {id:'monthEndHrs',     label:'Hours saved per month-end close',   unit:'hrs',    section:'Efficiency & Rates'},
+    {id:'financeRate',     label:'Finance team hourly rate',          unit:'DKK/hr', section:'Efficiency & Rates'}
+  ];
+
+  var formulaOverrides = { hr: {}, sc: {}, sd: {} };
   var currentFormulaArea = 'hr';
   var currentFormulaSaving = null;
 
   function buildFormulaContext(area) {
     var ctx = {};
+    if(area==='sd'){ Object.keys(sdP).forEach(function(k){ if(k.charAt(0)!=='_') ctx[k]=sdP[k]; }); return ctx; }
     var params = area === 'hr' ? builtInHRParams.concat(customParams.hr) : builtInSCParams.concat(customParams.sc);
     var state = area === 'hr' ? p : scP;
     // For SC formula preview: if a view industry is selected that differs from active, use its defaults
@@ -4730,10 +6926,12 @@ view_formula_for:'Vis formler for:'}
   }
 
   function getAllSavings(area) {
+    if(area==='sd') return builtInSDSavings.concat(customSavings.sd||[]);
     return area === 'hr' ? builtInHRSavings.concat(customSavings.hr) : builtInSCSavings.concat(customSavings.sc);
   }
 
   function isBuiltInSaving(area, id) {
+    if(area==='sd') return builtInSDSavings.some(function(s){return s.id===id;});
     return area === 'hr'
       ? builtInHRSavings.some(function(s) { return s.id === id; })
       : builtInSCSavings.some(function(s) { return s.id === id; });
@@ -4744,8 +6942,10 @@ view_formula_for:'Vis formler for:'}
     currentFormulaSaving = null;
     document.getElementById('fb-hr').style.display = area === 'hr' ? '' : 'none';
     document.getElementById('fb-sc').style.display = area === 'sc' ? '' : 'none';
+    var fbSd=document.getElementById('fb-sd'); if(fbSd) fbSd.style.display = area === 'sd' ? '' : 'none';
     document.getElementById('fbt-hr').classList.toggle('active', area === 'hr');
     document.getElementById('fbt-sc').classList.toggle('active', area === 'sc');
+    var fbtSd=document.getElementById('fbt-sd'); if(fbtSd) fbtSd.classList.toggle('active', area === 'sd');
     renderFormulaList(area);
   }
 
@@ -4793,13 +6993,13 @@ view_formula_for:'Vis formler for:'}
     if (!saving) return '';
     var isCustom = !isBuiltInSaving(area, id);
     var hasOverride = formulaOverrides[area][id] !== undefined;
-    var builtInFormulas = area === 'hr' ? builtInHRFormulas : builtInSCFormulas;
+    var builtInFormulas = area === 'hr' ? builtInHRFormulas : (area === 'sd' ? builtInSDFormulas : builtInSCFormulas);
     var currentExpr = hasOverride
       ? formulaOverrides[area][id]
       : (isCustom && saving.formulaExpr && saving.formulaExpr !== '0'
           ? saving.formulaExpr
           : (builtInFormulas[id] || ''));
-    var params = area === 'hr' ? builtInHRParams.concat(customParams.hr) : builtInSCParams.concat(customParams.sc);
+    var params = area === 'hr' ? builtInHRParams.concat(customParams.hr) : (area === 'sd' ? builtInSDParams.concat(customParams.sd||[]) : builtInSCParams.concat(customParams.sc));
     var sections = {}, sectionOrder = [];
     params.forEach(function(param) {
       var sec = param.section || 'Other';
@@ -4905,7 +7105,7 @@ view_formula_for:'Vis formler for:'}
         if (row) row.setAttribute('data-sc-ind', newInds);
       }
     }
-    if (currentFormulaArea === 'hr') recalculate(); else scRecalculate();
+    if (currentFormulaArea === 'hr') recalculate(); else if (currentFormulaArea === 'sd') sdRecalculate(); else scRecalculate();
     renderFormulaList(currentFormulaArea);
     var btn = document.getElementById('fb-save-btn');
     if (btn) {
@@ -4919,7 +7119,7 @@ view_formula_for:'Vis formler for:'}
     delete formulaOverrides[currentFormulaArea][currentFormulaSaving];
     var custom = customSavings[currentFormulaArea].find(function(s){ return s.id === currentFormulaSaving; });
     if (custom) { custom.formulaExpr = '0'; custom.value = 0; }
-    if (currentFormulaArea === 'hr') recalculate(); else scRecalculate();
+    if (currentFormulaArea === 'hr') recalculate(); else if (currentFormulaArea === 'sd') sdRecalculate(); else scRecalculate();
     renderFormulaList(currentFormulaArea);
   }
 
@@ -4958,9 +7158,11 @@ view_formula_for:'Vis formler for:'}
           <div class="param-area-tabs">
             <button class="param-area-tab active" id="pat-hr" onclick="showParamArea('hr')">HR &amp; Recruitment</button>
             <button class="param-area-tab" id="pat-sc" onclick="showParamArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="pat-sd" onclick="showParamArea('sd')">SD &amp; Sales</button>
           </div>
           <div id="param-area-hr"></div>
           <div id="param-area-sc" style="display:none"></div>
+          <div id="param-area-sd" style="display:none"></div>
         </div>
         <div class="settings-panel" id="stab-savings">
           <div class="settings-panel-title" data-i18n="set_savings_title">Savings Editor</div>
@@ -4968,9 +7170,11 @@ view_formula_for:'Vis formler for:'}
           <div class="param-area-tabs">
             <button class="param-area-tab active" id="sat-hr" onclick="showSavingArea('hr')">HR &amp; Recruitment</button>
             <button class="param-area-tab" id="sat-sc" onclick="showSavingArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="sat-sd" onclick="showSavingArea('sd')">SD &amp; Sales</button>
           </div>
           <div id="saving-area-hr"></div>
           <div id="saving-area-sc" style="display:none"></div>
+          <div id="saving-area-sd" style="display:none"></div>
         </div>
         <div class="settings-panel" id="stab-formulas">
           <div class="settings-panel-title" data-i18n="set_formulas_title">Formula Builder</div>
@@ -4978,9 +7182,11 @@ view_formula_for:'Vis formler for:'}
           <div class="param-area-tabs">
             <button class="param-area-tab active" id="fbt-hr" onclick="showFormulaArea('hr')">HR &amp; Recruitment</button>
             <button class="param-area-tab" id="fbt-sc" onclick="showFormulaArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="fbt-sd" onclick="showFormulaArea('sd')">SD &amp; Sales</button>
           </div>
           <div id="fb-hr"></div>
           <div id="fb-sc" style="display:none"></div>
+          <div id="fb-sd" style="display:none"></div>
         </div>
         <div class="settings-panel" id="stab-io">
           <div class="settings-panel-title" data-i18n="set_io_title">Import / Export</div>
@@ -5009,17 +7215,4 @@ view_formula_for:'Vis formler for:'}
               <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
                 <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
                 <div style="display:flex;gap:8px">
-                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
-                  <button class="io-reset-go-btn" onclick="resetToDefaults()" data-i18n="io_reset_go">Yes, reset everything</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+                  <button class="btn-cancel-param" onclick="document.getElementById('io-rese
