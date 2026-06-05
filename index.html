@@ -939,6 +939,13 @@
       from { transform: translateX(60px); opacity: 0; }
       to   { transform: translateX(0);    opacity: 1; }
     }
+    @keyframes moduleEnter {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .module-enter {
+      animation: moduleEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
     .settings-topbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 20px 28px 18px;
@@ -3022,18 +3029,33 @@
 
   function selectArea(a){
     currentArea=a;
-    // Hide landing, show tabs
-    document.getElementById('landing-section').style.display='none';
-    document.getElementById('area-tabs-bar').style.display='';
-    document.getElementById('hr-section').style.display=a==='hr'?'':'none';
-    document.getElementById('sc-section').style.display=a==='sc'?'':'none';
-    document.getElementById('sc-roi-section').style.display=a==='sc'?'':'none';
-    document.getElementById('tab-hr').classList.toggle('active',a==='hr');
-    document.getElementById('tab-sc').classList.toggle('active',a==='sc');
-    if(a==='hr'){recalculate(); setTimeout(drawROIChart,50);}
-    if(a==='sc'&&!currentIndustry) showIndustryModal();
-    if(a==='sc'&&currentIndustry) setTimeout(drawSCROIChart,50);
-    window.scrollTo({top:0, behavior:'smooth'});
+    var landing = document.getElementById('landing-section');
+    // Fade landing out, then show module
+    landing.style.transition = 'opacity 0.2s ease';
+    landing.style.opacity = '0';
+    setTimeout(function(){
+      landing.style.display = 'none';
+      landing.style.opacity = '';
+      landing.style.transition = '';
+      document.getElementById('area-tabs-bar').style.display='';
+      var hrEl = document.getElementById('hr-section');
+      var scEl = document.getElementById('sc-section');
+      var scRoiEl = document.getElementById('sc-roi-section');
+      hrEl.style.display = a==='hr' ? '' : 'none';
+      scEl.style.display = a==='sc' ? '' : 'none';
+      if(scRoiEl) scRoiEl.style.display = a==='sc' ? '' : 'none';
+      // Trigger fade+slide animation on the active section
+      var activeEl = a==='hr' ? hrEl : scEl;
+      activeEl.classList.remove('module-enter');
+      void activeEl.offsetWidth; // force reflow
+      activeEl.classList.add('module-enter');
+      document.getElementById('tab-hr').classList.toggle('active',a==='hr');
+      document.getElementById('tab-sc').classList.toggle('active',a==='sc');
+      if(a==='hr'){recalculate(); setTimeout(drawROIChart,50);}
+      if(a==='sc'&&!currentIndustry) showIndustryModal();
+      if(a==='sc'&&currentIndustry) setTimeout(drawSCROIChart,50);
+      window.scrollTo({top:0, behavior:'instant'});
+    }, 200);
   }
 
   function showIndustryModal(){document.getElementById('industry-modal').style.display='flex';}
@@ -4976,20 +4998,4 @@ view_formula_for:'Vis formler for:'}
             <div class="io-card io-card-reset">
               <div class="io-card-header"><span class="io-card-icon">🔄</span><span class="io-card-title" data-i18n="io_reset_title">Reset to defaults</span></div>
               <div class="io-card-desc" data-i18n="io_reset_desc">Remove all customisations and restore every parameter, saving, and formula to its original value.</div>
-              <button class="io-reset-btn" id="io-reset-btn" onclick="document.getElementById('io-reset-confirm').style.display='block';this.style.display='none'" data-i18n="io_reset_btn">Reset to defaults</button>
-              <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
-                <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
-                <div style="display:flex;gap:8px">
-                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
-                  <button class="io-reset-go-btn" onclick="resetToDefaults()" data-i18n="io_reset_go">Yes, reset everything</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<
+              <button class="io-reset-btn" id="io-reset-btn" onclick="document.getElementById('io-reset-confirm').style.display='block';this.style.display='none
