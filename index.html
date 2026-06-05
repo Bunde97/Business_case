@@ -5004,4 +5004,22 @@ view_formula_for:'Vis formler for:'}
             </div>
             <div class="io-card io-card-reset">
               <div class="io-card-header"><span class="io-card-icon">🔄</span><span class="io-card-title" data-i18n="io_reset_title">Reset to defaults</span></div>
-              <div class="io-card-desc" data-i18n="io_reset_desc">Remove all customisations and restore every
+              <div class="io-card-desc" data-i18n="io_reset_desc"> parameter, saving, and formula to its original value.</div>
+              <button class="io-reset-btn" id="io-reset-btn" onclick="document.getElementById('io-reset-confirm').style.display='block';this.style.display='none'" data-i18n="io_reset_btn">Reset to defaults</button>
+              <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
+                <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
+                <div style="display:flex;gap:8px">
+                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
+                  <button class="io-reset-go-btn" onclick="resetToDefaults()" data-i18n="io_reset_go">Yes, reset everything</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
