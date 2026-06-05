@@ -933,7 +933,7 @@
       background: #fff;
       display: flex; flex-direction: column;
       box-shadow: -8px 0 40px rgba(0,0,0,0.15);
-      animation: slideInRight 0.22s cubic-bezier(0.4,0,0.2,1);
+      animation: slideInRight 0.42s cubic-bezier(0.22,1,0.36,1);
     }
     @keyframes slideInRight {
       from { transform: translateX(60px); opacity: 0; }
@@ -3070,6 +3070,13 @@
     document.getElementById('sc-ind-name').textContent=m[currentLang]||m.en;
     loadSCDefaults(ind);
     selectTier(1);
+    // Animate SC section in
+    var scEl = document.getElementById('sc-section');
+    if(scEl){
+      scEl.classList.remove('module-enter');
+      void scEl.offsetWidth;
+      scEl.classList.add('module-enter');
+    }
     // If settings overlay is open on SC params, refresh immediately
     var overlay=document.getElementById('settings-overlay');
     if(overlay && overlay.style.display!=='none' && currentParamArea==='sc'){
@@ -4997,5 +5004,4 @@ view_formula_for:'Vis formler for:'}
             </div>
             <div class="io-card io-card-reset">
               <div class="io-card-header"><span class="io-card-icon">🔄</span><span class="io-card-title" data-i18n="io_reset_title">Reset to defaults</span></div>
-              <div class="io-card-desc" data-i18n="io_reset_desc">Remove all customisations and restore every parameter, saving, and formula to its original value.</div>
-              <button class="io-reset-btn" id="io-reset-btn" onclick="document.getElementById('io-reset-confirm').style.display='block';this.style.display='none
+              <div class="io-card-desc" data-i18n="io_reset_desc">Remove all customisations and restore every
