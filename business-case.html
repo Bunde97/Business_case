@@ -8346,4 +8346,170 @@ view_formula_for:'Vis formler for:'}
       + '<div class="fb-preview" id="fb-prev-' + area + '">' + renderFBPreview(area, currentExpr) + '</div>'
       + '<div class="fb-actions">'
       + ((hasOverride || isCustom) ? '<button class="fb-btn-reset" onclick="fbReset()">↺ '+(currentLang==='da'?'Nulstil':'Reset')+'</button>' : '')
-      + '<button class="fb-btn-save" id="fb-save-btn" onclick="fbSave()">'+(currentLan
+      + '<button class="fb-btn-save" id="fb-save-btn" onclick="fbSave()">'+(currentLang==='da'?'Gem formel':'Save formula')+'</button>'
+      + '</div>';
+  }
+
+  function renderFBPreview(area, expr) {
+    if (!expr || expr.trim() === '') return '<span class="fb-prev-hint">'+t('fb_err_preview')+'</span>';
+    var val = evalFormula(expr, area);
+    if (isNaN(val)) return '<span class="fb-prev-err">'+t('fb_err_syntax')+'</span>';
+    return '<span class="fb-prev-ok">≈ ' + fmtDKK(Math.max(0, val)) + ' / year</span>';
+  }
+
+  function selectFormulaSaving(area, id) { currentFormulaSaving = id; renderFormulaList(area); }
+
+  function fbGetInput() { return currentFormulaSaving ? document.getElementById('fb-inp-' + currentFormulaArea) : null; }
+  function fbInsert(token) { var inp = fbGetInput(); if (!inp) return; var s = inp.selectionStart, e = inp.selectionEnd; inp.value = inp.value.slice(0, s) + token + inp.value.slice(e); inp.selectionStart = inp.selectionEnd = s + token.length; inp.focus(); fbPreview(); }
+  function fbBackspace() { var inp = fbGetInput(); if (!inp) return; var s = inp.selectionStart, e = inp.selectionEnd; if (s !== e) { inp.value = inp.value.slice(0, s) + inp.value.slice(e); inp.selectionStart = inp.selectionEnd = s; } else if (s > 0) { inp.value = inp.value.slice(0, s-1) + inp.value.slice(s); inp.selectionStart = inp.selectionEnd = s-1; } inp.focus(); fbPreview(); }
+  function fbClear() { var inp = fbGetInput(); if (!inp) return; inp.value = ''; inp.focus(); fbPreview(); }
+  function fbPreview() { var inp = fbGetInput(); if (!inp) return; var el = document.getElementById('fb-prev-' + currentFormulaArea); if (el) el.innerHTML = renderFBPreview(currentFormulaArea, inp.value); }
+
+  function fbSave() {
+    var inp = fbGetInput();
+    if (!inp || !currentFormulaSaving) return;
+    var expr = inp.value.trim();
+    if (expr !== '') { var v = evalFormula(expr, currentFormulaArea); if (isNaN(v)) { alert('Formula has an error. Check the syntax before saving.'); return; } }
+    if (expr === '') { delete formulaOverrides[currentFormulaArea][currentFormulaSaving]; }
+    else {
+      formulaOverrides[currentFormulaArea][currentFormulaSaving] = expr;
+      var custom = customBenefits[currentFormulaArea].find(function(s){ return s.id === currentFormulaSaving; });
+      if (custom) custom.formulaExpr = expr;
+    }
+    if (currentFormulaArea === 'sc') {
+      var indInp = document.getElementById('fb-ind-sc');
+      if (indInp) { var newInds = indInp.value || 'all'; var allSavs = builtInSCBenefits.concat(customBenefits.sc); var sav = allSavs.find(function(s){ return s.id === currentFormulaSaving; }); if (sav) sav.industries = newInds; var row = document.getElementById('srow-sc-'+currentFormulaSaving); if (row) row.setAttribute('data-sc-ind', newInds); }
+    }
+    if (currentFormulaArea === 'hr') recalculate(); else if (currentFormulaArea === 'sd') sdRecalculate(); else scRecalculate();
+    renderFormulaList(currentFormulaArea);
+    var btn = document.getElementById('fb-save-btn');
+    if (btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#30d158'; setTimeout(function(){ if(btn){ btn.textContent=(currentLang==='da'?'Gem formel':'Save formula'); btn.style.background=''; } }, 1500); }
+  }
+
+  function fbReset() {
+    if (!currentFormulaSaving) return;
+    delete formulaOverrides[currentFormulaArea][currentFormulaSaving];
+    var custom = customBenefits[currentFormulaArea].find(function(s){ return s.id === currentFormulaSaving; });
+    if (custom) { custom.formulaExpr = '0'; custom.value = 0; }
+    if (currentFormulaArea === 'hr') recalculate(); else if (currentFormulaArea === 'sd') sdRecalculate(); else scRecalculate();
+    renderFormulaList(currentFormulaArea);
+  }
+
+
+
+
+  var _origShowSettingsTab = showSettingsTab;
+  showSettingsTab = function(tab) {
+    _origShowSettingsTab(tab);
+    if (tab === 'formulas') { currentFormulaSaving = null; showFormulaArea(currentFormulaArea || 'hr'); }
+    // When leaving Import/Export tab, reset the confirm box back to default state
+    if (tab !== 'io') {
+      var conf = document.getElementById('io-reset-confirm');
+      var btn  = document.getElementById('io-reset-btn');
+      if (conf) conf.style.display = 'none';
+      if (btn)  btn.style.display  = 'inline-flex';
+    }
+  };
+
+</script>
+
+<div id="settings-overlay" class="settings-overlay" style="display:none" onclick="if(event.target===this)closeSettings()">
+  <div class="settings-shell">
+    <div class="settings-topbar">
+      <div class="settings-topbar-left">
+        <span class="settings-topbar-icon">⚙️</span>
+        <div>
+          <div class="settings-topbar-title" data-i18n="set_title">Customise</div>
+          <div class="settings-topbar-sub" data-i18n="set_sub">Parameters, benefits &amp; formulas</div>
+        </div>
+      </div>
+      <button class="settings-close-btn" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-sidebar">
+        <button class="settings-nav-btn active" id="snav-parameters" onclick="showSettingsTab('parameters')"><span class="settings-nav-icon">🎛</span><span data-i18n="set_tab_params">Parameters</span></button>
+        <button class="settings-nav-btn" id="snav-savings" onclick="showSettingsTab('savings')"><span class="settings-nav-icon">📊</span><span data-i18n="set_tab_savings">Benefits</span></button>
+        <button class="settings-nav-btn" id="snav-formulas" onclick="showSettingsTab('formulas')"><span class="settings-nav-icon">🔢</span><span data-i18n="set_tab_formulas">Formulas</span></button>
+        <button class="settings-nav-btn" id="snav-io" onclick="showSettingsTab('io')"><span class="settings-nav-icon">💾</span><span data-i18n="set_tab_io">Import / Export</span></button>
+      </div>
+      <div class="settings-content">
+        <div class="settings-panel active" id="stab-parameters">
+          <div class="settings-panel-title" data-i18n="set_params_title">Parameter Editor</div>
+          <div class="settings-panel-sub" data-i18n="set_params_subView and edit all parameters. Built-in parameters show their defaults; custom parameters can be fully edited or removed.</div>
+          <div class="param-area-tabs">
+            <button class="param-area-tab active" id="pat-hr" onclick="showParamArea('hr')">HR &amp; Recruitment</button>
+            <button class="param-area-tab" id="pat-sc" onclick="showParamArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="pat-sd" onclick="showParamArea('sd')">SD &amp; Sales</button>
+          </div>
+          <div id="param-area-hr"></div>
+          <div id="param-area-sc" style="display:none"></div>
+          <div id="param-area-sd" style="display:none"></div>
+        </div>
+        <div class="settings-panel" id="stab-savings">
+          <div class="settings-panel-title" data-i18n="set_savings_title">Benefits Editor</div>
+          <div class="settings-panel-sub" data-i18n="set_savings_sub">View, add or edit benefit categories. Each benefit bar can be renamed or have its formula changed.</div>
+          <div class="param-area-tabs">
+            <button class="param-area-tab active" id="sat-hr" onclick="showSavingArea('hr')">HR &amp; Recruitment</button>
+            <button class="param-area-tab" id="sat-sc" onclick="showSavingArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="sat-sd" onclick="showSavingArea('sd')">SD &amp; Sales</button>
+          </div>
+          <div id="saving-area-hr"></div>
+          <div id="saving-area-sc" style="display:none"></div>
+          <div id="saving-area-sd" style="display:none"></div>
+        </div>
+        <div class="settings-panel" id="stab-formulas">
+          <div class="settings-panel-title" data-i18n="set_formulas_title">Formula Builder</div>
+          <div class="settings-panel-sub" data-i18n="set_formulas_sub">Click a parameter to insert it into a formula. Use operator buttons to build expressions.</div>
+          <div class="param-area-tabs">
+            <button class="param-area-tab active" id="fbt-hr" onclick="showFormulaArea('hr')">HR &amp; Recruitment</button>
+            <button class="param-area-tab" id="fbt-sc" onclick="showFormulaArea('sc')">Supply Chain</button>
+            <button class="param-area-tab" id="fbt-sd" onclick="showFormulaArea('sd')">SD &amp; Sales</button>
+          </div>
+          <div id="fb-hr"></div>
+          <div id="fb-sc" style="display:none"></div>
+          <div id="fb-sd" style="display:none"></div>
+        </div>
+        <div class="settings-panel" id="stab-io">
+          <div class="settings-panel-title" data-i18n="set_io_title">Import / Export</div>
+          <div class="settings-panel-sub" data-i18n="set_io_sub">Export all customisations to a JSON file to save your session, then import it later to restore everything.</div>
+          <div class="io-cards">
+            <div class="io-card">
+              <div class="io-card-header"><span class="io-card-icon">&#128228;</span><span class="io-card-title" data-i18n="io_export_title">Export session</span></div>
+              <div class="io-card-desc" data-i18n="io_export_desc">Download a JSON file with all your current parameters, benefits, formulas and settings.</div>
+              <button class="btn-save-param" onclick="exportConfig()" style="margin-bottom:8px" data-i18n="io_export_btn">Download JSON</button>
+              <div class="io-last-saved" id="io-last-saved"></div>
+            </div>
+            <div class="io-card">
+              <div class="io-card-header"><span class="io-card-icon">&#128229;</span><span class="io-card-title" data-i18n="io_import_title">Import session</span></div>
+              <div class="io-card-desc" data-i18n="io_import_desc">Restore a previously exported session. Drag a JSON file below or click to browse.</div>
+              <div class="io-dropzone" ondragover="this.classList.add('drag-over');event.preventDefault()" ondragleave="this.classList.remove('drag-over')" ondrop="this.classList.remove('drag-over');handleImportDrop(event)">
+                <div class="io-dropzone-icon">&#128194;</div>
+                <div class="io-dropzone-text" data-i18n="io_drop_text">Drop JSON file here</div>
+                <div class="io-dropzone-hint"><span data-i18n="io_drop_or">or</span> <label style="color:var(--accent);cursor:pointer;text-decoration:underline"><span data-i18n="io_drop_browse">browse</span><input type="file" accept=".json" style="display:none" onchange="importSettings(event)"></label></div>
+              </div>
+              <div class="io-status" id="io-import-status"></div>
+            </div>
+            <div class="io-card io-card-reset">
+              <div class="io-card-header"><span class="io-card-icon">&#128260;</span><span class="io-card-title" data-i18n="io_reset_title">Reset to defaults</span></div>
+              <div class="io-card-desc" data-i18n="io_reset_desc">Remove all customisations and restore every parameter, benefit, and formula to its original value.</div>
+              <button class="io-reset-btn" id="io-reset-btn" onclick="document.getElementById('io-reset-confirm').style.display='block';this.style.display='none'" data-i18n="io_reset_btn">Reset to defaults</button>
+              <div class="io-reset-confirm" id="io-reset-confirm" style="display:none">
+                <p style="font-size:13px;margin-bottom:10px" data-i18n="io_reset_confirm">Are you sure? All customisations will be permanently lost.</p>
+                <div style="display:flex;gap:8px">
+                  <button class="btn-cancel-param" onclick="document.getElementById('io-reset-confirm').style.display='none';document.getElementById('io-reset-btn').style.display='inline-flex'" data-i18n="io_reset_cancel">Cancel</button>
+                  <button class="io-reset-go-btn" onclick="showResetToast();resetToDefaults();" data-i18n="io_reset_go">Yes, reset everything</button>
+                </div>
+              </div>
+              <div id="io-reset-status" style="display:none;margin-top:10px;font-size:13px;color:#30d158;font-weight:600;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="reset-toast"></div>
+
+</body>
+</html>
