@@ -3245,14 +3245,7 @@
               <input type="range" class="dark-range" id="sl-sapIT" min="0" max="5000000" step="50000" value="700000">
               <div class="roi-hint" data-i18n="roi_sapIT_hint">Annual benefit from reduced SAP HR IT staffing</div>
             </div>
-            <div class="roi-slider-row">
-              <div class="roi-slider-top">
-                <span class="roi-slider-label" data-i18n="roi_hrServiceEff">HR Service team efficiency</span>
-                <span class="roi-slider-value" id="disp-hrServiceEff">DKK 330.000</span>
-              </div>
-              <input type="range" class="dark-range" id="sl-hrServiceEff" min="0" max="2000000" step="10000" value="330000">
-              <div class="roi-hint" data-i18n="roi_hrServiceEff_hint">Effektivisering HR Serviceteam (from separate sheet, row 8)</div>
-            </div>
+
             <div class="roi-slider-row">
               <div class="roi-slider-top">
                 <span class="roi-slider-label" data-i18n="roi_dataSave">Data transparency savings</span>
@@ -3328,7 +3321,6 @@
     sfEC: 3450000,
     sfOnb: 502000,
     sapIT: 700000,
-    hrServiceEff: 330000,
     dataSave: 0
   };
 
@@ -3347,7 +3339,7 @@
     const r = calculate();
     const annualLicense = roi.sfEC + roi.sfOnb;
     const hrBase = (typeof getHRBenefitsTotal === 'function') ? getHRBenefitsTotal() : (r.s1 + r.s2 + r.s3 + r.s4 + r.s5);
-    const annualBenefits = hrBase + roi.sapIT + roi.hrServiceEff + roi.dataSave;
+    const annualBenefits = hrBase + roi.sapIT + roi.dataSave;
 
     const cumInvest = [0];
     const cumBenefits = [0];
@@ -3437,9 +3429,8 @@
   });
 
   [
-    { id: 'sl-sapIT',        key: 'sapIT',        dispId: 'disp-sapIT' },
-    { id: 'sl-hrServiceEff', key: 'hrServiceEff', dispId: 'disp-hrServiceEff' },
-    { id: 'sl-dataSave',     key: 'dataSave',     dispId: 'disp-dataSave' }
+    { id: 'sl-sapIT',    key: 'sapIT',    dispId: 'disp-sapIT' },
+    { id: 'sl-dataSave', key: 'dataSave', dispId: 'disp-dataSave' }
   ].forEach(({ id, key, dispId }) => {
     document.getElementById(id).addEventListener('input', e => {
       roi[key] = parseDKK(e.target.value);
@@ -3499,7 +3490,7 @@
 
   const dkkFmt = v => 'DKK ' + Math.round(v).toLocaleString('da-DK');
   makeEditable('disp-sapIT',        'sl-sapIT',        'roi.sapIT',        v => Math.round(parseFloat(v)), dkkFmt, 0, 10000000, true);
-  makeEditable('disp-hrServiceEff', 'sl-hrServiceEff', 'roi.hrServiceEff', v => Math.round(parseFloat(v)), dkkFmt, 0, 5000000,  true);
+
   makeEditable('disp-dataSave',     'sl-dataSave',     'roi.dataSave',     v => Math.round(parseFloat(v)), dkkFmt, 0, 10000000, true);
 
   window.addEventListener('resize', drawROIChart);
@@ -8512,4 +8503,4 @@ view_formula_for:'Vis formler for:'}
 <div id="reset-toast"></div>
 
 </body>
-</html>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
