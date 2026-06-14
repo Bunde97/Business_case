@@ -5165,7 +5165,7 @@
     var hidden = document.body.classList.contains('hide-contingency');
     var icon = document.getElementById('contingency-toggle-icon');
     var label = document.getElementById('contingency-toggle-label');
-    if (icon) icon.textContent = hidden ? '🙈' : '👁';
+    if (icon) icon.textContent = hidden ? '🚫' : '👁';
     if (label) {
       var key = hidden ? 'set_tab_contingency_show' : 'set_tab_contingency_hide';
       label.setAttribute('data-i18n', key);
