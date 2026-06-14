@@ -9029,25 +9029,29 @@ view_formula_for:'Vis formler for:'}
   }
 
 
+  // Maps builtInSDParams ids to their slider element id suffix, for the
+  // cases where the param id doesn't match the slider id directly.
+  var sdSliderIdMap = { ordersPerEntity: 'OrdersPerYear' };
+  function sdSliderId(id) {
+    var suffix = sdSliderIdMap[id] || (id.charAt(0).toUpperCase() + id.slice(1));
+    return 'sl-sd' + suffix;
+  }
   function updateBuiltInSD(id, field, val) {
     var v = parseFloat(val);
     var param = builtInSDParams.find(function(x){ return x.id===id; });
     if (!param) return;
     if (field === 'default') {
       sdP[id] = v; param.defaultVal = v;
-      var capId = id.charAt(0).toUpperCase() + id.slice(1);
-      var sl = document.getElementById('sl-sd' + capId);
+      var sl = document.getElementById(sdSliderId(id));
       if (sl) { sl.value = v; sl.dispatchEvent(new Event('input')); }
       sdRecalculate();
     } else if (field === 'min') {
       param.min = v;
-      var capId = id.charAt(0).toUpperCase() + id.slice(1);
-      var sl = document.getElementById('sl-sd' + capId);
+      var sl = document.getElementById(sdSliderId(id));
       if (sl) sl.min = v;
     } else if (field === 'max') {
       param.max = v;
-      var capId = id.charAt(0).toUpperCase() + id.slice(1);
-      var sl = document.getElementById('sl-sd' + capId);
+      var sl = document.getElementById(sdSliderId(id));
       if (sl) sl.max = v;
     }
   }
