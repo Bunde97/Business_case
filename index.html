@@ -8327,6 +8327,7 @@ view_formula_for:'Vis formler for:'}
         sd: JSON.parse(JSON.stringify(formulaOverrides.sd||{}))
       },
       ic: icPtSnapshot(),
+      icProjectType: icProjectType,
       sd: {
         params: JSON.parse(JSON.stringify(sdP)),
         implCosts: JSON.parse(JSON.stringify(sdImplCosts)),
@@ -8464,6 +8465,18 @@ view_formula_for:'Vis formler for:'}
       if(data.ic.sanityCategories!==undefined) icSnap.sanityCats = data.ic.sanityCategories;
       icPtApply(icSnap);
       icRenderCostChart();
+    }
+    // Restore Project type selector (HR & Recruitment vs SAP Commercial Expansion Program)
+    if(data.icProjectType && (data.icProjectType==='hr' || data.icProjectType==='sd')){
+      icProjectType = data.icProjectType;
+      var ptLbl = document.getElementById('ic-ptype-label');
+      var ptNames = {hr:(currentLang==='da'?'HR &amp; Rekruttering':'HR &amp; Recruitment'), sd:'SAP Commercial Expansion Program'};
+      if (ptLbl) { ptLbl.setAttribute('data-i18n', icProjectType==='hr'?'area_hr':'area_sd'); ptLbl.innerHTML = ptNames[icProjectType]; }
+      var ptMenu = document.getElementById('ic-ptype-menu');
+      if (ptMenu) ptMenu.querySelectorAll('.ic-custom-select-opt').forEach(function(o){
+        o.classList.toggle('selected', (o.getAttribute('onclick')||'').indexOf("'"+icProjectType+"'") !== -1);
+      });
+      if(typeof icSyncImplCosts==='function') icSyncImplCosts();
     }
     // Restore SD data
     if(data.sd){
