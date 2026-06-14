@@ -8326,15 +8326,7 @@ view_formula_for:'Vis formler for:'}
         sc: JSON.parse(JSON.stringify(formulaOverrides.sc)),
         sd: JSON.parse(JSON.stringify(formulaOverrides.sd||{}))
       },
-      ic: {
-        period: icPeriod,
-        duration: (function(){ var el=document.getElementById('ic-duration'); return el?parseInt(el.value)||2:2; })(),
-        phases: JSON.parse(JSON.stringify(icPhases)),
-        itResources: JSON.parse(JSON.stringify(icITResources)),
-        bizResources: JSON.parse(JSON.stringify(icBizResources)),
-        addCosts: JSON.parse(JSON.stringify(icAddCosts)),
-        sanityCategories: JSON.parse(JSON.stringify(icSanityCategories))
-      },
+      ic: icPtSnapshot(),
       sd: {
         params: JSON.parse(JSON.stringify(sdP)),
         implCosts: JSON.parse(JSON.stringify(sdImplCosts)),
@@ -8461,33 +8453,17 @@ view_formula_for:'Vis formler for:'}
     renderParamEditor(currentParamArea || 'hr');
     renderSavingEditor(currentSavingArea || 'hr');
 
-    // Restore IC data
+    // Restore IC data (groups, phases, resources, dates, contingency, etc.)
     if(data.ic){
-      if(data.ic.period) icPeriod=data.ic.period;
-      if(data.ic.phases) icPhases=data.ic.phases;
-      if(data.ic.itResources) icITResources=data.ic.itResources;
-      if(data.ic.bizResources) icBizResources=data.ic.bizResources;
-      if(data.ic.addCosts) icAddCosts=data.ic.addCosts;
-      if(data.ic.sanityCategories) icSanityCategories=data.ic.sanityCategories;
-      if(data.ic.duration){var durEl=document.getElementById('ic-duration');if(durEl)durEl.value=data.ic.duration;}
-      var btnM=document.getElementById('ic-btn-months'),btnW=document.getElementById('ic-btn-weeks');
-      if(btnM)btnM.classList.toggle('active',icPeriod==='months');
-      if(btnW)btnW.classList.toggle('active',icPeriod==='weeks');
-      if(currentArea==='ic'){icInitCustomSelects();icSetup();}
-    }
-    // Restore IC data (de-duped block kept for compatibility)
-    if(data.ic){
-      if(data.ic.period) icPeriod=data.ic.period;
-      if(data.ic.phases) icPhases=data.ic.phases;
-      if(data.ic.itResources) icITResources=data.ic.itResources;
-      if(data.ic.bizResources) icBizResources=data.ic.bizResources;
-      if(data.ic.addCosts) icAddCosts=data.ic.addCosts;
-      if(data.ic.sanityCategories) icSanityCategories=data.ic.sanityCategories;
-      if(data.ic.duration){var durEl2=document.getElementById('ic-duration');if(durEl2)durEl2.value=data.ic.duration;}
-      var btnM2=document.getElementById('ic-btn-months'),btnW2=document.getElementById('ic-btn-weeks');
-      if(btnM2)btnM2.classList.toggle('active',icPeriod==='months');
-      if(btnW2)btnW2.classList.toggle('active',icPeriod==='weeks');
-      if(currentArea==='ic'){icInitCustomSelects();icSetup();}
+      var icDefaults = icPtDefaultState();
+      var icSnap = {};
+      Object.keys(icDefaults).forEach(function(k){ icSnap[k] = (data.ic[k]!==undefined) ? data.ic[k] : icDefaults[k]; });
+      // Backward compatibility with older exports that used different key names
+      if(data.ic.itResources!==undefined) icSnap.itRes = data.ic.itResources;
+      if(data.ic.bizResources!==undefined) icSnap.bizRes = data.ic.bizResources;
+      if(data.ic.sanityCategories!==undefined) icSnap.sanityCats = data.ic.sanityCategories;
+      icPtApply(icSnap);
+      icRenderCostChart();
     }
     // Restore SD data
     if(data.sd){
@@ -12693,7 +12669,7 @@ function icDoRestore(idx) {
             <div class="io-card">
               <div class="io-card-header"><span class="io-card-icon">📤</span><span class="io-card-title" data-i18n="io_export_title">Export session</span></div>
               <div class="io-card-desc" data-i18n="io_export_desc">Download a JSON file with all your current parameters, benefits, formulas and settings.</div>
-              <button class="btn-save-param" onclick="exportConfig()" style="margin-bottom:8px" data-i18n="io_export_btn">Download JSON</button>
+              <button class="btn-save-param" onclick="exportSettings()" style="margin-bottom:8px" data-i18n="io_export_btn">Download JSON</button>
               <div class="io-last-saved" id="io-last-saved"></div>
             </div>
             <div class="io-card">
