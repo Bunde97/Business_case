@@ -8687,10 +8687,9 @@ view_formula_for:'Vis formler for:'}
     // Custom param row
     var customRow = document.getElementById('custom-row-' + area + '-' + id);
     if (customRow) return customRow;
-    // SD slider: sl-sdKey (capitalise first letter)
+    // SD slider
     if (area === 'sd') {
-      var sdKey = 'sl-sd' + id.charAt(0).toUpperCase() + id.slice(1);
-      var sdSl = document.getElementById(sdKey);
+      var sdSl = document.getElementById(sdSliderId(id));
       if (sdSl) return sdSl.closest('.slider-row');
       return null;
     }
@@ -8960,7 +8959,7 @@ view_formula_for:'Vis formler for:'}
       }
       if(newInds !== null && bParam) bParam.industries = newInds;
       if(area==='hr'){ updateBuiltInHR(id,'default',def); updateBuiltInHR(id,'min',min); updateBuiltInHR(id,'max',max); }
-      else if(area==='sd'){ updateBuiltInSD(id,'default',def); updateBuiltInSD(id,'min',min); updateBuiltInSD(id,'max',max); }
+      else if(area==='sd'){ updateBuiltInSD(id,'min',min); updateBuiltInSD(id,'max',max); updateBuiltInSD(id,'default',def); }
       else { updateBuiltInSC(id,'default',def); updateBuiltInSC(id,'min',min); updateBuiltInSC(id,'max',max); }
     }
     editingParam = { area: null, id: null };
@@ -9043,7 +9042,14 @@ view_formula_for:'Vis formler for:'}
     if (field === 'default') {
       sdP[id] = v; param.defaultVal = v;
       var sl = document.getElementById(sdSliderId(id));
-      if (sl) { sl.value = v; sl.dispatchEvent(new Event('input')); }
+      if (sl) {
+        // Keep the slider's range in sync first, so setting the value
+        // below doesn't get silently clamped to a stale min/max.
+        if (param.min !== undefined) sl.min = param.min;
+        if (param.max !== undefined) sl.max = param.max;
+        sl.value = v;
+        sl.dispatchEvent(new Event('input'));
+      }
       sdRecalculate();
     } else if (field === 'min') {
       param.min = v;
