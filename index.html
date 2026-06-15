@@ -9971,7 +9971,7 @@ view_formula_for:'Vis formler for:'}
           a[year-1]=v;
           sdRampPcts[id]=a;
           updateSDRampNote();
-          drawSDROIChart();
+          sdRecalculate();
         });
         inp.addEventListener('keydown',function(e){
           if(e.key==='Enter'){ e.preventDefault(); e.target.blur(); }
@@ -10003,7 +10003,7 @@ view_formula_for:'Vis formler for:'}
           aBlur[year-1]=v;
           sdRampPcts[id]=aBlur;
           updateSDRampNote();
-          drawSDROIChart();
+          sdRecalculate();
           buildSDRampGrid();
           if(sdRampPendingFocusYear!==null){
             var ny=sdRampPendingFocusYear;
