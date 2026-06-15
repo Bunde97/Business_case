@@ -7661,7 +7661,7 @@
     var rampGridEl=document.getElementById('sd-ramp-grid');
     if(rampGridEl&&rampGridEl.classList.contains('open')) buildSDRampGrid();
     updateSDRampNote();
-    drawSDROIChart();
+    sdRecalculate();
   }
 
   // ── Benefit Ramp-Up helpers ──
@@ -9901,7 +9901,7 @@ view_formula_for:'Vis formler for:'}
     var gridEl=document.getElementById('sd-ramp-grid');
     if(gridEl&&gridEl.classList.contains('open')) buildSDRampGrid();
     updateSDRampNote();
-    drawSDROIChart();
+    sdRecalculate();
   }
 
   function sdSelectScaleEnd(y){
@@ -9912,7 +9912,7 @@ view_formula_for:'Vis formler for:'}
     var gridEl=document.getElementById('sd-ramp-grid');
     if(gridEl&&gridEl.classList.contains('open')) buildSDRampGrid();
     updateSDRampNote();
-    drawSDROIChart();
+    sdRecalculate();
   }
 
   function onSDRampSelect(){
