@@ -2361,6 +2361,14 @@
       border-left: 2px solid var(--border);
       white-space: nowrap;
     }
+    /* Resource cluster (grouping) rows */
+    .ic-cluster-row td { background: #e4e9f0; font-weight: 700; font-size: 12.5px; border-top: 1px solid #cdd6e2; }
+    .ic-cluster-row:hover td { background: #d8dfe8; }
+    .ic-cluster-name-cell { padding: 5px 8px !important; }
+    .ic-cluster-cell { color: #2c3e50; }
+    .ic-cluster-row .ic-res-cell { text-align: center; padding: 0 2px; }
+    .ic-cluster-row .ic-row-actions { opacity: 0; display: inline-flex; gap: 4px; }
+    .ic-cluster-row:hover .ic-row-actions { opacity: 1; }
     .ic-res-row { background: #fff; }
     .ic-res-row:hover { background: #fafcff; }
     .ic-res-name-cell, .ic-res-rate-cell {
@@ -2933,7 +2941,7 @@
     display: none;
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.35);
-    z-index: 800;
+    z-index: 1100;
   }
   .pm-parked-overlay.open { display: block; }
   .pm-parked-drawer {
@@ -2943,7 +2951,7 @@
     max-width: 90vw;
     background: var(--surface);
     border-left: 1px solid var(--border);
-    z-index: 801;
+    z-index: 1101;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -3053,7 +3061,7 @@
   #pm-restore-modal {
     position: fixed; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    z-index: 1100;
+    z-index: 1200;
     background: rgba(0,0,0,0.45);
   }
   .pm-restore-modal-box {
@@ -3115,7 +3123,7 @@
     display: none;
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.35);
-    z-index: 800;
+    z-index: 1100;
   }
   .ic-parked-overlay.open { display: block; }
   .ic-parked-drawer {
@@ -3124,7 +3132,7 @@
     width: 340px;
     background: var(--surface);
     border-left: 1px solid var(--border);
-    z-index: 801;
+    z-index: 1101;
     transform: translateX(100%);
     transition: transform 0.28s cubic-bezier(.4,0,.2,1);
     display: flex;
@@ -3135,7 +3143,7 @@
   #ic-restore-modal {
     position: fixed; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    z-index: 900;
+    z-index: 1200;
     background: rgba(0,0,0,0.45);
   }
   .ic-restore-modal-box {
@@ -4434,6 +4442,7 @@
       <label class="ic-export-check-row"><input type="checkbox" id="icex-breakdown" checked=""> <span>Cost Breakdown</span></label>
       <label class="ic-export-check-row"><input type="checkbox" id="icex-addcosts" checked=""> <span>Additional Costs</span></label>
       <label class="ic-export-check-row"><input type="checkbox" id="icex-sanity" checked=""> <span>Sanity Check</span></label>
+      <label class="ic-export-check-row"><input type="checkbox" id="icex-ratecard" checked=""> <span>Rate Card</span></label>
     </div>
     <div class="ic-export-modal-footer">
       <button class="ic-export-cancel" onclick="icHideExportModal()">Cancel</button>
@@ -4501,9 +4510,9 @@
         <div class="ic-setup-field">
           <label class="ic-setup-label" data-i18n="ic_start_label">Project start</label>
           <div class="ic-cal-wrap" id="cal-wrap-start">
-            <button class="ic-date-btn has-date" id="ic-start-btn" onclick="icToggleCal(&#39;start&#39;)">
+            <button class="ic-date-btn" id="ic-start-btn" onclick="icToggleCal(&#39;start&#39;)">
               <span class="ic-date-btn-icon">📅</span>
-              <span id="ic-start-label" data-i18n="ic_select_date">15 Jun 2026</span>
+              <span id="ic-start-label" data-i18n="ic_select_date">Select date</span>
             </button>
 
           </div>
@@ -4511,9 +4520,9 @@
         <div class="ic-setup-field">
           <label class="ic-setup-label" data-i18n="ic_end_label">Project end</label>
           <div class="ic-cal-wrap" id="cal-wrap-end">
-            <button class="ic-date-btn has-date" id="ic-end-btn" style="cursor:default;opacity:0.75">
+            <button class="ic-date-btn" id="ic-end-btn" style="cursor:default;opacity:0.75">
               <span class="ic-date-btn-icon">📅</span>
-              <span id="ic-end-label" data-i18n="ic_select_date">15 Oct 2028</span>
+              <span id="ic-end-label" data-i18n="ic_select_date">Select date</span>
             </button>
           </div>
         </div>
@@ -4523,13 +4532,13 @@
           <label class="ic-setup-label" data-i18n="ic_it_contingency_label">IT resource contingency</label>
           <div class="ic-custom-select" id="ic-itcont-wrap">
             <div class="ic-custom-select-btn" onclick="icToggleCustomSelect(&#39;ic-itcont-wrap&#39;)">
-              <span id="ic-itcont-label">10%</span>
+              <span id="ic-itcont-label">0%</span>
               <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l5 5 5-5"></path></svg>
             </div>
             <div class="ic-custom-select-menu" id="ic-itcont-menu">
-              <div class="ic-custom-select-opt" onclick="icSelectItContingency(0)">0%</div>
+              <div class="ic-custom-select-opt selected" onclick="icSelectItContingency(0)">0%</div>
               <div class="ic-custom-select-opt" onclick="icSelectItContingency(5)">5%</div>
-              <div class="ic-custom-select-opt selected" onclick="icSelectItContingency(10)">10%</div>
+              <div class="ic-custom-select-opt" onclick="icSelectItContingency(10)">10%</div>
               <div class="ic-custom-select-opt" onclick="icSelectItContingency(15)">15%</div>
               <div class="ic-custom-select-opt" onclick="icSelectItContingency(20)">20%</div>
               <div class="ic-custom-select-opt" onclick="icSelectItContingency(25)">25%</div>
@@ -4541,13 +4550,13 @@
           <label class="ic-setup-label" data-i18n="ic_biz_contingency_label">Business resource contingency</label>
           <div class="ic-custom-select" id="ic-bizcont-wrap">
             <div class="ic-custom-select-btn" onclick="icToggleCustomSelect(&#39;ic-bizcont-wrap&#39;)">
-              <span id="ic-bizcont-label">10%</span>
+              <span id="ic-bizcont-label">0%</span>
               <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l5 5 5-5"></path></svg>
             </div>
             <div class="ic-custom-select-menu" id="ic-bizcont-menu">
-              <div class="ic-custom-select-opt" onclick="icSelectBizContingency(0)">0%</div>
+              <div class="ic-custom-select-opt selected" onclick="icSelectBizContingency(0)">0%</div>
               <div class="ic-custom-select-opt" onclick="icSelectBizContingency(5)">5%</div>
-              <div class="ic-custom-select-opt selected" onclick="icSelectBizContingency(10)">10%</div>
+              <div class="ic-custom-select-opt" onclick="icSelectBizContingency(10)">10%</div>
               <div class="ic-custom-select-opt" onclick="icSelectBizContingency(15)">15%</div>
               <div class="ic-custom-select-opt" onclick="icSelectBizContingency(20)">20%</div>
               <div class="ic-custom-select-opt" onclick="icSelectBizContingency(25)">25%</div>
@@ -4610,7 +4619,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-it&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
-        <button class="ic-add-phase-btn" onclick="icAddResource(&#39;it&#39;)">+ Add person</button>
+        <button class="ic-add-phase-btn" onclick="icAddCluster(&#39;it&#39;)">+ Add cluster</button>
       </div>
     </div>
     <div class="ic-timeline-wrap">
@@ -4629,7 +4638,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-biz&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
-        <button class="ic-add-phase-btn" onclick="icAddResource(&#39;biz&#39;)">+ Add person</button>
+        <button class="ic-add-phase-btn" onclick="icAddCluster(&#39;biz&#39;)">+ Add cluster</button>
       </div>
     </div>
     <div class="ic-timeline-wrap">
@@ -5614,6 +5623,15 @@
         {id:'biz2',name:'Key User',rate:700,hours:{}}
       ],
       nextResId:20,
+      itClusters: [
+        {id:'itc1', name:'Implementation team', expanded:true},
+        {id:'itc2', name:'Roll out team', expanded:true}
+      ],
+      bizClusters: [
+        {id:'bizc1', name:'Implementation team', expanded:true},
+        {id:'bizc2', name:'Roll out team', expanded:true}
+      ],
+      nextClusterId:10,
       addCosts: [
         {id:'ac1', name:'Licence',     years:{}},
         {id:'ac2', name:'Travel',      years:{}},
@@ -5653,6 +5671,9 @@
       nextPhId: icNextPhId, nextSpId: icNextSpId, nextSspId: icNextSspId,
       itRes: JSON.parse(JSON.stringify(icITResources)),
       bizRes: JSON.parse(JSON.stringify(icBizResources)),
+      itClusters: JSON.parse(JSON.stringify(icITClusters)),
+      bizClusters: JSON.parse(JSON.stringify(icBizClusters)),
+      nextClusterId: icNextClusterId,
       nextResId: icNextResId,
       addCosts: JSON.parse(JSON.stringify(icAddCosts)),
       nextAcId: icNextAcId,
@@ -5678,6 +5699,9 @@
     icNextPhId=snap.nextPhId; icNextSpId=snap.nextSpId; icNextSspId=snap.nextSspId;
     icITResources=JSON.parse(JSON.stringify(snap.itRes));
     icBizResources=JSON.parse(JSON.stringify(snap.bizRes));
+    icITClusters=JSON.parse(JSON.stringify(snap.itClusters||[]));
+    icBizClusters=JSON.parse(JSON.stringify(snap.bizClusters||[]));
+    if(snap.nextClusterId) icNextClusterId=snap.nextClusterId;
     icNextResId=snap.nextResId;
     icAddCosts=JSON.parse(JSON.stringify(snap.addCosts));
     icNextAcId=snap.nextAcId;
@@ -5785,6 +5809,21 @@
       }
       setCell(type+'-'+res.id+'-grand', grand ? icFmtDKK(grand) : '—');
     });
+
+    // Cluster subtotal rows (display-only)
+    if(typeof icGetClusterArr==='function'){
+      var _cls=icGetClusterArr(type);
+      _cls.forEach(function(cl){
+        var clRes=resources.filter(function(r){return r.clusterId===cl.id;});
+        var clHrs=0, clGrand=0, clYr=new Array(calRanges.length).fill(0);
+        for(var i=0;i<p.count;i++){ var cc=0; clRes.forEach(function(res){cc+=(res.hours[i]||0);}); var ce=tbl.querySelector('[data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'"]'); if(ce) ce.textContent=cc>0?cc:''; }
+        clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++) clHrs+=(res.hours[i]||0); for(var y=0;y<calRanges.length;y++){ var rng=calRanges[y]; for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; } });
+        for(var y=0;y<calRanges.length;y++){ clGrand+=clYr[y]; setCell(type+'-cl-'+cl.id+'-yr'+y, clYr[y]?icFmtDKK(clYr[y]):'\u2014', clYr[y]>0); }
+        setCell(type+'-cl-'+cl.id+'-hrs', clHrs?clHrs:'\u2014', clHrs>0);
+        setCell(type+'-cl-'+cl.id+'-days', clHrs?(clHrs/7.5).toFixed(1):'\u2014', clHrs>0);
+        setCell(type+'-cl-'+cl.id+'-grand', clGrand?icFmtDKK(clGrand):'\u2014');
+      });
+    }
 
     // Totals row — period columns
     var totHrs = 0, totGrand = 0;
@@ -6676,7 +6715,7 @@
       var row=e.target.closest('tr[data-drag]');
       if(!row||!row.draggable){ e.preventDefault(); return; }
       _icDragRow=row;
-      _icDragData={type:row.dataset.drag, phId:row.dataset.phid||'', spId:row.dataset.spid||'', sspId:row.dataset.sspid||'', grpId:row.dataset.grpid||''};
+      _icDragData={type:row.dataset.drag, phId:row.dataset.phid||'', spId:row.dataset.spid||'', sspId:row.dataset.sspid||'', grpId:row.dataset.grpid||'', resId:row.dataset.resid||'', resType:row.dataset.restype||''};
       e.dataTransfer.effectAllowed='move';
       e.dataTransfer.setData('text/plain','ic-reorder');
       setTimeout(function(){ if(_icDragRow) _icDragRow.classList.add('ic-drag-source'); }, 0);
@@ -6684,6 +6723,16 @@
 
     tbl.addEventListener('dragover', function(e){
       if(!_icDragData) return;
+      if(_icDragData.type==='resource'){
+        var _clRow=e.target.closest('tr.ic-cluster-row');
+        if(_clRow){
+          e.preventDefault();
+          if(_icDropRow&&_icDropRow!==_clRow){ _icDropRow.classList.remove('ic-drop-before','ic-drop-after'); }
+          _icDropRow=_clRow; _icDropPos='into';
+          _clRow.classList.add('ic-drop-after');
+          return;
+        }
+      }
       var row=e.target.closest('tr[data-drag]');
       if(!row||row===_icDragRow){
         if(_icDropRow){ _icDropRow.classList.remove('ic-drop-before','ic-drop-after'); _icDropRow=null; }
@@ -6694,6 +6743,7 @@
       if(_icDragData.type==='phase'&&(row.dataset.grpid||'grp1')!==((_icDragData.grpId)||'grp1')) return;
       if(_icDragData.type==='subphase'&&row.dataset.phid!==_icDragData.phId) return;
       if(_icDragData.type==='activity'&&(row.dataset.spid!==_icDragData.spId||row.dataset.phid!==_icDragData.phId)) return;
+      if(_icDragData.type==='resource'&&(row.dataset.restype||'')!==(_icDragData.resType||'')) return;
       e.preventDefault();
       var rect=row.getBoundingClientRect();
       var newPos=e.clientY<rect.top+rect.height/2?'before':'after';
@@ -6714,7 +6764,7 @@
       var raw=''; try{ raw=e.dataTransfer.getData('text/plain'); }catch(ex){}
       if(raw!=='ic-reorder'){ _icClearDrag(); return; }
       e.preventDefault();
-      var type=_icDragData.type, pos=_icDropPos;
+      var type=_icDragData.type, pos=_icDropPos, resType=(_icDragData.resType||'');
 
       if(type==='phase'){
         var fromIdx=icPhases.findIndex(function(p){return p.id===_icDragData.phId;});
@@ -6753,8 +6803,29 @@
           }
         }
       }
+      else if(type==='resource'){
+        var arr=icGetResourceArr(resType);
+        var dragRes=arr.find(function(r){return r.id===_icDragData.resId;});
+        if(dragRes){
+          if(_icDropPos==='into' && _icDropRow.classList.contains('ic-cluster-row')){
+            dragRes.clusterId=_icDropRow.dataset.clusterid;
+            var fi=arr.findIndex(function(r){return r.id===dragRes.id;});
+            var item=arr.splice(fi,1)[0]; arr.push(item);
+          } else {
+            var toId=_icDropRow.dataset.resid;
+            var targetRes=arr.find(function(r){return r.id===toId;});
+            if(targetRes && dragRes!==targetRes){
+              dragRes.clusterId=targetRes.clusterId;
+              var fromIdx=arr.findIndex(function(r){return r.id===dragRes.id;});
+              arr.splice(fromIdx,1);
+              var newIdx=arr.findIndex(function(r){return r.id===toId;});
+              arr.splice(pos==='before'?newIdx:newIdx+1,0,dragRes);
+            }
+          }
+        }
+      }
       _icClearDrag();
-      icRenderTimeline();
+      if(type==='resource'){ icRenderResources(resType); } else { icRenderTimeline(); }
     });
 
     tbl.addEventListener('dragend', function(){ _icClearDrag(); });
@@ -7040,14 +7111,24 @@
 
 
   // ── IC Resources ──
+  var icITClusters = [
+    {id:'itc1', name:'Implementation team', expanded:true},
+    {id:'itc2', name:'Roll out team', expanded:true}
+  ];
+  var icBizClusters = [
+    {id:'bizc1', name:'Implementation team', expanded:true},
+    {id:'bizc2', name:'Roll out team', expanded:true}
+  ];
+  var icNextClusterId=10;
+  function icGetClusterArr(type){ return type==='it'?icITClusters:icBizClusters; }
   var icITResources = [
-    {id:'it1',name:'Project Manager',grade:null,hours:{}},
-    {id:'it2',name:'Solution Architect',grade:null,hours:{}},
-    {id:'it3',name:'Developer',grade:null,hours:{}}
+    {id:'it1',name:'Project Manager',grade:null,clusterId:'itc1',hours:{}},
+    {id:'it2',name:'Solution Architect',grade:null,clusterId:'itc1',hours:{}},
+    {id:'it3',name:'Developer',grade:null,clusterId:'itc1',hours:{}}
   ];
   var icBizResources = [
-    {id:'biz1',name:'Business Owner',grade:null,hours:{}},
-    {id:'biz2',name:'Key User',grade:null,hours:{}}
+    {id:'biz1',name:'Business Owner',grade:null,clusterId:'bizc1',hours:{}},
+    {id:'biz2',name:'Key User',grade:null,clusterId:'bizc1',hours:{}}
   ];
   var icNextResId=20;
 
@@ -7136,22 +7217,24 @@
     h+='</tr></thead>';
 
     var b='<tbody>';
-    if(!resources.length){
-      b+='<tr class="ic-empty-row"><td colspan="'+(p.count+calRanges.length+5)+'">'+(currentLang==='da'?'Tilføj en person for at starte':'Add a person to get started')+'</td></tr>';
-    } else {
-      for(var ri=0;ri<resources.length;ri++){
-        var res=resources[ri];
+    var isPmRes=(typeof currentArea!=='undefined'&&currentArea==='pm');
+    var colspanFull=p.count+calRanges.length+5;
+    if(!isPmRes){ icEnsureClusters(type); }
+    var icClusters=isPmRes?null:icGetClusterArr(type);
+
+    function icBuildResRow(res){
+      var rb='';
         var totalHrs=0;
         for(var i=0;i<p.count;i++) totalHrs+=(res.hours[i]||0);
         var totalDays=totalHrs>0?(totalHrs/7.5).toFixed(1):'';
-        b+='<tr class="ic-res-row">';
-        b+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner">';
-        b+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
-        b+='<div class="ic-row-actions">'
+        rb+='<tr class="ic-res-row" data-drag="resource" data-resid="'+res.id+'" data-restype="'+type+'" data-clusterid="'+(res.clusterId||'')+'">';
+        rb+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
+        rb+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
+        rb+='<div class="ic-row-actions">'
           +'<button class="ic-row-btn ic-range-btn" data-action="open-res-range" data-type="'+type+'" data-resid="'+res.id+'" title="Bulk fill hours">⏱</button>'
           +'<button class="ic-row-btn ic-del-btn" data-action="del-res" data-type="'+type+'" data-resid="'+res.id+'" title="Delete">&#10005;</button>'
           +'</div>';
-        b+='</div></td>';
+        rb+='</div></td>';
         var gradeList = icGetRateList(type);
         var csId = 'ic-gcs-'+type+'-'+res.id;
         var selGrade = gradeList.find(function(g){return g.id===res.grade;});
@@ -7177,49 +7260,83 @@
           });
         }
         gs += '</div></div>';
-        b+='<td class="ic-res-rate-col ic-res-rate-cell">'+gs+'</td>';
+        rb+='<td class="ic-res-rate-col ic-res-rate-cell">'+gs+'</td>';
         var noGrade = !res.grade;
         for(var i=0;i<p.count;i++){
           var hrs=res.hours[i]||0;
           var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
           var redCls = (noGrade && hrs>0) ? ' ic-hrs-no-grade' : '';
-          b+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+'" '+(hrs>0?'value="'+hrs+'"':'placeholder="&#8212;"')+' min="0" step="8" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
+          rb+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+'" '+(hrs>0?'value="'+hrs+'"':'placeholder="&#8212;"')+' min="0" step="8" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
         }
-        b+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-hrs">'+( totalHrs>0?totalHrs:'&mdash;')+'</td>';
-        b+='<td class="ic-res-sumcol'+(totalDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-days">'+( totalDays||'&mdash;')+'</td>';
+        rb+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-hrs">'+( totalHrs>0?totalHrs:'&mdash;')+'</td>';
+        rb+='<td class="ic-res-sumcol'+(totalDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-days">'+( totalDays||'&mdash;')+'</td>';
         var resRate=icGetResRate(res,type);
         var grand=0;
         for(var y=0;y<calRanges.length;y++){
           var rng=calRanges[y],yt=0;
           for(var m=rng.start;m<=rng.end;m++) yt+=(res.hours[m]||0)*resRate;
           grand+=yt;
-          b+='<td class="ic-res-sumcol'+(yt>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-yr'+y+'">'+( yt>0?icFmtDKK(yt):'&mdash;')+'</td>';
+          rb+='<td class="ic-res-sumcol'+(yt>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-yr'+y+'">'+( yt>0?icFmtDKK(yt):'&mdash;')+'</td>';
         }
-        b+='<td class="ic-res-sumcol ic-res-grandtotal-cell" data-sumid="'+type+'-'+res.id+'-grand">'+(grand>0?icFmtDKK(grand):'&mdash;')+'</td>';
-        b+='</tr>';
+        rb+='<td class="ic-res-sumcol ic-res-grandtotal-cell" data-sumid="'+type+'-'+res.id+'-grand">'+(grand>0?icFmtDKK(grand):'&mdash;')+'</td>';
+        rb+='</tr>';
+      return rb;
+    }
+
+    if(isPmRes){
+      if(!resources.length){
+        b+='<tr class="ic-empty-row"><td colspan="'+colspanFull+'">'+(currentLang==='da'?'Tilføj en person for at starte':'Add a person to get started')+'</td></tr>';
+      } else {
+        for(var ri=0;ri<resources.length;ri++){ b+=icBuildResRow(resources[ri]); }
       }
-      var totHrs=0,totGrand=0;
-      for(var i=0;i<p.count;i++){for(var ri=0;ri<resources.length;ri++) totHrs+=(resources[ri].hours[i]||0);}
-      for(var ri=0;ri<resources.length;ri++){for(var i=0;i<p.count;i++) totGrand+=(resources[ri].hours[i]||0)*icGetResRate(resources[ri],type);}
+    } else {
+      icClusters.forEach(function(cl){
+        var clRes=resources.filter(function(r){return r.clusterId===cl.id;});
+        var clHrs=0, clGrand=0; var clYr=new Array(calRanges.length).fill(0); var clCol=new Array(p.count).fill(0);
+        clRes.forEach(function(res){ var rate=icGetResRate(res,type);
+          for(var i=0;i<p.count;i++){ clCol[i]+=(res.hours[i]||0); clHrs+=(res.hours[i]||0); }
+          for(var y=0;y<calRanges.length;y++){ var rng=calRanges[y]; for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; }
+        });
+        for(var y=0;y<calRanges.length;y++) clGrand+=clYr[y];
+        var clDays=clHrs>0?(clHrs/7.5).toFixed(1):'';
+        b+='<tr class="ic-cluster-row" data-clusterid="'+cl.id+'">';
+        b+='<td class="ic-res-name-col ic-cluster-name-cell" colspan="2"><div class="ic-name-inner">';
+        b+='<button class="ic-toggle-btn" data-action="toggle-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">'+(cl.expanded?'&#9660;':'&#9658;')+'</button>';
+        b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
+        b+='<div class="ic-row-actions"><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
+        b+='</div></td>';
+        for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?clCol[i]:'')+'</td>'; }
+        b+='<td class="ic-res-sumcol ic-cluster-cell'+(clHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-hrs">'+(clHrs>0?clHrs:'&mdash;')+'</td>';
+        b+='<td class="ic-res-sumcol ic-cluster-cell'+(clDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-days">'+(clDays||'&mdash;')+'</td>';
+        for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-cluster-cell'+(clYr[y]>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-yr'+y+'">'+(clYr[y]>0?icFmtDKK(clYr[y]):'&mdash;')+'</td>'; }
+        b+='<td class="ic-res-sumcol ic-cluster-cell ic-res-grandtotal-cell" data-sumid="'+type+'-cl-'+cl.id+'-grand">'+(clGrand>0?icFmtDKK(clGrand):'&mdash;')+'</td>';
+        b+='</tr>';
+        if(cl.expanded){
+          if(!clRes.length){
+            b+='<tr class="ic-empty-row"><td colspan="'+colspanFull+'" style="padding-left:40px;color:#999;font-size:12px">'+(currentLang==='da'?'Ingen personer — klik + Tilføj person':'No people — click + Add person')+'</td></tr>';
+          } else {
+            clRes.forEach(function(res){ b+=icBuildResRow(res); });
+          }
+        }
+      });
+    }
+
+    if(resources.length){
+      var oHrs=0,oGrand=0; var oCol=new Array(p.count).fill(0); var oYr=new Array(calRanges.length).fill(0);
+      resources.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++){ oCol[i]+=(res.hours[i]||0); oHrs+=(res.hours[i]||0); } for(var y=0;y<calRanges.length;y++){ var rng=calRanges[y]; for(var m=rng.start;m<=rng.end;m++) oYr[y]+=(res.hours[m]||0)*rate; } });
+      for(var y=0;y<calRanges.length;y++) oGrand+=oYr[y];
       b+='<tr class="ic-res-totals-row">';
       b+='<td class="ic-res-name-col ic-res-total-label">Total</td><td class="ic-res-rate-col"></td>';
-      for(var i=0;i<p.count;i++){
-        var tot=0; for(var ri=0;ri<resources.length;ri++) tot+=(resources[ri].hours[i]||0);
-        var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-        b+='<td class="ic-res-cell'+bnd+'" data-sumid="'+type+'-col-'+i+'">'+(tot>0?tot:'')+'</td>';
-      }
-      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-hrs">'+(totHrs>0?totHrs:'&mdash;')+'</td>';
-      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-days">'+(totHrs>0?(totHrs/7.5).toFixed(1):'&mdash;')+'</td>';
-      for(var y=0;y<calRanges.length;y++){
-        var rng=calRanges[y],yt=0;
-        for(var ri=0;ri<resources.length;ri++){for(var m=rng.start;m<=rng.end;m++) yt+=(resources[ri].hours[m]||0)*icGetResRate(resources[ri],type);}
-        b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-yr'+y+'">'+(yt>0?icFmtDKK(yt):'&mdash;')+'</td>';
-      }
-      b+='<td class="ic-res-sumcol ic-res-grandtotal-cell ic-totrow-sum" data-sumid="'+type+'-total-grand">'+(totGrand>0?icFmtDKK(totGrand):'&mdash;')+'</td>';
+      for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell'+bnd+'" data-sumid="'+type+'-col-'+i+'">'+(oCol[i]>0?oCol[i]:'')+'</td>'; }
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-hrs">'+(oHrs>0?oHrs:'&mdash;')+'</td>';
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-days">'+(oHrs>0?(oHrs/7.5).toFixed(1):'&mdash;')+'</td>';
+      for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-yr'+y+'">'+(oYr[y]>0?icFmtDKK(oYr[y]):'&mdash;')+'</td>'; }
+      b+='<td class="ic-res-sumcol ic-res-grandtotal-cell ic-totrow-sum" data-sumid="'+type+'-total-grand">'+(oGrand>0?icFmtDKK(oGrand):'&mdash;')+'</td>';
       b+='</tr>';
     }
     b+='</tbody>';
     tbl.innerHTML=h+b;
+    icInitDragReorder(tbl);
 
     // Track mousedown so blur can re-focus the right cell after table rebuild
     tbl.addEventListener('mousedown', function(e) {
@@ -7293,16 +7410,56 @@
     tbl.querySelectorAll('[data-action="del-res"]').forEach(function(el){
       el.onclick=function(){var t=this.getAttribute('data-type'),id=this.getAttribute('data-resid');icDeleteResource(t,id);};
     });
+    tbl.querySelectorAll('[data-action="toggle-cluster"]').forEach(function(el){
+      el.onclick=function(){ var t=el.getAttribute('data-type'),id=el.getAttribute('data-clusterid'); var cl=icGetClusterArr(t).find(function(x){return x.id===id;}); if(cl){ cl.expanded=!cl.expanded; icRenderResources(t); } };
+    });
+    tbl.querySelectorAll('[data-action="rename-cluster"]').forEach(function(el){
+      el.onblur=function(){ var t=el.getAttribute('data-type'),id=el.getAttribute('data-clusterid'); var cl=icGetClusterArr(t).find(function(x){return x.id===id;}); if(cl) cl.name=el.value; };
+      el.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); el.blur(); } };
+    });
+    tbl.querySelectorAll('[data-action="add-res-to-cluster"]').forEach(function(el){
+      el.onclick=function(){ icAddResource(el.getAttribute('data-type'), el.getAttribute('data-clusterid')); };
+    });
+    tbl.querySelectorAll('[data-action="del-cluster"]').forEach(function(el){
+      el.onclick=function(){ icDeleteCluster(el.getAttribute('data-type'), el.getAttribute('data-clusterid')); };
+    });
     // Always refresh cost chart + sanity check after any table re-render
     setTimeout(function(){ icRenderCostChart(); icRenderSanityCheck(); }, 0);
   }
 
-  function icAddResource(type){
-    
-    
-    
+  function icEnsureClusters(type){
+    var clusters=icGetClusterArr(type);
+    if(!clusters.length){ clusters.push({id:'cl'+(icNextClusterId++),name:(currentLang==='da'?'Gruppe 1':'Cluster 1'),expanded:true}); }
     var arr=icGetResourceArr(type);
-    arr.push({id:(type==='it'?'it':'biz')+(icNextResId++),name:'New resource',grade:null,hours:{}});
+    var ids={}; clusters.forEach(function(c){ids[c.id]=true;});
+    arr.forEach(function(r){ if(!r.clusterId||!ids[r.clusterId]) r.clusterId=clusters[0].id; });
+  }
+
+  function icAddCluster(type){
+    var clusters=icGetClusterArr(type);
+    clusters.push({id:'cl'+(icNextClusterId++),name:(currentLang==='da'?'Ny gruppe':'New cluster'),expanded:true});
+    icRenderResources(type);
+  }
+
+  function icDeleteCluster(type,id){
+    var clusters=icGetClusterArr(type);
+    if(clusters.length<=1){ alert(currentLang==='da'?'Mindst \u00e9n gruppe er p\u00e5kr\u00e6vet.':'At least one cluster is required.'); return; }
+    var arr=icGetResourceArr(type);
+    var hasPeople=arr.some(function(r){return r.clusterId===id;});
+    if(hasPeople && !confirm(currentLang==='da'?'Slet denne gruppe og alle dens personer?':'Delete this cluster and all of its people?')) return;
+    var remaining=clusters.filter(function(c){return c.id!==id;});
+    if(type==='it'){ icITClusters=remaining; icITResources=icITResources.filter(function(r){return r.clusterId!==id;}); }
+    else { icBizClusters=remaining; icBizResources=icBizResources.filter(function(r){return r.clusterId!==id;}); }
+    icRenderResources(type);
+    icRenderCostChart();
+  }
+
+  function icAddResource(type, clusterId){
+    icEnsureClusters(type);
+    var arr=icGetResourceArr(type);
+    var clusters=icGetClusterArr(type);
+    var cid=clusterId||(clusters.length?clusters[0].id:null);
+    arr.push({id:(type==='it'?'it':'biz')+(icNextResId++),name:'New resource',grade:null,clusterId:cid,hours:{}});
     icRenderResources(type);
   }
 
@@ -7617,7 +7774,8 @@
       timeline:  document.getElementById('icex-timeline')   && document.getElementById('icex-timeline').checked,
       breakdown: document.getElementById('icex-breakdown')  && document.getElementById('icex-breakdown').checked,
       addcosts:  document.getElementById('icex-addcosts')   && document.getElementById('icex-addcosts').checked,
-      sanity:    document.getElementById('icex-sanity')     && document.getElementById('icex-sanity').checked
+      sanity:    document.getElementById('icex-sanity')     && document.getElementById('icex-sanity').checked,
+      ratecard:  document.getElementById('icex-ratecard')   && document.getElementById('icex-ratecard').checked
     };
     var btn = document.getElementById('ic-export-generate-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
@@ -7832,7 +7990,7 @@
     }
 
     // ── Helper: resource table section ──────────────────────────────────
-    function addResourceSection(title, resources, type, mult) {
+    function addResourceSection(title, resources, type, mult, clusters) {
       addSectionTitle(title);
       var totalCols = 2 + p.count + 2 + calRanges.length + 1;
 
@@ -7857,7 +8015,8 @@
       var colTots = new Array(p.count).fill(0);
       var yrTots  = new Array(calRanges.length).fill(0);
 
-      resources.forEach(function(res, ri) {
+      var rowParity=0;
+      function addOneRes(res){
         var resRate = icGetResRate(res, type);
         var tHrs=0, rowData=[res.name, gradeNameFor(res,type)];
         for (var i=0; i<p.count; i++) { var h=res.hours[i]||0; tHrs+=h; colTots[i]+=h; rowData.push(h||null); }
@@ -7868,11 +8027,40 @@
         totGrand+=grand; rowData.push(toDisp(grand)||null);
 
         var row=ws.addRow(rowData);
-        if (ri%2===0) { for(var c=1;c<=totalCols;c++) row.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:LIGHT}}; }
+        if (rowParity%2===0) { for(var c=1;c<=totalCols;c++) row.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:LIGHT}}; }
+        rowParity++;
         for (var c=3+p.count+2; c<=totalCols; c++) { row.getCell(c).numFmt='#,##0'; row.getCell(c).alignment={horizontal:'right'}; }
+        row.getCell(1).alignment={horizontal:'left',indent:1};
         row.getCell(3+p.count).alignment={horizontal:'right'};
         row.getCell(4+p.count).alignment={horizontal:'right'};
-      });
+      }
+      function addClusterHeaderRow(cl, clRes){
+        var clHrs=0, clGrand=0; var clCol=new Array(p.count).fill(0); var clYr=new Array(calRanges.length).fill(0);
+        clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++){ clCol[i]+=(res.hours[i]||0); clHrs+=(res.hours[i]||0); } calRanges.forEach(function(rng,y){ for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate*mult; }); });
+        clYr.forEach(function(v){ clGrand+=v; });
+        var rd=[cl.name,''];
+        for (var i=0;i<p.count;i++) rd.push(clCol[i]||null);
+        rd.push(clHrs||null, clHrs?parseFloat((clHrs/7.5).toFixed(1)):null);
+        clYr.forEach(function(v){ rd.push(toDisp(v)||null); }); rd.push(toDisp(clGrand)||null);
+        var r=ws.addRow(rd);
+        for (var c=1;c<=totalCols;c++){ r.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDDE3EC'}}; r.getCell(c).font={bold:true,size:10}; }
+        for (var c=3;c<=totalCols;c++) r.getCell(c).alignment={horizontal:'right'};
+        for (var c=3+p.count+2;c<=totalCols;c++) r.getCell(c).numFmt='#,##0';
+        r.getCell(1).alignment={horizontal:'left'};
+        rowParity=0;
+      }
+      if (clusters && clusters.length){
+        var known={}; clusters.forEach(function(c){ known[c.id]=true; });
+        clusters.forEach(function(cl){
+          var clRes=resources.filter(function(r){ return r.clusterId===cl.id; });
+          addClusterHeaderRow(cl, clRes);
+          clRes.forEach(addOneRes);
+        });
+        var orphans=resources.filter(function(r){ return !known[r.clusterId]; });
+        if (orphans.length){ addClusterHeaderRow({name:'Unassigned'}, orphans); orphans.forEach(addOneRes); }
+      } else {
+        resources.forEach(addOneRes);
+      }
 
       var totData=['Total',''];
       for(var i=0;i<p.count;i++) totData.push(colTots[i]||null);
@@ -7885,8 +8073,39 @@
       for(var c=3+p.count+2;c<=totalCols;c++) tRow.getCell(c).numFmt='#,##0';
     }
 
-    if (cfg.it)  addResourceSection('IT RESOURCES',       icITResources,  'it',  itMult);
-    if (cfg.biz) addResourceSection('BUSINESS RESOURCES', icBizResources, 'biz', bizMult);
+    if (cfg.it)  addResourceSection('IT RESOURCES',       icITResources,  'it',  itMult,  icITClusters);
+    if (cfg.biz) addResourceSection('BUSINESS RESOURCES', icBizResources, 'biz', bizMult, icBizClusters);
+
+    // ── RATE CARD (grades & hourly rates) ──────────────────────────────
+    function addRateCardSection() {
+      addSectionTitle('RATE CARD');
+      if (!ws.getColumn(1).width || ws.getColumn(1).width < 22) ws.getColumn(1).width = 22;
+      if (!ws.getColumn(2).width || ws.getColumn(2).width < 18) ws.getColumn(2).width = 18;
+      var cur = currentCurrency;
+      function addGradeTable(label, grades) {
+        if (label) { var sh = ws.addRow([label, '']); styleSubHeader(sh, 2); }
+        var hr = ws.addRow(['Grade', 'Rate (' + cur + '/hr)']);
+        styleHeader(hr, 2, NROW);
+        hr.getCell(2).alignment = { horizontal:'right', vertical:'middle' };
+        grades.forEach(function(g, gi) {
+          var row = ws.addRow([g.name, toDisp(g.rate)]);
+          if (gi % 2 === 0) { for (var c = 1; c <= 2; c++) row.getCell(c).fill = { type:'pattern', pattern:'solid', fgColor:{argb:LIGHT} }; }
+          row.getCell(2).numFmt = '#,##0';
+          row.getCell(2).alignment = { horizontal:'right' };
+        });
+      }
+      if (icRateCards.shared) {
+        var seen = {}, uni = [];
+        icRateCards.it.concat(icRateCards.biz).forEach(function(g){ if (!seen[g.id]) { seen[g.id] = 1; uni.push(g); } });
+        uni.sort(function(a,b){ return a.rate - b.rate; });
+        addGradeTable('', uni);
+      } else {
+        addGradeTable('IT', icRateCards.it.slice().sort(function(a,b){ return a.rate - b.rate; }));
+        ws.addRow([]);
+        addGradeTable('Business', icRateCards.biz.slice().sort(function(a,b){ return a.rate - b.rate; }));
+      }
+    }
+    if (cfg.ratecard) addRateCardSection();
 
     // ── 4. PROJECT TIMELINE (visual Gantt) ──────────────────────────────
     if (cfg.timeline) {
@@ -9704,6 +9923,9 @@ view_formula_for:'Vis formler for:'}
     ];
     icNextPhId=7; icNextSpId=20;
     icITResources=[]; icBizResources=[];
+    icITClusters=[{id:'itc1',name:'Implementation team',expanded:true},{id:'itc2',name:'Roll out team',expanded:true}];
+    icBizClusters=[{id:'bizc1',name:'Implementation team',expanded:true},{id:'bizc2',name:'Roll out team',expanded:true}];
+    icNextClusterId=10;
     icDates={start:null,end:null};
     // Reset language
     setLang('en');
@@ -13988,14 +14210,15 @@ function pmDefaultPhasesForType(type) {
   return base;
 }
 function pmDefaultState(type) {
-  return { phases: pmDefaultPhasesForType(type||pmSelectedType), itRes: [{id:'r1',name:'Project Manager',rate:1200,hours:{}}], bizRes: [{id:'r10',name:'Business Lead',rate:600,hours:{}}], addCosts: [], sanityCats: [], nextPhId:10,nextSpId:30,nextSspId:500,nextResId:20,nextAcId:10,nextScId:20, period:'months', duration:2, extraMonths:0, dateStart:null, dateEnd:null };
+  return { phases: pmDefaultPhasesForType(type||pmSelectedType), itRes: [{id:'r1',name:'Project Manager',rate:1200,hours:{}}], bizRes: [{id:'r10',name:'Business Lead',rate:600,hours:{}}], itClusters:[{id:'itc1',name:'Implementation team',expanded:true}], bizClusters:[{id:'bizc1',name:'Implementation team',expanded:true}], nextClusterId:10, addCosts: [], sanityCats: [], nextPhId:10,nextSpId:30,nextSspId:500,nextResId:20,nextAcId:10,nextScId:20, period:'months', duration:2, extraMonths:0, dateStart:null, dateEnd:null, itContingencyPct:0, bizContingencyPct:0 };
 }
 function pmSnapshotIc() {
   var durEl=document.getElementById('ic-duration'), exEl=document.getElementById('ic-extra-months');
-  return { phases:JSON.parse(JSON.stringify(icPhases)), itRes:JSON.parse(JSON.stringify(icITResources)), bizRes:JSON.parse(JSON.stringify(icBizResources)), addCosts:JSON.parse(JSON.stringify(icAddCosts)), sanityCats:JSON.parse(JSON.stringify(icSanityCategories)), nextPhId:icNextPhId,nextSpId:icNextSpId,nextSspId:icNextSspId,nextResId:icNextResId,nextAcId:icNextAcId,nextScId:icNextScId, period:icPeriod, duration:durEl?parseInt(durEl.value)||2:2, extraMonths:exEl?parseInt(exEl.value)||0:0, dateStart:icDates.start?icDates.start.getTime():null, dateEnd:icDates.end?icDates.end.getTime():null };
+  return { phases:JSON.parse(JSON.stringify(icPhases)), itRes:JSON.parse(JSON.stringify(icITResources)), bizRes:JSON.parse(JSON.stringify(icBizResources)), itClusters:JSON.parse(JSON.stringify(icITClusters)), bizClusters:JSON.parse(JSON.stringify(icBizClusters)), nextClusterId:icNextClusterId, addCosts:JSON.parse(JSON.stringify(icAddCosts)), sanityCats:JSON.parse(JSON.stringify(icSanityCategories)), nextPhId:icNextPhId,nextSpId:icNextSpId,nextSspId:icNextSspId,nextResId:icNextResId,nextAcId:icNextAcId,nextScId:icNextScId, period:icPeriod, duration:durEl?parseInt(durEl.value)||2:2, extraMonths:exEl?parseInt(exEl.value)||0:0, dateStart:icDates.start?icDates.start.getTime():null, dateEnd:icDates.end?icDates.end.getTime():null, itContingencyPct:icItContingencyPct, bizContingencyPct:icBizContingencyPct };
 }
 function pmApplySnapshot(snap) {
-  icPhases=JSON.parse(JSON.stringify(snap.phases)); icITResources=JSON.parse(JSON.stringify(snap.itRes)); icBizResources=JSON.parse(JSON.stringify(snap.bizRes)); icAddCosts=JSON.parse(JSON.stringify(snap.addCosts)); icSanityCategories=JSON.parse(JSON.stringify(snap.sanityCats));
+  icItContingencyPct=snap.itContingencyPct||0; icBizContingencyPct=snap.bizContingencyPct||0; if(typeof icUpdateContingencySelectUI==="function")icUpdateContingencySelectUI();
+  icPhases=JSON.parse(JSON.stringify(snap.phases)); icITResources=JSON.parse(JSON.stringify(snap.itRes)); icBizResources=JSON.parse(JSON.stringify(snap.bizRes)); icITClusters=JSON.parse(JSON.stringify(snap.itClusters||[])); icBizClusters=JSON.parse(JSON.stringify(snap.bizClusters||[])); if(snap.nextClusterId) icNextClusterId=snap.nextClusterId; icAddCosts=JSON.parse(JSON.stringify(snap.addCosts)); icSanityCategories=JSON.parse(JSON.stringify(snap.sanityCats));
   icNextPhId=snap.nextPhId; icNextSpId=snap.nextSpId; icNextSspId=snap.nextSspId; icNextResId=snap.nextResId; icNextAcId=snap.nextAcId; icNextScId=snap.nextScId;
   // Restore duration / period settings
   if(snap.period!==undefined){ icPeriod=snap.period; var bm=document.getElementById('ic-btn-months'),bw=document.getElementById('ic-btn-weeks'); if(bm)bm.classList.toggle('active',snap.period==='months'); if(bw)bw.classList.toggle('active',snap.period==='weeks'); }
