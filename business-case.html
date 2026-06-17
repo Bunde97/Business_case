@@ -10304,8 +10304,8 @@ view_formula_for:'Vis formler for:'}
       var wb=new ExcelJS.Workbook();
       wb.xlsx.load(ev.target.result).then(function(){
         try{ _icApplyExcel(wb); }
-        catch(err){ alert('Import failed: '+(err&&err.message?err.message:err)); }
-      }).catch(function(){ alert('Could not read the Excel file. Make sure it is a valid .xlsx export.'); });
+        catch(err){ _icShowModal('Import not possible', [], {sub:(err&&err.message?err.message:String(err)), confirmLabel:'OK'}); }
+      }).catch(function(){ _icShowModal('Import not possible', [], {sub:'Could not read the Excel file. Make sure it is a valid .xlsx export.', confirmLabel:'OK'}); });
     };
     reader.readAsArrayBuffer(file);
   }
@@ -10319,6 +10319,38 @@ view_formula_for:'Vis formler for:'}
     for(var i=0;i<lists.length;i++){ var hit=(lists[i]||[]).filter(function(g){return g.name===text;})[0]; if(hit) return hit.id; }
     return fallbackId||null;
   }
+  function _icShowModal(title, lines, opts){
+    opts=opts||{};
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1300;background:rgba(0,0,0,0.45);';
+    var box=document.createElement('div'); box.className='ic-restore-modal-box';
+    var h=document.createElement('div'); h.className='ic-restore-modal-title'; h.textContent=title; box.appendChild(h);
+    if(opts.sub){ var sub=document.createElement('div'); sub.className='ic-restore-modal-sub'; sub.textContent=opts.sub; box.appendChild(sub); }
+    if(lines && lines.length){
+      var body=document.createElement('div'); body.style.cssText='font-size:13px;color:var(--text);margin:4px 0 18px;line-height:1.6;';
+      lines.forEach(function(l){
+        var r=document.createElement('div'); r.style.cssText='display:flex;justify-content:space-between;gap:24px;border-bottom:1px solid var(--border-light);padding:4px 0;';
+        var a=document.createElement('span'); a.textContent=l.label; a.style.color='var(--text-secondary)';
+        var b=document.createElement('span'); b.textContent=l.value; b.style.fontWeight='600'; b.style.color='var(--text)';
+        r.appendChild(a); r.appendChild(b); body.appendChild(r);
+      });
+      box.appendChild(body);
+    }
+    var actions=document.createElement('div'); actions.className='ic-restore-modal-actions';
+    function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+    if(opts.onConfirm){
+      var cancel=document.createElement('button'); cancel.className='ic-restore-cancel'; cancel.textContent=opts.cancelLabel||'Cancel';
+      cancel.onclick=function(){ close(); if(opts.onCancel) opts.onCancel(); };
+      actions.appendChild(cancel);
+    }
+    var conf=document.createElement('button'); conf.className='ic-restore-confirm'; conf.textContent=opts.confirmLabel||'OK';
+    conf.onclick=function(){ close(); if(opts.onConfirm) opts.onConfirm(); };
+    actions.appendChild(conf);
+    box.appendChild(actions); ov.appendChild(box);
+    ov.addEventListener('click', function(e){ if(e.target===ov){ close(); if(opts.onConfirm&&opts.onCancel) opts.onCancel(); } });
+    document.body.appendChild(ov);
+  }
+
   function _icApplyExcel(wb){
     var wd=wb.getWorksheet('Data');
     if(!wd) throw new Error("This file isn't a compatible Investment Case export (no Data sheet). Export a fresh copy and edit that one.");
@@ -10430,16 +10462,18 @@ view_formula_for:'Vis formler for:'}
     var acRemoved=Object.keys(oldAcIds).filter(function(id){ return !newAcIds[id]; }).length;
     if(!newAll.length) throw new Error('No resource rows found in the file. Make sure you exported the IT/Business resource tables.');
 
-    var msg='Import summary\n\n'
-      +'People changed: '+changed+'\n'
-      +'People unchanged: '+unchanged+'\n'
-      +'People added: '+added+'\n'
-      +'People removed: '+removed+'\n'
-      +'Rate-card rates changed: '+ratesChanged+'\n'
-      +'Additional cost lines: '+newAC.length+' ('+acAdded+' added'+(acRemoved?(', '+acRemoved+' removed'):'')+')\n\n'
-      +'Apply these changes? Your current Investment Case data will be replaced.';
-    if(!confirm(msg)) return;
+    var _sumLines=[
+      {label:'People changed', value:String(changed)},
+      {label:'People unchanged', value:String(unchanged)},
+      {label:'People added', value:String(added)},
+      {label:'People removed', value:String(removed)},
+      {label:'Rate-card rates changed', value:String(ratesChanged)},
+      {label:'Additional cost lines', value:newAC.length+' ('+acAdded+' added'+(acRemoved?(', '+acRemoved+' removed'):'')+')'}
+    ];
+    _icShowModal('Import summary', _sumLines, { sub:'Your current Investment Case data will be replaced.', confirmLabel:'Apply', cancelLabel:'Cancel', onConfirm:_doApply });
+    return;
 
+    function _doApply(){
     // ---- APPLY ----
     rateUpdates.forEach(function(u){ u.grade.rate=u.rate; });
     function buildClusters(type, list){
@@ -10468,7 +10502,13 @@ view_formula_for:'Vis formler for:'}
     if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); }
     if(typeof icRenderCostChart==='function') icRenderCostChart();
     if(typeof icRenderSanityCheck==='function') icRenderSanityCheck();
-    alert('Import complete: '+changed+' changed, '+unchanged+' unchanged, '+added+' added, '+removed+' removed.');
+    _icShowModal('Import complete', [
+      {label:'People changed', value:String(changed)},
+      {label:'People added', value:String(added)},
+      {label:'People removed', value:String(removed)},
+      {label:'Rate-card rates changed', value:String(ratesChanged)}
+    ], { confirmLabel:'Done' });
+    }
   }
 
   function readImportFile(file) {
