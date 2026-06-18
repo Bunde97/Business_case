@@ -2550,6 +2550,16 @@
     tr:hover .ic-addcost-del-btn { opacity:1; }
     .ic-addcost-del-btn:hover { background:rgba(192,57,43,.1); }
 
+    /* ── IC Cost Breakdown number columns ── */
+    .ic-cost-cells { display: inline-flex; align-items: center; flex-shrink: 0; }
+    .ic-cc { text-align: right; font-size: 11px; color: var(--text-secondary); white-space: nowrap; padding-left: 8px; font-variant-numeric: tabular-nums; }
+    .ic-cc-h { width: 46px; }
+    .ic-cc-c { width: 88px; }
+    .ic-cc-sum { color: var(--navy); font-weight: 700; }
+    .ic-cost-cells-head .ic-cc { font-size: 10px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .02em; }
+    .ic-cost-colhead { display: flex; align-items: center; justify-content: flex-end; padding: 0 0 6px; margin-bottom: 4px; border-bottom: 1px solid var(--border-light); }
+    .ic-cost-colhead-name { flex: 1; }
+
     /* ── IC Export to Excel ── */
     .ic-export-btn {
       display: inline-flex; align-items: center; gap: 7px;
@@ -2560,6 +2570,15 @@
       transition: background 0.15s;
     }
     .ic-export-btn:hover { background: var(--accent-hover); }
+    .ic-import-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      margin-top: 18px; margin-left: 10px; padding: 9px 20px;
+      background: #fff; color: var(--accent);
+      border: 1px solid var(--accent); border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ic-import-btn:hover { background: var(--accent); color: #fff; }
     .ic-export-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.45);
       z-index: 9000; display: flex; align-items: center; justify-content: center;
@@ -3056,6 +3075,13 @@
     white-space: nowrap;
   }
   .pm-restore-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .pm-park-del {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-secondary); font-size: 13px; line-height: 1;
+    padding: 6px 9px; margin-left: 6px; cursor: pointer; flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .pm-park-del:hover { background: #fdeaea; border-color: #e74c3c; color: #e74c3c; }
 
   /* restore picker modal */
   #pm-restore-modal {
@@ -3194,8 +3220,6 @@
       <button class="header-io-btn export" onclick="exportSettings()" data-i18n="btn_export">Export</button>
       <button class="header-io-btn import" onclick="document.getElementById(&#39;import-file-input&#39;).click()" data-i18n="btn_import">Import</button>
       <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importSettings(event)">
-      <button class="header-io-btn import" onclick="document.getElementById(&#39;import-excel-input&#39;).click()" title="Import an edited Excel export" data-i18n="btn_import_excel">Import Excel</button>
-      <input type="file" id="import-excel-input" accept=".xlsx" style="display:none" onchange="icImportExcelFile(event)">
       <button class="header-icon-btn" onclick="var ov=document.getElementById(&#39;settings-overlay&#39;);if(ov.style.display===&#39;flex&#39;)closeSettings();else openSettings();" title="Customise">⚙️</button>
       <div class="lang-toggle">
         <button class="lang-btn active" id="btn-en" onclick="setLang(&#39;en&#39;)">EN</button>
@@ -4426,6 +4450,11 @@
     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3"></path></svg>
     Export to Excel
   </button>
+  <button class="ic-import-btn" onclick="document.getElementById('import-excel-input').click()" title="Import an edited Excel export" data-i18n="btn_import_excel">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 10V2M5 5l3-3 3 3"></path></svg>
+    Import Excel
+  </button>
+  <input type="file" id="import-excel-input" accept=".xlsx" style="display:none" onchange="icImportExcelFile(event)">
 </section>
 
 <!-- ── Export to Excel Modal ── -->
@@ -7563,17 +7592,27 @@
 
     var bh='';
     var tree=icBuildCostTree(p);
+    bh+='<div class="ic-cost-colhead"><span class="ic-cost-colhead-name"></span><span class="ic-cost-cells ic-cost-cells-head">'
+      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'Timer':'Hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'Pris':'Cost')+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'IT t':'IT hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'IT pris':'IT cost')+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'Forr. t':'Biz hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'Forr. pris':'Biz cost')+'</span>'
+      +'</span></div>';
 
     // Group / Phase / sub-phase / activity tree (only nodes with painted content shown)
     tree.groups.forEach(function(node){ bh+=icRenderCostNodeHtml(node, grand); });
 
     // Resource hours that fall in months not painted anywhere on the timeline
     if(tree.unassigned>0.5){
+      var _ua=tree.unassignedAgg||{};
       var unassignedNode={
         key:'unassigned',
         name:(currentLang==='da'?'Ikke tildelt i tidsplanen':'Not assigned in timeline'),
         color:'#9aa5b1',
         cost:tree.unassigned,
+        hours:_ua.hours||0, itCost:_ua.itCost||0, itHours:_ua.itHours||0, bizCost:_ua.bizCost||0, bizHours:_ua.bizHours||0,
         children:tree.unassignedChildren
       };
       bh+=icRenderCostNodeHtml(unassignedNode, grand);
@@ -7617,14 +7656,16 @@
   var icCostExpanded = {};
 
   function icBuildCostTree(p){
-    // Apply IT/Business resource contingency markups to each resource's effective
-    // rate so phase/sub-phase/activity costs scale proportionally with the totals
-    // shown in the summary cards and year-by-year breakdown.
     var itMult  = 1 + (icItContingencyPct||0)/100;
     var bizMult = 1 + (icBizContingencyPct||0)/100;
-    var allRes = icITResources.map(function(r){return {id:r.id,name:r.name,hours:r.hours,rate:icGetResRate(r,'it')*itMult};})
-      .concat(icBizResources.map(function(r){return {id:r.id,name:r.name,hours:r.hours,rate:icGetResRate(r,'biz')*bizMult};}));
-    var phaseDirect={}, subDirect={}, actDirect={}, unassigned=0, unassignedByRes={};
+    var allRes = icITResources.map(function(r){return {id:r.id,name:r.name,hours:r.hours,rate:icGetResRate(r,'it')*itMult,type:'it'};})
+      .concat(icBizResources.map(function(r){return {id:r.id,name:r.name,hours:r.hours,rate:icGetResRate(r,'biz')*bizMult,type:'biz'};}));
+
+    function _blank(){ return {cost:0,hours:0,itCost:0,itHours:0,bizCost:0,bizHours:0}; }
+    function _add(o,type,c,h){ o.cost+=c; o.hours+=h; if(type==='it'){o.itCost+=c;o.itHours+=h;} else {o.bizCost+=c;o.bizHours+=h;} }
+    function _merge(dst,src){ dst.cost+=src.cost;dst.hours+=src.hours;dst.itCost+=src.itCost;dst.itHours+=src.itHours;dst.bizCost+=src.bizCost;dst.bizHours+=src.bizHours; return dst; }
+
+    var phaseDirect={}, subDirect={}, actDirect={}, unassignedAgg=_blank(), unassignedByRes={};
 
     for(var m=0;m<p.count;m++){
       var deepest=[];
@@ -7636,45 +7677,48 @@
           var acts=sp.subSubPhases||[];
           for(var ai=0;ai<acts.length;ai++){
             var act=acts[ai];
-            if(act.painted && act.painted[m]){
-              deepest.push('a|'+ph.id+'|'+sp.id+'|'+act.id);
-              spHit=true; phHit=true;
-            }
+            if(act.painted && act.painted[m]){ deepest.push('a|'+ph.id+'|'+sp.id+'|'+act.id); spHit=true; phHit=true; }
           }
-          if(!spHit && sp.painted && sp.painted[m]){
-            deepest.push('s|'+ph.id+'|'+sp.id);
-            phHit=true;
-          }
+          if(!spHit && sp.painted && sp.painted[m]){ deepest.push('s|'+ph.id+'|'+sp.id); phHit=true; }
         }
-        if(!phHit && ph.painted && ph.painted[m]){
-          deepest.push('p|'+ph.id);
-        }
+        if(!phHit && ph.painted && ph.painted[m]){ deepest.push('p|'+ph.id); }
       }
 
-      var monthCost=0;
-      for(var ri=0;ri<allRes.length;ri++) monthCost+=(allRes[ri].hours[m]||0)*allRes[ri].rate;
-      if(monthCost<=0) continue;
+      var monthCost=0, monthHours=0;
+      for(var ri=0;ri<allRes.length;ri++){ monthCost+=(allRes[ri].hours[m]||0)*allRes[ri].rate; monthHours+=(allRes[ri].hours[m]||0); }
+      if(monthCost<=0 && monthHours<=0) continue;
 
       if(deepest.length===0){
-        unassigned+=monthCost;
         for(var ri2=0;ri2<allRes.length;ri2++){
-          var rc=(allRes[ri2].hours[m]||0)*allRes[ri2].rate;
-          if(rc>0){
-            var entry=unassignedByRes[allRes[ri2].id];
-            if(!entry){ entry={cost:0,months:[]}; unassignedByRes[allRes[ri2].id]=entry; }
-            entry.cost+=rc;
-            entry.months.push(m);
-          }
+          var R=allRes[ri2]; var rc=(R.hours[m]||0)*R.rate, rhh=(R.hours[m]||0);
+          if(rc<=0 && rhh<=0) continue;
+          _add(unassignedAgg, R.type, rc, rhh);
+          var entry=unassignedByRes[R.id];
+          if(!entry){ entry={agg:_blank(),months:[]}; unassignedByRes[R.id]=entry; }
+          _add(entry.agg, R.type, rc, rhh); entry.months.push(m);
         }
       } else {
-        var share=monthCost/deepest.length;
-        for(var di=0;di<deepest.length;di++){
-          var parts=deepest[di].split('|');
-          if(parts[0]==='p') phaseDirect[parts[1]]=(phaseDirect[parts[1]]||0)+share;
-          else if(parts[0]==='s') subDirect[parts[1]+'|'+parts[2]]=(subDirect[parts[1]+'|'+parts[2]]||0)+share;
-          else actDirect[parts[1]+'|'+parts[2]+'|'+parts[3]]=(actDirect[parts[1]+'|'+parts[2]+'|'+parts[3]]||0)+share;
+        var n=deepest.length;
+        for(var ri3=0;ri3<allRes.length;ri3++){
+          var Rr=allRes[ri3]; var rc3=(Rr.hours[m]||0)*Rr.rate, rh3=(Rr.hours[m]||0);
+          if(rc3<=0 && rh3<=0) continue;
+          var shareC=rc3/n, shareH=rh3/n;
+          for(var di=0;di<deepest.length;di++){
+            var parts=deepest[di].split('|'); var key, store;
+            if(parts[0]==='p'){ key=parts[1]; store=phaseDirect; }
+            else if(parts[0]==='s'){ key=parts[1]+'|'+parts[2]; store=subDirect; }
+            else { key=parts[1]+'|'+parts[2]+'|'+parts[3]; store=actDirect; }
+            if(!store[key]) store[key]=_blank();
+            _add(store[key], Rr.type, shareC, shareH);
+          }
         }
       }
+    }
+
+    function _node(key,name,color,direct,children){
+      var agg=_blank(); if(direct) _merge(agg,direct);
+      children.forEach(function(c){ _merge(agg,c); });
+      return {key:key,name:name,color:color,cost:agg.cost,hours:agg.hours,itCost:agg.itCost,itHours:agg.itHours,bizCost:agg.bizCost,bizHours:agg.bizHours,children:children};
     }
 
     var phaseNodes=[];
@@ -7687,21 +7731,17 @@
         (sp.subSubPhases||[]).forEach(function(act){
           var hasPaint=act.painted && Object.keys(act.painted).length>0;
           if(!hasPaint) return;
-          actNodes.push({key:ph.id+'|'+sp.id+'|'+act.id, name:act.name, color:act.color||_darken(spColor,18), cost:actDirect[ph.id+'|'+sp.id+'|'+act.id]||0, children:[]});
+          actNodes.push(_node(ph.id+'|'+sp.id+'|'+act.id, act.name, act.color||_darken(spColor,18), actDirect[ph.id+'|'+sp.id+'|'+act.id], []));
         });
         var spOwnPaint=sp.painted && Object.keys(sp.painted).length>0;
         if(!spOwnPaint && actNodes.length===0) return;
-        var spCost=(subDirect[ph.id+'|'+sp.id]||0)+actNodes.reduce(function(s,n){return s+n.cost;},0);
-        subNodes.push({key:ph.id+'|'+sp.id, name:sp.name, color:spColor, cost:spCost, children:actNodes});
+        subNodes.push(_node(ph.id+'|'+sp.id, sp.name, spColor, subDirect[ph.id+'|'+sp.id], actNodes));
       });
       var phOwnPaint=ph.painted && Object.keys(ph.painted).length>0;
       if(!phOwnPaint && subNodes.length===0) return;
-      var phCost=(phaseDirect[ph.id]||0)+subNodes.reduce(function(s,n){return s+n.cost;},0);
-      phaseNodes.push({key:ph.id, name:ph.name, color:phColor, cost:phCost, children:subNodes});
+      phaseNodes.push(_node(ph.id, ph.name, phColor, phaseDirect[ph.id], subNodes));
     });
 
-    // Top-level groups (e.g. "Implementation project" / "Roll out") — always in
-    // icGroups order, but only shown if at least one phase under them has content
     var groupNodes=[];
     icGroups.forEach(function(g){
       var children=phaseNodes.filter(function(pn){
@@ -7709,22 +7749,20 @@
         return (ph&&ph.groupId||'grp1')===g.id;
       });
       if(!children.length) return;
-      var gCost=children.reduce(function(s,n){return s+n.cost;},0);
-      groupNodes.push({key:'grp|'+g.id, name:g.name, color:'#64748b', cost:gCost, children:children});
+      groupNodes.push(_node('grp|'+g.id, g.name, '#64748b', null, children));
     });
 
-    // Breakdown of the "unassigned" bucket by resource, so it's clear what
-    // still needs to be painted on the timeline (and for which periods)
     var unassignedChildren=[];
     icITResources.concat(icBizResources).forEach(function(r){
       var entry=unassignedByRes[r.id];
-      if(!entry || entry.cost<=0.5) return;
+      if(!entry || entry.agg.cost<=0.5) return;
       var periodLabels=entry.months.slice().sort(function(a,b){return a-b;}).map(function(m){return p.labels[m]||('M'+(m+1));});
       var nm=r.name+' — '+periodLabels.join(', ');
-      unassignedChildren.push({key:'unassigned|'+r.id, name:nm, color:'#9aa5b1', cost:entry.cost, children:[]});
+      var a=entry.agg;
+      unassignedChildren.push({key:'unassigned|'+r.id, name:nm, color:'#9aa5b1', cost:a.cost,hours:a.hours,itCost:a.itCost,itHours:a.itHours,bizCost:a.bizCost,bizHours:a.bizHours, children:[]});
     });
 
-    return {groups:groupNodes, unassigned:unassigned, unassignedChildren:unassignedChildren};
+    return {groups:groupNodes, unassigned:unassignedAgg.cost, unassignedAgg:unassignedAgg, unassignedChildren:unassignedChildren};
   }
 
   function icRenderCostNodeHtml(node, grand){
@@ -7739,7 +7777,16 @@
       h+='<span class="ic-toggle-spacer"></span>';
     }
     h+='<span class="saving-bar-name">'+node.name.replace(/&/g,'&amp;')+'</span></div>';
-    h+='<span class="saving-bar-amount">'+(node.cost>0?icFmtDKK(node.cost):'—')+'</span></div>';
+    var _fh=function(x){return x>0?(''+Math.round(x)):'—';};
+    var _fc=function(x){return x>0?icFmtDKK(x):'—';};
+    h+='<span class="ic-cost-cells">'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.hours)+'</span>'
+      +'<span class="ic-cc ic-cc-c ic-cc-sum">'+_fc(node.cost)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.itHours)+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+_fc(node.itCost)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.bizHours)+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+_fc(node.bizCost)+'</span>'
+      +'</span></div>';
     h+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+(node.color||'#999')+'"></div></div></div>';
     if(hasChildren && expanded){
       h+='<div class="ic-cost-children">';
@@ -8399,89 +8446,6 @@
       });
     }
 
-    // ── 5. COST BREAKDOWN ────────────────────────────────────────────────
-    if (cfg.breakdown) {
-      addSectionTitle('COST BREAKDOWN');
-
-      var cbItems  = [];   // collected for canvas chart
-      var CB_IMG_COL = 3; // 0-based: image starts at col D
-
-      var cbHdr = ws.addRow(['Phase / Category', 'Cost (' + currentCurrency + ')', '% of Total']);
-      styleSubHeader(cbHdr, 3);
-      cbHdr.getCell(2).alignment = cbHdr.getCell(3).alignment = {horizontal:'right', vertical:'middle'};
-      var cbFirstDataRow = cbHdr.number; // image anchors at header row
-
-      var cbAC = icTotalAddCosts();
-      var tree = icBuildCostTree(p);
-      var treeTotal = tree.groups.reduce(function(s,g){return s+g.cost;},0) + (tree.unassigned||0) + cbAC;
-
-      function addCbRow(lbl, dkkCost, indent, nodeColor) {
-        var dispCost = toDisp(dkkCost);
-        var pct = treeTotal > 0 ? (dkkCost / treeTotal * 100).toFixed(1) + '%' : '—';
-        var row = ws.addRow([(indent > 0 ? new Array(indent*4+1).join(' ') : '') + lbl, dispCost||null, pct]);
-        row.height = 15;  // 15pt * 96/72 = 20px exactly
-        row.getCell(2).numFmt = '#,##0';
-        row.getCell(2).alignment = row.getCell(3).alignment = {horizontal:'right'};
-        // Background = tint of the node's own color so each row has a unique hue
-        // Groups at 15%, children at 10% — matches the bar color palette
-        var tintAlpha = indent === 0 ? 0.15 : 0.10;
-        var baseColor = nodeColor || '#9aa5b1';
-        var bgCss  = tintHex(baseColor, tintAlpha);
-        var bgArgb = tintArgb(baseColor, tintAlpha);
-        for (var _fc = 1; _fc <= 3; _fc++)
-          row.getCell(_fc).fill = {type:'pattern', pattern:'solid', fgColor:{argb:bgArgb}};
-        cbItems.push({ name: lbl, value: dkkCost,
-          color: baseColor,
-          displayVal: pct, isGroup: indent === 0, bgColor: bgCss });
-        return row;
-      }
-
-      tree.groups.forEach(function(grp) {
-        var grpRow = addCbRow(grp.name, grp.cost, 0, grp.color);
-        grpRow.getCell(1).font = {bold:true, color:{argb:NAVY}};
-        (grp.children||[]).forEach(function(ph) {
-          addCbRow(ph.name, ph.cost, 1, ph.color);
-          (ph.children||[]).forEach(function(sp) {
-            addCbRow(sp.name, sp.cost, 2, sp.color);
-            (sp.children||[]).forEach(function(act) { addCbRow(act.name, act.cost, 3, act.color); });
-          });
-        });
-      });
-
-      if (tree.unassigned > 0.5)
-        addCbRow('Not assigned in timeline', tree.unassigned, 0, '#9aa5b1').getCell(1).font = {color:{argb:'FF888888'}};
-      if (cbAC > 0) {
-        var acRow2 = addCbRow('Additional Costs', cbAC, 0, '#64748b');
-        acRow2.getCell(1).font = {bold:true, color:{argb:NAVY}};
-        icAddCosts.forEach(function(ac) {
-          var t = 0; Object.keys(ac.years).forEach(function(y){t += ac.years[y]||0;});
-          if (t > 0) addCbRow(ac.name, t, 1, '#64748b');
-        });
-      }
-
-      var cbTot = ws.addRow(['Total', toDisp(treeTotal)||null, '100%']); styleTotals(cbTot, 3);
-      _icFx.breakdown={ totalRow:cbTot.number, costCol:2, vTotal:toDisp(treeTotal) };
-      cbTot.getCell(2).numFmt = '#,##0';
-      cbTot.getCell(2).fill = cbTot.getCell(3).fill = {type:'pattern', pattern:'solid', fgColor:{argb:ORANGE}};
-      cbTot.getCell(2).font  = cbTot.getCell(3).font  = {bold:true, color:{argb:WHITE}};
-      cbTot.getCell(2).alignment = cbTot.getCell(3).alignment = {horizontal:'right'};
-
-      // Embed canvas bar chart image (col D, anchored at first data row)
-      // 15pt row × 96/72 = 20px per row — matches Excel exactly
-      if (cbItems.length > 0) {
-        var cbRowH   = 20;                        // 15pt * 96/72
-        var cbChartH = cbItems.length * cbRowH;   // no extra padding
-        try {
-          var cbPng = makeBarChart(cbItems, treeTotal, 220, cbRowH);
-          var cbImgId = wb.addImage({ base64: cbPng, extension: 'png' });
-          ws.addImage(cbImgId, {
-            tl: { col: CB_IMG_COL, row: cbFirstDataRow },  // +1 row: skip header
-            ext: { width: 220, height: cbChartH }
-          });
-        } catch(e) { /* canvas not available */ }
-      }
-    }
-
     // ── 6. ADDITIONAL COSTS ──────────────────────────────────────────────
     if (cfg.addcosts) {
       addSectionTitle('ADDITIONAL COSTS');
@@ -8516,6 +8480,91 @@
       }
       _icFx.addcost={ totalRow:acTR.number, grandCol:acGrandCol, firstYearCol:2, nYears:acNY };
       if(_icFx.map) _icFx.map.addcost={ ids: icAddCosts.map(function(a){return a.id;}), nYears:acNY, firstYearCol:2 };
+    }
+
+    // ── COST BREAKDOWN (main sheet, under Additional Costs; merged cells
+    //     so numbers read clearly while the month grid stays compact) ──────
+    if (cfg.breakdown) {
+      addSectionTitle('COST BREAKDOWN');
+      var cbItems=[];
+      var cbCur=currentCurrency;
+      // Each number spans two narrow month columns. Column starts:
+      var CB={ name:1, alloc:3, cost:5, ith:7, itc:9, bizh:11, bizc:13, pct:15 };
+      function _cbCell(row, startCol, span, value, align, fillArgb, font, numFmt){
+        var cell=row.getCell(startCol);
+        if(value!==undefined) cell.value=value;
+        if(numFmt) cell.numFmt=numFmt;
+        cell.alignment={horizontal:align||'left', vertical:'middle'};
+        if(font) cell.font=font;
+        if(fillArgb){ for(var c=startCol;c<startCol+span;c++) row.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:fillArgb}}; }
+        if(span>1){ try{ ws.mergeCells(row.number,startCol,row.number,startCol+span-1); }catch(e){} }
+        return cell;
+      }
+      var cbHdrFont={bold:true,size:10,color:{argb:NAVY}};
+      var cbHdr=ws.addRow([]); cbHdr.height=18;
+      _cbCell(cbHdr, CB.name, 2, 'Phase / Category', 'left',  LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.alloc,2, 'Alloc Hours',       'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.cost, 2, 'Cost ('+cbCur+')',  'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.ith,  2, 'IT Hours',          'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.itc,  2, 'IT Cost ('+cbCur+')','right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.bizh, 2, 'Biz Hours',         'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.bizc, 2, 'Biz Cost ('+cbCur+')','right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.pct,  1, '% of Total',        'right', LIGHT2, cbHdrFont);
+      var cbFirstDataRow=cbHdr.number;
+
+      var cbAC=icTotalAddCosts();
+      var cbTree=icBuildCostTree(p);
+      var cbTreeTotal=cbTree.groups.reduce(function(s2,g){return s2+g.cost;},0)+(cbTree.unassigned||0)+cbAC;
+
+      function addCbRow(lbl,node,indent,nodeColor){
+        var pct=cbTreeTotal>0?((node.cost||0)/cbTreeTotal*100).toFixed(1)+'%':'—';
+        var indentStr=indent>0?new Array(indent*3+1).join(' '):'';
+        var baseColor=nodeColor||'#9aa5b1';
+        var bgArgb=tintArgb(baseColor, indent===0?0.15:0.10);
+        var nameFont = indent===0?{bold:true,color:{argb:NAVY}}:undefined;
+        var row=ws.addRow([]); row.height=15;
+        _cbCell(row, CB.name, 2, indentStr+lbl, 'left',  bgArgb, nameFont);
+        _cbCell(row, CB.alloc,2, (node.hours>0?Math.round(node.hours):null),    'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.cost, 2, (toDisp(node.cost||0)||null),                   'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.ith,  2, (node.itHours>0?Math.round(node.itHours):null), 'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.itc,  2, (toDisp(node.itCost||0)||null),                 'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.bizh, 2, (node.bizHours>0?Math.round(node.bizHours):null),'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.bizc, 2, (toDisp(node.bizCost||0)||null),                'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.pct,  1, pct, 'right', bgArgb);
+        cbItems.push({name:lbl,value:(node.cost||0),color:baseColor,displayVal:pct,isGroup:indent===0,bgColor:tintHex(baseColor, indent===0?0.15:0.10)});
+        return row;
+      }
+
+      cbTree.groups.forEach(function(grp){
+        addCbRow(grp.name,grp,0,grp.color);
+        (grp.children||[]).forEach(function(ph){ addCbRow(ph.name,ph,1,ph.color);
+          (ph.children||[]).forEach(function(sp){ addCbRow(sp.name,sp,2,sp.color);
+            (sp.children||[]).forEach(function(act){ addCbRow(act.name,act,3,act.color); }); }); });
+      });
+      if(cbTree.unassigned>0.5){ var uaRow=addCbRow('Not assigned in timeline', cbTree.unassignedAgg||{cost:cbTree.unassigned}, 0, '#9aa5b1'); uaRow.getCell(CB.name).font={color:{argb:'FF888888'}}; }
+      if(cbAC>0){
+        addCbRow('Additional Costs',{cost:cbAC},0,'#64748b');
+        icAddCosts.forEach(function(ac){ var t=0; Object.keys(ac.years).forEach(function(y){t+=ac.years[y]||0;}); if(t>0) addCbRow(ac.name,{cost:t},1,'#64748b'); });
+      }
+
+      var sumH=0,sumItH=0,sumItC=0,sumBizH=0,sumBizC=0;
+      cbTree.groups.forEach(function(g){ sumH+=g.hours; sumItH+=g.itHours; sumItC+=g.itCost; sumBizH+=g.bizHours; sumBizC+=g.bizCost; });
+      var cbUa=cbTree.unassignedAgg; if(cbUa){ sumH+=cbUa.hours; sumItH+=cbUa.itHours; sumItC+=cbUa.itCost; sumBizH+=cbUa.bizHours; sumBizC+=cbUa.bizCost; }
+      var totFont={bold:true,color:{argb:NAVY}};
+      var cbTot=ws.addRow([]); cbTot.height=18;
+      _cbCell(cbTot, CB.name, 2, 'Total', 'left', GREY, totFont);
+      _cbCell(cbTot, CB.alloc,2, (sumH>0?Math.round(sumH):null), 'right', GREY, totFont, '#,##0');
+      _cbCell(cbTot, CB.cost, 2, (toDisp(cbTreeTotal)||null), 'right', ORANGE, {bold:true,color:{argb:WHITE}}, '#,##0');
+      _cbCell(cbTot, CB.ith,  2, (sumItH>0?Math.round(sumItH):null), 'right', GREY, totFont, '#,##0');
+      _cbCell(cbTot, CB.itc,  2, (toDisp(sumItC)||null), 'right', GREY, totFont, '#,##0');
+      _cbCell(cbTot, CB.bizh, 2, (sumBizH>0?Math.round(sumBizH):null), 'right', GREY, totFont, '#,##0');
+      _cbCell(cbTot, CB.bizc, 2, (toDisp(sumBizC)||null), 'right', GREY, totFont, '#,##0');
+      _cbCell(cbTot, CB.pct,  1, '100%', 'right', GREY, totFont);
+
+      if(cbItems.length>0){
+        var cbRowH=20, cbChartH=cbItems.length*cbRowH;
+        try{ var cbPng=makeBarChart(cbItems,cbTreeTotal,220,cbRowH); var cbImgId=wb.addImage({base64:cbPng,extension:'png'}); ws.addImage(cbImgId,{tl:{col:15,row:cbFirstDataRow},ext:{width:220,height:cbChartH}}); }catch(e){}
+      }
     }
 
     // ── 7. SANITY CHECK ──────────────────────────────────────────────────
@@ -8675,7 +8724,7 @@
 
     // ── Download ─────────────────────────────────────────────────────────
     ws.addRow([]);
-    ws.columns.forEach(function(col){ if(!col.width||col.width<8) col.width=9; else if(col.width<=3) col.width=3; });
+    (ws.columns||[]).forEach(function(col){ if(!col.width||col.width<8) col.width=9; else if(col.width<=3) col.width=3; });
     wb.xlsx.writeBuffer().then(function(buffer){
       var blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       var url=URL.createObjectURL(blob);
@@ -14696,7 +14745,7 @@ function pmRenderDrawer() {
   var items=pmParked[pmSelectedType]||[];
   if(!items.length){body.innerHTML='<div class="pm-parked-empty">No parked items.<br>Delete phases, sub-phases or activities from the timeline to park them here.</div>';return;}
   var phases=items.filter(function(i){return i.kind==='phase';}); var subphases=items.filter(function(i){return i.kind==='subphase';}); var activities=items.filter(function(i){return i.kind==='activity';});
-  function itemRow(item){ return '<div class="pm-parked-item" draggable="true" data-park-idx="'+items.indexOf(item)+'">'+'<span class="pm-parked-item-dot" style="background:'+(item.color||'#888')+'"></span>'+'<span class="pm-parked-item-name">'+_escHtml(item.name)+'</span>'+'<span class="pm-parked-item-type">'+(item.kind==='phase'?'Phase':item.kind==='subphase'?'Sub-phase':'Activity')+'</span>'+'<button class="pm-restore-btn" onclick="pmShowRestorePicker('+items.indexOf(item)+')">Restore</button>'+'</div>'; }
+  function itemRow(item){ return '<div class="pm-parked-item" draggable="true" data-park-idx="'+items.indexOf(item)+'">'+'<span class="pm-parked-item-dot" style="background:'+(item.color||'#888')+'"></span>'+'<span class="pm-parked-item-name">'+_escHtml(item.name)+'</span>'+'<span class="pm-parked-item-type">'+(item.kind==='phase'?'Phase':item.kind==='subphase'?'Sub-phase':'Activity')+'</span>'+'<button class="pm-restore-btn" onclick="pmShowRestorePicker('+items.indexOf(item)+')">Restore</button>'+'<button class="pm-park-del" title="Delete parked item" onclick="pmDeleteParked('+items.indexOf(item)+')">&#10005;</button>'+'</div>'; }
   var html='';
   if(phases.length){html+='<div class="pm-parked-group-label">Phases</div>'; phases.forEach(function(item){html+=itemRow(item);});}
   if(subphases.length){html+='<div class="pm-parked-group-label">Sub-phases</div>'; subphases.forEach(function(item){html+=itemRow(item);});}
@@ -14830,7 +14879,7 @@ function icRenderDrawer() {
   var items=icParked;
   if(!items.length){body.innerHTML='<div class="pm-parked-empty">No parked items.<br>Delete phases, sub-phases or activities to park them here.</div>';return;}
   var phases=items.filter(function(i){return i.kind==='phase';}); var subphases=items.filter(function(i){return i.kind==='subphase';}); var activities=items.filter(function(i){return i.kind==='activity';});
-  function itemRow(item){return '<div class="pm-parked-item" draggable="true" data-ic-park-idx="'+items.indexOf(item)+'">'+'<span class="pm-parked-item-dot" style="background:'+(item.color||'#888')+'"></span>'+'<span class="pm-parked-item-name">'+_escHtml(item.name)+'</span>'+'<span class="pm-parked-item-type">'+(item.kind==='phase'?'Phase':item.kind==='subphase'?'Sub-phase':'Activity')+'</span>'+'<button class="pm-restore-btn" onclick="icShowRestorePicker('+items.indexOf(item)+')">Restore</button>'+'</div>';}
+  function itemRow(item){return '<div class="pm-parked-item" draggable="true" data-ic-park-idx="'+items.indexOf(item)+'">'+'<span class="pm-parked-item-dot" style="background:'+(item.color||'#888')+'"></span>'+'<span class="pm-parked-item-name">'+_escHtml(item.name)+'</span>'+'<span class="pm-parked-item-type">'+(item.kind==='phase'?'Phase':item.kind==='subphase'?'Sub-phase':'Activity')+'</span>'+'<button class="pm-restore-btn" onclick="icShowRestorePicker('+items.indexOf(item)+')">Restore</button>'+'<button class="pm-park-del" title="Delete parked item" onclick="icDeleteParked('+items.indexOf(item)+')">&#10005;</button>'+'</div>';}
   var html='';
   if(phases.length){html+='<div class="pm-parked-group-label">Phases</div>'; phases.forEach(function(item){html+=itemRow(item);});}
   if(subphases.length){html+='<div class="pm-parked-group-label">Sub-phases</div>'; subphases.forEach(function(item){html+=itemRow(item);});}
@@ -14850,6 +14899,21 @@ function icRenderDrawer() {
       var ov=document.getElementById('ic-parked-overlay'); if(ov)ov.style.pointerEvents='';
     });
   });
+}
+function icDeleteParked(idx) {
+  if(idx<0 || idx>=icParked.length) return;
+  if(!confirm('Delete this parked item? It can\'t be restored afterwards.')) return;
+  icParked.splice(idx,1);
+  if(typeof icUpdateParkedBadge==='function') icUpdateParkedBadge();
+  icRenderDrawer();
+}
+function pmDeleteParked(idx) {
+  var arr=pmParked[pmSelectedType]||[];
+  if(idx<0 || idx>=arr.length) return;
+  if(!confirm('Delete this parked item? It can\'t be restored afterwards.')) return;
+  arr.splice(idx,1);
+  if(typeof pmUpdateParkedBadge==='function') pmUpdateParkedBadge();
+  pmRenderDrawer();
 }
 function icShowRestorePicker(idx) {
   var item=icParked[idx]; if(!item)return;
