@@ -7999,8 +7999,10 @@
     function _merge(dst,src){ dst.cost+=src.cost;dst.hours+=src.hours;dst.itCost+=src.itCost;dst.itHours+=src.itHours;dst.bizCost+=src.bizCost;dst.bizHours+=src.bizHours; return dst; }
 
     var phaseDirect={}, subDirect={}, actDirect={}, unassignedAgg=_blank(), unassignedByRes={};
+    var memberDirectW={};
     var phaseW={}, subW={}, actW={}, unassignedW=new Array(p.count).fill(0);
     function _wadd(store,key,m,v){ if(!store[key]) store[key]=new Array(p.count).fill(0); store[key][m]+=v; }
+    function _mwadd(key,resId,m,v){ if(!memberDirectW[key]) memberDirectW[key]={}; if(!memberDirectW[key][resId]) memberDirectW[key][resId]=new Array(p.count).fill(0); memberDirectW[key][resId][m]+=v; }
 
     for(var m=0;m<p.count;m++){
       var deepest=[];
@@ -8055,6 +8057,7 @@
             else { key=parts[1]+'|'+parts[2]+'|'+parts[3]; store=actDirect; }
             if(!store[key]) store[key]=_blank();
             _add(store[key], Rr.type, rc3*_w[di], rh3*_w[di]);
+            _mwadd(key, Rr.id, m, _w[di]);
           }
         }
       }
@@ -8062,11 +8065,13 @@
 
     function _wblank(){ return new Array(p.count).fill(0); }
     function _wmerge(dst,src){ if(src){ for(var i=0;i<p.count;i++) dst[i]+=src[i]; } return dst; }
-    function _node(key,name,color,direct,children,directW){
+    function _mwmerge(dst,src){ if(src){ for(var rid in src){ if(!dst[rid]) dst[rid]=new Array(p.count).fill(0); for(var i=0;i<p.count;i++) dst[rid][i]+=src[rid][i]; } } return dst; }
+    function _node(key,name,color,direct,children,directW,directMW){
       var agg=_blank(); if(direct) _merge(agg,direct);
       var wt=_wblank(); if(directW) _wmerge(wt,directW);
-      children.forEach(function(c){ _merge(agg,c); _wmerge(wt,c.weights); });
-      return {key:key,name:name,color:color,cost:agg.cost,hours:agg.hours,itCost:agg.itCost,itHours:agg.itHours,bizCost:agg.bizCost,bizHours:agg.bizHours,weights:wt,children:children};
+      var mw={}; if(directMW) _mwmerge(mw,directMW);
+      children.forEach(function(c){ _merge(agg,c); _wmerge(wt,c.weights); _mwmerge(mw,c.memberW); });
+      return {key:key,name:name,color:color,cost:agg.cost,hours:agg.hours,itCost:agg.itCost,itHours:agg.itHours,bizCost:agg.bizCost,bizHours:agg.bizHours,weights:wt,memberW:mw,children:children};
     }
 
     var phaseNodes=[];
@@ -8079,15 +8084,15 @@
         (sp.subSubPhases||[]).forEach(function(act){
           var hasPaint=act.painted && Object.keys(act.painted).length>0;
           if(!hasPaint) return;
-          actNodes.push(_node(ph.id+'|'+sp.id+'|'+act.id, act.name, act.color||_darken(spColor,18), actDirect[ph.id+'|'+sp.id+'|'+act.id], [], actW[ph.id+'|'+sp.id+'|'+act.id]));
+          actNodes.push(_node(ph.id+'|'+sp.id+'|'+act.id, act.name, act.color||_darken(spColor,18), actDirect[ph.id+'|'+sp.id+'|'+act.id], [], actW[ph.id+'|'+sp.id+'|'+act.id], memberDirectW[ph.id+'|'+sp.id+'|'+act.id]));
         });
         var spOwnPaint=sp.painted && Object.keys(sp.painted).length>0;
         if(!spOwnPaint && actNodes.length===0) return;
-        subNodes.push(_node(ph.id+'|'+sp.id, sp.name, spColor, subDirect[ph.id+'|'+sp.id], actNodes, subW[ph.id+'|'+sp.id]));
+        subNodes.push(_node(ph.id+'|'+sp.id, sp.name, spColor, subDirect[ph.id+'|'+sp.id], actNodes, subW[ph.id+'|'+sp.id], memberDirectW[ph.id+'|'+sp.id]));
       });
       var phOwnPaint=ph.painted && Object.keys(ph.painted).length>0;
       if(!phOwnPaint && subNodes.length===0) return;
-      phaseNodes.push(_node(ph.id, ph.name, phColor, phaseDirect[ph.id], subNodes, phaseW[ph.id]));
+      phaseNodes.push(_node(ph.id, ph.name, phColor, phaseDirect[ph.id], subNodes, phaseW[ph.id], memberDirectW[ph.id]));
     });
 
     var groupNodes=[];
@@ -8418,6 +8423,10 @@
       var hdrRow = ws.addRow(hdrs);
       styleHeader(hdrRow, totalCols, NROW);
       for (var c=3; c<=totalCols; c++) hdrRow.getCell(c).alignment = {horizontal:'center',vertical:'middle'};
+      ws.getColumn(totalCols+2).width = 13;
+      hdrRow.getCell(totalCols+2).value = 'Rate helper \u2192 copy down for new rows';
+      hdrRow.getCell(totalCols+2).font = {size:9, italic:true, color:{argb:'FF999999'}};
+      hdrRow.getCell(totalCols+2).alignment = {horizontal:'left', vertical:'middle'};
 
       var monthC0=3, monthCN=2+p.count, ahCol=3+p.count, adCol=4+p.count, ycCol0=5+p.count, totalCol=totalCols;
       var meta={ type:type, mult:mult, monthC0:monthC0, monthCN:monthCN, ahCol:ahCol, adCol:adCol, ycCol0:ycCol0, totalCol:totalCol, members:[], clusters:[], totalRow:null, totals:null };
@@ -8532,6 +8541,7 @@
       }
       _addGradeRows(icRateCards.it,'it');
       _addGradeRows(icRateCards.biz,'biz');
+      var _rcN=_mapGrades.map(function(g){return parseInt(g.cell.slice(1),10);}); var _rcF=_rcN.length?Math.min.apply(null,_rcN):0, _rcL=_rcN.length?Math.max.apply(null,_rcN):0;
 
       wsData.addRow([]);
       var rcTitle = wsData.addRow(['RESOURCE RATES ('+currentCurrency+'/hr)']); rcTitle.getCell(1).font={bold:true,color:{argb:NAVY}};
@@ -8552,19 +8562,19 @@
         var multRef='Data!$B$'+multRowFor(meta.type);
         meta.members.forEach(function(mem){
           var rn=mem.rowNum;
-          if(mem.tHrs>0){
-            setF(rn, meta.ahCol, 'SUM('+_colL(meta.monthC0)+rn+':'+_colL(meta.monthCN)+rn+')', mem.tHrs);
-            setF(rn, meta.adCol, _colL(meta.ahCol)+rn+'/7.5', mem.ad);
-          }
-          var rateRef='Data!$C$'+mem.rateRow;
+          setF(rn, meta.ahCol, 'SUM('+_colL(meta.monthC0)+rn+':'+_colL(meta.monthCN)+rn+')', mem.tHrs||0);
+          setF(rn, meta.adCol, _colL(meta.ahCol)+rn+'/7.5', mem.ad||0);
+          var _vk='VLOOKUP("'+(meta.type==="it"?"IT":"Biz")+' - "&TRIM(B'+rn+'),Data!$A$'+_rcF+':$B$'+_rcL+',2,FALSE)';
+          var rateExpr=_rcF? ('IFERROR('+_vk+',0)') : ('Data!$C$'+mem.rateRow);
+          var _rcCell=ws.getRow(rn).getCell(2 + p.count + 2 + calRanges.length + 1 + 2);
+          _rcCell.value={formula:rateExpr, result:mem.rate};
+          _rcCell.numFmt='"\u2193 copy";"\u2193 copy";"grade misspelled"';
+          _rcCell.font={size:9, italic:true, color:{argb:'FF999999'}};
           calRanges.forEach(function(rng,y){
-            var dv=mem.ycVals[y];
-            if(dv>0){
-              var c1=_colL(meta.monthC0+rng.start)+rn, c2=_colL(meta.monthC0+rng.end)+rn;
-              setF(rn, meta.ycCol0+y, 'SUM('+c1+':'+c2+')*'+rateRef, dv);
-            }
+            var c1=_colL(meta.monthC0+rng.start)+rn, c2=_colL(meta.monthC0+rng.end)+rn;
+            setF(rn, meta.ycCol0+y, 'SUM('+c1+':'+c2+')*('+rateExpr+')', mem.ycVals[y]||0);
           });
-          if(mem.grand>0) setF(rn, meta.totalCol, 'SUM('+_colL(meta.ycCol0)+rn+':'+_colL(meta.ycCol0+calRanges.length-1)+rn+')', mem.grand);
+          setF(rn, meta.totalCol, 'SUM('+_colL(meta.ycCol0)+rn+':'+_colL(meta.ycCol0+calRanges.length-1)+rn+')', mem.grand||0);
         });
         meta.clusters.forEach(function(cl){
           if(!cl.count || cl.first===null) return;
@@ -8607,7 +8617,7 @@
       };
       _icSectionsMeta.forEach(function(meta){
         meta.members.forEach(function(mem){
-          _icFx.map.resources.push({ id:mem.res.id, type:meta.type, clusterId:mem.res.clusterId||null, gradeId:mem.res.grade||null });
+          _icFx.map.resources.push({ id:mem.res.id, type:meta.type, clusterId:mem.res.clusterId||null, gradeId:mem.res.grade||null, alloc:mem.res.alloc||null });
         });
       });
       wsData.state = 'hidden';
@@ -8865,23 +8875,55 @@
       var monthRows=null;
       if(_icFx.wsData && _icSectionsMeta.length && _icFx.dataMult){
         var wsD=_icFx.wsData;
-        var itMembers=[], bizMembers=[];
-        _icSectionsMeta.forEach(function(meta){ meta.members.forEach(function(mem){ (meta.type==='it'?itMembers:bizMembers).push({row:mem.rowNum, rateRow:mem.rateRow, mc0:meta.monthC0}); }); });
+        var _RATECOL = 2 + p.count + 2 + calRanges.length + 1 + 2; var _RC=_colL(_RATECOL);
+        try{ ws.getColumn(_RATECOL).hidden=false; ws.getColumn(_RATECOL).width=13; }catch(e){}
         var itMultRef='Data!$B$'+_icFx.dataMult.itRow, bizMultRef='Data!$B$'+_icFx.dataMult.bizRow;
+        // Cluster-aware member-row blocks so a person added INSIDE a block flows into the breakdown
+        function _blocks(meta){
+          if(!meta) return [];
+          if(meta.clusters && meta.clusters.length){ return meta.clusters.filter(function(c){return c.first&&c.last;}).map(function(c){return {first:c.first,last:c.last};}); }
+          if(meta.members && meta.members.length){ return [{first:meta.members[0].rowNum, last:meta.members[meta.members.length-1].rowNum}]; }
+          return [];
+        }
+        var itM=_icMetaOf('it'), bzM=_icMetaOf('biz');
+        var itB=_blocks(itM), bzB=_blocks(bzM);
         wsD.addRow([]);
-        var hLbl=wsD.addRow(['COST BREAKDOWN per-month helper (do not edit)']); hLbl.getCell(1).font={italic:true,color:{argb:'FF888888'},size:9};
-        function _termsH(members,m){ return members.map(function(x){ return "'Investment Case'!"+_colL(x.mc0+m)+x.row; }); }
-        function _termsC(members,m,multRef){ return members.map(function(x){ return "'Investment Case'!"+_colL(x.mc0+m)+x.row+"*Data!$C$"+x.rateRow+"*"+multRef; }); }
-        function _addMonthly(label, fn){ var r=wsD.addRow([label]); for(var m=0;m<p.count;m++){ var t=fn(m); r.getCell(2+m).value = t.length?{formula:t.join('+'), result:0}:0; } return r.number; }
-        var rItH=_addMonthly('IT hours/mo',  function(m){ return _termsH(itMembers,m); });
-        var rBzH=_addMonthly('Biz hours/mo', function(m){ return _termsH(bizMembers,m); });
-        var rItC=_addMonthly('IT cost/mo',   function(m){ return _termsC(itMembers,m,itMultRef); });
-        var rBzC=_addMonthly('Biz cost/mo',  function(m){ return _termsC(bizMembers,m,bizMultRef); });
+        var hLbl=wsD.addRow(['COST BREAKDOWN per-month helper (range-based; do not edit)']); hLbl.getCell(1).font={italic:true,color:{argb:'FF888888'},size:9};
+        function _hoursF(meta,m){ if(!meta||!meta.totalRow) return null; return "'Investment Case'!"+_colL(meta.monthC0+m)+meta.totalRow; }
+        function _costF(meta,blocks,m,multRef){ if(!meta||!blocks.length) return null; var mc=_colL(meta.monthC0+m); var terms=blocks.map(function(b){ return "SUMPRODUCT('Investment Case'!"+mc+b.first+":"+mc+b.last+",'Investment Case'!"+_RC+b.first+":"+_RC+b.last+")"; }); return '('+terms.join('+')+')*'+multRef; }
+        function _addMonthly(label, fn){ var r=wsD.addRow([label]); for(var m=0;m<p.count;m++){ var fx=fn(m); r.getCell(2+m).value = fx?{formula:fx, result:0}:0; } return r.number; }
+        var rItH=_addMonthly('IT hours/mo',  function(m){ return _hoursF(itM,m); });
+        var rBzH=_addMonthly('Biz hours/mo', function(m){ return _hoursF(bzM,m); });
+        var rItC=_addMonthly('IT cost/mo',   function(m){ return _costF(itM,itB,m,itMultRef); });
+        var rBzC=_addMonthly('Biz cost/mo',  function(m){ return _costF(bzM,bzB,m,bizMultRef); });
         monthRows={ itH:rItH, bzH:rBzH, itC:rItC, bzC:rBzC };
       }
       var _cbColEnd=_colL(1+p.count);
       function _sp(weights, dataRow){ var arr=weights.map(function(x){ return Math.round(x*1e6)/1e6; }).join(','); return 'SUMPRODUCT({'+arr+'},Data!$B$'+dataRow+':$'+_cbColEnd+'$'+dataRow+')'; }
       function _sumData(dataRow){ return 'SUM(Data!$B$'+dataRow+':$'+_cbColEnd+'$'+dataRow+')'; }
+      // Per-member live formulas (used when per-person phase splits exist)
+      var _cbItMult=_icFx.dataMult?('Data!$B$'+_icFx.dataMult.itRow):'1';
+      var _cbBzMult=_icFx.dataMult?('Data!$B$'+_icFx.dataMult.bizRow):'1';
+      var _cbMembers=[];
+      _icSectionsMeta.forEach(function(meta){ meta.members.forEach(function(mem){ _cbMembers.push({id:(mem.res&&mem.res.id), type:meta.type, row:mem.rowNum, rateRow:mem.rateRow, mc0:meta.monthC0}); }); });
+      // Correction terms: for members whose split differs from the even base.
+      // node total = even-base(range, auto-includes new rows) + SUM of these deltas.
+      // multRef set => cost term (xrate xmult); null => hours term.
+      // Correction terms (bounded): one SUMPRODUCT per person who differs from the even split.
+      function _corrTerms(node,type,multRef){
+        var mw=node.memberW||{}, w0=node.weights||[], terms=[];
+        for(var mi=0;mi<_cbMembers.length;mi++){ var mem=_cbMembers[mi]; if(mem.type!==type||!mem.id) continue;
+          var w=mw[mem.id]; if(!w) continue;
+          var corr=[], any=false;
+          for(var m=0;m<p.count;m++){ var c=Math.round(((w[m]||0)-(w0[m]||0))*1e6)/1e6; corr.push(c); if(Math.abs(c)>1e-9) any=true; }
+          if(!any) continue;
+          if(multRef && !mem.rateRow) continue;
+          var range="'Investment Case'!"+_colL(mem.mc0)+mem.row+":"+_colL(mem.mc0+p.count-1)+mem.row;
+          var sp='SUMPRODUCT({'+corr.join(',')+'},'+range+')';
+          terms.push(multRef?('('+sp+')*Data!$C$'+mem.rateRow+'*'+multRef):sp);
+        }
+        return terms.length?('+'+terms.join('+')):'';
+      }
 
       function addCbRow(lbl,node,indent,nodeColor){
         var rowCost=node.cost||0;
@@ -8891,13 +8933,13 @@
         var bgArgb=tintArgb(baseColor, indent===0?0.15:0.10);
         var nameFont = indent===0?{bold:true,color:{argb:NAVY}}:undefined;
         var row=ws.addRow([]); row.height=15; var rn=row.number;
-        var dyn = monthRows && node.weights && !icHasCustomAlloc();
-        function vH(val,dataRow){ if(!(val>0)) return null; return dyn?{formula:_sp(node.weights,dataRow), result:Math.round(val)}:Math.round(val); }
-        function vC(dispVal,dataRow){ if(!(dispVal>0)) return null; return dyn?{formula:_sp(node.weights,dataRow), result:dispVal}:dispVal; }
-        var itHv=vH(node.itHours||0, dyn?monthRows.itH:0);
-        var bzHv=vH(node.bizHours||0, dyn?monthRows.bzH:0);
-        var itCv=vC(toDisp(node.itCost||0), dyn?monthRows.itC:0);
-        var bzCv=vC(toDisp(node.bizCost||0), dyn?monthRows.bzC:0);
+        var dyn = monthRows && node.weights;
+        function vH(val,aggRow,corr){ if(!(val>0)) return null; return (dyn&&aggRow)?{formula:_sp(node.weights,aggRow)+corr, result:Math.round(val)}:Math.round(val); }
+        function vC(dispVal,aggRow,corr){ if(!(dispVal>0)) return null; return (dyn&&aggRow)?{formula:_sp(node.weights,aggRow)+corr, result:dispVal}:dispVal; }
+        var itHv=vH(node.itHours||0, dyn?monthRows.itH:0, _corrTerms(node,'it',null));
+        var bzHv=vH(node.bizHours||0, dyn?monthRows.bzH:0, _corrTerms(node,'biz',null));
+        var itCv=vC(toDisp(node.itCost||0), dyn?monthRows.itC:0, _corrTerms(node,'it',_cbItMult));
+        var bzCv=vC(toDisp(node.bizCost||0), dyn?monthRows.bzC:0, _corrTerms(node,'biz',_cbBzMult));
         var allocV = (dyn && node.hours>0) ? {formula:_colL(CB.ith)+rn+'+'+_colL(CB.bizh)+rn, result:Math.round(node.hours)} : (node.hours>0?Math.round(node.hours):null);
         var costV  = (dyn && rowCost>0)   ? {formula:_colL(CB.itc)+rn+'+'+_colL(CB.bizc)+rn, result:toDisp(rowCost)} : (toDisp(rowCost)||null);
         _cbCell(row, CB.name, 2, indentStr+lbl, 'left',  bgArgb, nameFont);
@@ -10823,7 +10865,7 @@ view_formula_for:'Vis formler for:'}
         if(note.indexOf('res:')===0){ rid=note.slice(4); mapr=resById[rid]||{}; }
         else { rid=( (curType==='it')?'it':'biz')+(icNextResId++); mapr={}; addedCount++; }
         var tp=curType||mapr.type||'it';
-        var rObj={ id:rid, name:c1, grade:_icGradeIdFromText(tp, gradeText, mapr.gradeId), clusterId:(curCluster||mapr.clusterId||null), hours:hours };
+        var rObj={ id:rid, name:c1, grade:_icGradeIdFromText(tp, gradeText, mapr.gradeId), clusterId:(curCluster||mapr.clusterId||null), hours:hours, alloc:(mapr&&mapr.alloc)||null };
         (tp==='it'?newIT:newBiz).push(rObj);
       }
     }
