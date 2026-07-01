@@ -4531,6 +4531,7 @@
       <label class="ic-export-check-row"><input type="checkbox" id="icex-addcosts" checked=""> <span>Additional Costs</span></label>
       <label class="ic-export-check-row"><input type="checkbox" id="icex-sanity" checked=""> <span>Sanity Check</span></label>
       <label class="ic-export-check-row"><input type="checkbox" id="icex-ratecard" checked=""> <span>Rate Card</span></label>
+      <label class="ic-export-check-row" style="border-top:1px solid #e3e7ee;margin-top:6px;padding-top:8px"><input type="checkbox" id="icex-fte"> <span>Export in FTE (instead of hours)</span></label>
     </div>
     <div class="ic-export-modal-footer">
       <button class="ic-export-cancel" onclick="icHideExportModal()">Cancel</button>
@@ -4682,7 +4683,6 @@
         <button class="pm-parked-btn" id="pm-parked-btn" onclick="pmOpenDrawer()" style="opacity: 0.65;">
           📦 Parked items <span class="pm-parked-badge" id="pm-parked-count">0</span>
         </button>
-        <button class="pm-type-btn" id="pm-fte-toggle" onclick="pmToggleFte()" style="margin-left:8px" title="Switch the grid between hours and full-time-employee (FTE)">Showing: Hours</button>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
@@ -4710,6 +4710,7 @@
       <div style="display:flex;gap:8px;align-items:center">
         <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-it&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
         <button class="ic-add-phase-btn" onclick="icAddCluster(&#39;it&#39;)">+ Add cluster</button>
+        <button class="ic-add-phase-btn" id="bc-fte-toggle" onclick="bcToggleFte()" title="Switch the grid between hours and FTE">Showing: Hours</button>
       </div>
     </div>
     <div class="ic-timeline-wrap">
@@ -4788,7 +4789,10 @@
   <!-- RIGHT: cost bars -->
   <div class="results-col">
     <div class="savings-section">
-      <div class="savings-title" data-i18n="ic_cost_breakdown">Cost breakdown including Contingency</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div class="savings-title" data-i18n="ic_cost_breakdown">Cost breakdown including Contingency</div>
+        <button class="ic-add-phase-btn" id="cb-fte-toggle" onclick="cbToggleFte()" title="Show the breakdown hours as FTE (independent of the resource tables)" style="font-size:11px;padding:4px 10px">Showing: Hours</button>
+      </div>
       <div id="ic-cost-bars"><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><button class="ic-toggle-btn" data-action="toggle-cost" data-key="grp|grp1">▼</button><span class="saving-bar-name">Implementation project</span></div><span class="saving-bar-amount">2.061.400 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:29.4%;background:#64748b"></div></div></div><div class="ic-cost-children"><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Discover</span></div><span class="saving-bar-amount">228.800 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:3.3%;background:#F5A623"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Prepare</span></div><span class="saving-bar-amount">125.400 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:1.8%;background:#7AB648"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Explore</span></div><span class="saving-bar-amount">426.800 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:6.1%;background:#3AADA8"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Realize</span></div><span class="saving-bar-amount">853.600 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:12.2%;background:#1A6FAD"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Deploy</span></div><span class="saving-bar-amount">213.400 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:3.0%;background:#F07800"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Run</span></div><span class="saving-bar-amount">213.400 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:3.0%;background:#6B7C3F"></div></div></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><button class="ic-toggle-btn" data-action="toggle-cost" data-key="grp|grp2">▼</button><span class="saving-bar-name">Roll out</span></div><span class="saving-bar-amount">3.414.400 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:48.7%;background:#64748b"></div></div></div><div class="ic-cost-children"><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Roll out FR</span></div><span class="saving-bar-amount">853.600 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:12.2%;background:#f39c12"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Roll out ES</span></div><span class="saving-bar-amount">853.600 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:12.2%;background:#2980b9"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Roll out US</span></div><span class="saving-bar-amount">853.600 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:12.2%;background:#4A90D9"></div></div></div></div><div class="ic-cost-node"><div class="saving-bar"><div class="saving-bar-header"><div class="ic-cost-label-wrap"><span class="ic-toggle-spacer"></span><span class="saving-bar-name">Roll out CN</span></div><span class="saving-bar-amount">853.600 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:12.2%;background:#F07800"></div></div></div></div></div></div><div class="ic-cost-group-label" style="margin-top:16px">Additional Costs</div><div class="saving-bar"><div class="saving-bar-header"><span class="saving-bar-name">Travel</span><span class="saving-bar-amount">800.000 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:11.4%;background:#7f8c8d"></div></div></div><div class="saving-bar"><div class="saving-bar-header"><span class="saving-bar-name">Project A</span><span class="saving-bar-amount">730.000 kr</span></div><div class="bar-track"><div class="bar-fill" style="width:10.4%;background:#95a5a6"></div></div></div></div>
     </div>
   </div>
@@ -5338,7 +5342,7 @@
       if(icEl) {
         icEl.style.display = (a==='ic'||a==='pm') ? '' : 'none';
         icEl.classList.toggle('pm-mode', a==='pm');
-        if(a==='pm'){ if(typeof pmUpdateFteBtn==='function') pmUpdateFteBtn(); if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); } }
+        if(a==='pm'||a==='ic'){ if(typeof bcUpdateFteBtn==='function') bcUpdateFteBtn(); if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); } }
       }
       var sdEl=document.getElementById('sd-section');
       if(sdEl) sdEl.style.display = a==='sd' ? '' : 'none';
@@ -5977,7 +5981,10 @@
     try{ var u=localStorage.getItem('bcCurrentUser'); if(u){ bcCurrentUser=u; } }catch(e){}
     bcRefreshAuthUI();
     try{ pmFteMode = (localStorage.getItem('pmFteMode')==='1'); }catch(e){}
-    if(typeof pmUpdateFteBtn==='function') pmUpdateFteBtn();
+    try{ icFteMode = (localStorage.getItem('icFteMode')==='1'); }catch(e){}
+    try{ cbFteMode = (localStorage.getItem('cbFteMode')==='1'); }catch(e){}
+    if(typeof bcUpdateFteBtn==='function') bcUpdateFteBtn();
+    if(typeof cbUpdateFteBtn==='function') cbUpdateFteBtn();
     if(typeof bcInitFteBasis==='function') bcInitFteBasis();
     if(typeof bcInitRateFields==='function') bcInitRateFields();
     try{ if(!document.getElementById('ic-alloc-style')){ var _as=document.createElement('style'); _as.id='ic-alloc-style'; _as.textContent='.ic-hrs-input.ic-hrs-alloc{box-shadow:inset 0 -3px 0 -1px #6b46c1;border-radius:2px}'; (document.head||document.documentElement).appendChild(_as);} }catch(e){}
@@ -6018,7 +6025,7 @@
       for (var i = 0; i < p.count; i++) { var _h=(res.hours[i]||0); totalHrs += _h; if(_h>0) actMonths++; }
       var totalDays = totalHrs ? (totalHrs / 7.5).toFixed(1) : 0;
 
-      setCell(type+'-'+res.id+'-hrs',  totalHrs  ? pmSumDisp(totalHrs,actMonths)  : '—', totalHrs > 0);
+      setCell(type+'-'+res.id+'-hrs',  totalHrs  ? _icResAvgFte(function(q){return res.hours[q]||0;},p.count)  : '—', totalHrs > 0);
       setCell(type+'-'+res.id+'-days', totalDays ? totalDays : '—', !!totalDays);
 
       var grand = 0;
@@ -6038,10 +6045,10 @@
         var clRes=resources.filter(function(r){return r.clusterId===cl.id;});
         var clHrs=0, clGrand=0, clYr=new Array(calRanges.length).fill(0);
         var clAct=0;
-        for(var i=0;i<p.count;i++){ var cc=0; clRes.forEach(function(res){cc+=(res.hours[i]||0);}); if(cc>0) clAct++; var ce=tbl.querySelector('[data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'"]'); if(ce) ce.textContent=cc>0?pmHd(cc):''; }
+        for(var i=0;i<p.count;i++){ var cc=0; clRes.forEach(function(res){cc+=(res.hours[i]||0);}); if(cc>0) clAct++; var ce=tbl.querySelector('[data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'"]'); if(ce) ce.textContent=cc>0?_icResHd(cc,i):''; }
         clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++) clHrs+=(res.hours[i]||0); for(var y=0;y<calRanges.length;y++){ var rng=calRanges[y]; for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; } });
         for(var y=0;y<calRanges.length;y++){ clGrand+=clYr[y]; setCell(type+'-cl-'+cl.id+'-yr'+y, clYr[y]?icFmtDKK(clYr[y]):'\u2014', clYr[y]>0); }
-        setCell(type+'-cl-'+cl.id+'-hrs', clHrs?pmSumDisp(clHrs,clAct):'\u2014', clHrs>0);
+        setCell(type+'-cl-'+cl.id+'-hrs', clHrs?_icResAvgFte(function(q){var cc=0;clRes.forEach(function(res){cc+=(res.hours[q]||0);});return cc;},p.count):'\u2014', clHrs>0);
         setCell(type+'-cl-'+cl.id+'-days', clHrs?(clHrs/7.5).toFixed(1):'\u2014', clHrs>0);
         setCell(type+'-cl-'+cl.id+'-grand', clGrand?icFmtDKK(clGrand):'\u2014');
       });
@@ -6055,13 +6062,13 @@
       totHrs += colTot;
       if (colTot > 0) totAct++;
       var colEl = tbl.querySelector('[data-sumid="'+type+'-col-'+i+'"]');
-      if (colEl) colEl.textContent = colTot > 0 ? pmHd(colTot) : '';
+      if (colEl) colEl.textContent = colTot > 0 ? _icResHd(colTot,i) : '';
     }
     for (var ri = 0; ri < resources.length; ri++) {
       for (var i = 0; i < p.count; i++) totGrand += (resources[ri].hours[i] || 0) * icGetResRate(resources[ri], type);
     }
 
-    setCell(type+'-total-hrs',  totHrs ? pmSumDisp(totHrs,totAct) : '—');
+    setCell(type+'-total-hrs',  totHrs ? _icResAvgFte(function(q){var c=0;for(var ri=0;ri<resources.length;ri++)c+=(resources[ri].hours[q]||0);return c;},p.count) : '—');
     setCell(type+'-total-days', totHrs ? (totHrs / 7.5).toFixed(1) : '—');
     for (var y = 0; y < calRanges.length; y++) {
       var rng = calRanges[y], yt = 0;
@@ -6369,6 +6376,14 @@
     return Math.ceil((((d-yearStart)/86400000)+1)/7);
   }
 
+  // Monday on or before the project start — used to align week columns to real
+  // calendar (Mon-Sun) weeks instead of the project's start weekday.
+  function _icWeekAnchor(){
+    var s=icDates.start; if(!s) return null;
+    var d=new Date(s.getFullYear(),s.getMonth(),s.getDate());
+    d.setDate(d.getDate()-((d.getDay()+6)%7));
+    return d;
+  }
   function icGetPeriods(){
     var years=Math.ceil(icTotalMonths()/12);
     var isWeeks=icPeriod==='weeks';
@@ -6396,14 +6411,14 @@
         else yearGroups[yearGroups.length-1].count++;
       }
     } else if(start && isWeeks){
+      var _wa=_icWeekAnchor()||start;
       if(icDates.end){
-        var ms=icDates.end-start;
-        count=Math.max(1,Math.ceil(ms/(7*24*60*60*1000)));
+        count=Math.max(1, Math.floor((icDates.end-_wa)/(7*24*60*60*1000))+1);
         years=Math.max(1,Math.ceil(count/52));
       }
       var prevYr=null;
       for(var i=0;i<count;i++){
-        var d=new Date(start.getTime()+i*7*24*60*60*1000);
+        var d=new Date(_wa.getFullYear(),_wa.getMonth(),_wa.getDate()+i*7);
         labels.push('W'+icISOWeek(d));
         var yr=d.getFullYear();
         if(yr!==prevYr){ yearGroups.push({year:yr,count:1}); prevYr=yr; }
@@ -6460,10 +6475,55 @@
     return '#'+[r,g,b].map(function(v){return('0'+v.toString(16)).slice(-2);}).join('');
   }
 
+  // ── Option B: date-anchored timeline memory ──────────────────────────
+  // Each phase/sub/activity keeps a hidden `pdays` map (absolute day-numbers
+  // that are painted). The visible `painted` index-map is rebuilt from pdays
+  // for whichever view (months/weeks) is showing, so marks follow the calendar.
+  function _icDayNum(d){ return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); }
+  function _icColDays(i){
+    var s=icDates.start; if(!s) return null;
+    var s0,e0;
+    if(icPeriod==='weeks'){ var _wa=_icWeekAnchor()||s; s0=new Date(_wa.getFullYear(),_wa.getMonth(),_wa.getDate()+i*7); e0=new Date(_wa.getFullYear(),_wa.getMonth(),_wa.getDate()+i*7+7); }
+    else { s0=new Date(s.getFullYear(), s.getMonth()+i, 1); e0=new Date(s.getFullYear(), s.getMonth()+i+1, 1); }
+    // Day-numbers from the calendar date (timezone-stable); end is exclusive so
+    // adjacent columns never share a boundary day.
+    var d0=_icDayNum(s0), d1=_icDayNum(e0);
+    var arr=[]; for(var d=d0; d<d1; d++) arr.push(d); return arr;
+  }
+  function _icPaintWrite(node, i, on){
+    var days=_icColDays(i); if(!days) return; // no date context -> legacy index mode
+    if(!node.pdays) node.pdays={};
+    for(var k=0;k<days.length;k++){ if(on) node.pdays[days[k]]=1; else delete node.pdays[days[k]]; }
+  }
+  function _icRebuildNodePainted(node){
+    if(!icDates.start) return; // legacy mode: keep index-based painted as-is
+    // migrate: seed pdays once from the existing painted indices (current view)
+    if(!node.pdays){
+      node.pdays={};
+      var keys=Object.keys(node.painted||{});
+      for(var j=0;j<keys.length;j++){ if(node.painted[keys[j]]){ var dd=_icColDays(Number(keys[j])); if(dd){ for(var x=0;x<dd.length;x++) node.pdays[dd[x]]=1; } } }
+    }
+    // rebuild painted index-map from pdays for the current view
+    var p=icGetPeriods(), np={};
+    for(var i=0;i<p.count;i++){ var dz=_icColDays(i); if(!dz) continue; for(var y=0;y<dz.length;y++){ if(node.pdays[dz[y]]){ np[i]=true; break; } } }
+    node.painted=np;
+  }
+  function _icRebuildAllPainted(){
+    if(!icDates.start) return;
+    (icPhases||[]).forEach(function(ph){
+      _icRebuildNodePainted(ph);
+      (ph.subPhases||[]).forEach(function(sp){
+        _icRebuildNodePainted(sp);
+        (sp.subSubPhases||[]).forEach(function(act){ _icRebuildNodePainted(act); });
+      });
+    });
+  }
+
   function icRenderTimeline(){
     var tbl=document.getElementById('ic-timeline-table');
     if(!tbl) return;
     var p=icGetPeriods();
+    _icRebuildAllPainted();
 
     // thead
     var h='<thead>';
@@ -7070,13 +7130,13 @@
       if(!sp) return;
       var act=sp.subSubPhases.find(function(a){return a.id===sspId;});
       if(!act) return;
-      if(act.painted[idx]) delete act.painted[idx]; else act.painted[idx]=true;
+      var _on=!act.painted[idx]; if(_on) act.painted[idx]=true; else delete act.painted[idx]; _icPaintWrite(act, idx, _on);
     } else if(spId){
       var sp=ph.subPhases.find(function(s){return s.id===spId;});
       if(!sp) return;
-      if(sp.painted[idx]) delete sp.painted[idx]; else sp.painted[idx]=true;
+      var _on=!sp.painted[idx]; if(_on) sp.painted[idx]=true; else delete sp.painted[idx]; _icPaintWrite(sp, idx, _on);
     } else {
-      if(ph.painted[idx]) delete ph.painted[idx]; else ph.painted[idx]=true;
+      var _on=!ph.painted[idx]; if(_on) ph.painted[idx]=true; else delete ph.painted[idx]; _icPaintWrite(ph, idx, _on);
     }
     icRenderTimeline();
   }
@@ -7149,9 +7209,9 @@
     if(sspId){var sp=ph.subPhases.find(function(s){return s.id===spId;});target=sp?sp.subSubPhases.find(function(a){return a.id===sspId;}):null;}
     else{target = spId ? ph.subPhases.find(function(s){return s.id===spId;}) : ph;}
     if (!target) return;
-    target.painted = {};
+    target.painted = {}; target.pdays = {};
     var p = icGetPeriods();
-    for (var i = start; i < Math.min(start+dur, p.count); i++) target.painted[i] = true;
+    for (var i = start; i < Math.min(start+dur, p.count); i++) { target.painted[i] = true; _icPaintWrite(target, i, true); }
     _icRangePopup.classList.remove('open'); icRangeOpen = null;
     icRenderTimeline();
   }
@@ -7162,7 +7222,7 @@
     var target;
     if(sspId){var sp=ph.subPhases.find(function(s){return s.id===spId;});target=sp?sp.subSubPhases.find(function(a){return a.id===sspId;}):null;}
     else{target = spId ? ph.subPhases.find(function(s){return s.id===spId;}) : ph;}
-    if (target) target.painted = {};
+    if (target){ target.painted = {}; target.pdays = {}; }
     _icRangePopup.classList.remove('open'); icRangeOpen = null;
     icRenderTimeline();
   }
@@ -7245,6 +7305,7 @@
     if (!res) return;
     for (var i = from; i <= to; i++) {
       if (hrs > 0) res.hours[i] = hrs; else delete res.hours[i];
+      _icResWriteCol(res, i, hrs);
     }
     _icResRangePopup.classList.remove('open'); icResRangeOpen = null;
     icRenderResources(type);
@@ -7258,7 +7319,7 @@
     if (from > to) { var tmp=from; from=to; to=tmp; }
     var res = icGetResourceArr(type).find(function(r){return r.id===resId;});
     if (!res) return;
-    for (var i = from; i <= to; i++) delete res.hours[i];
+    for (var i = from; i <= to; i++) { delete res.hours[i]; _icResWriteCol(res, i, 0); }
     _icResRangePopup.classList.remove('open'); icResRangeOpen = null;
     icRenderResources(type);
   }
@@ -7415,26 +7476,47 @@
   }
 
   /* ===== Hours <-> FTE (Project Management only) ===== */
-  var pmFteMode=false;
-  function bcFteHrsMonth(){ var v; try{ v=parseFloat(localStorage.getItem('bcFteHrsMonth')); }catch(e){} return (v>0)?v:148; }
+  var pmFteMode=false, icFteMode=false, cbFteMode=false;
+  function bcFteHrsMonth(){ var v; try{ v=parseFloat(localStorage.getItem('bcFteHrsMonth')); }catch(e){} return (v>0)?v:162.5; }
   function bcFteHrsWeek(){ var v; try{ v=parseFloat(localStorage.getItem('bcFteHrsWeek')); }catch(e){} return (v>0)?v:37.5; }
   function bcFteDivisor(){ return (typeof icPeriod!=='undefined' && icPeriod==='weeks') ? bcFteHrsWeek() : bcFteHrsMonth(); }
-  function pmFteActive(){ return (typeof currentArea!=='undefined' && currentArea==='pm' && pmFteMode); }
+  function pmFteActive(){ if(typeof currentArea==='undefined') return false; return (currentArea==='pm'&&pmFteMode)||(currentArea==='ic'&&icFteMode); }
   // hours -> grid display value: FTE rounded to 2dp when active, else raw hours
-  function pmHd(h){ if(!(h>0)) return 0; if(pmFteActive()){ return Math.round((h/bcFteDivisor())*100)/100; } return h; }
+  function pmHd(h){ if(!(h>0)) return 0; if(pmFteActive()){ return Math.round((h/bcFteDivisor())*100)/100; } return Math.round(h*100)/100; }
   // Average FTE across allocated (non-zero) months
   function pmAvgFte(totalHrs, activeMonths){ if(!(totalHrs>0)||!(activeMonths>0)) return 0; return Math.round((totalHrs/activeMonths/bcFteDivisor())*100)/100; }
   // Summary 'hours' cell: average FTE when FTE view active, else raw total hours
-  function pmSumDisp(totalHrs, activeMonths){ return pmFteActive() ? pmAvgFte(totalHrs, activeMonths) : totalHrs; }
-  function pmToggleFte(){
-    pmFteMode=!pmFteMode;
-    try{ localStorage.setItem('pmFteMode', pmFteMode?'1':'0'); }catch(e){}
-    pmUpdateFteBtn();
+  function pmSumDisp(totalHrs, activeMonths){ return pmFteActive() ? pmAvgFte(totalHrs, activeMonths) : Math.round(totalHrs*100)/100; }
+  // Option B: resource FTE uses a per-period WORKING-DAY basis (7.5 h/working day
+  // by default), so 1 FTE always means a full working day regardless of how many
+  // working days a month/week contains. Falls back to the flat basis if there is
+  // no calendar (no project start date).
+  function _icColWorkDayCount(i){ var wd=_icColWorkDays(i); return wd?wd.length:0; }
+  function _icHrsPerWorkDay(){ var w=bcFteHrsWeek(); return (w>0)?w/5:7.5; }
+  function _icResFteBasis(i){ var n=_icColWorkDayCount(i); var hpd=_icHrsPerWorkDay(); return (icDates.start&&n>0&&hpd>0)?(hpd*n):bcFteDivisor(); }
+  function _icResHd(h,i){ if(!(h>0)) return 0; if(pmFteActive()) return Math.round((h/_icResFteBasis(i))*100)/100; return Math.round(h*100)/100; }
+  function _icResAvgFte(get,count){ if(!pmFteActive()){ var t=0; for(var q=0;q<count;q++) t+=get(q)||0; return Math.round(t*100)/100; } var sum=0,cnt=0; for(var q=0;q<count;q++){ var hh=get(q)||0; if(hh>0){ sum+=hh/_icResFteBasis(q); cnt++; } } return cnt>0?Math.round((sum/cnt)*100)/100:0; }
+  function bcToggleFte(){
+    if(currentArea==='ic'){ icFteMode=!icFteMode; try{ localStorage.setItem('icFteMode', icFteMode?'1':'0'); }catch(e){} }
+    else if(currentArea==='pm'){ pmFteMode=!pmFteMode; try{ localStorage.setItem('pmFteMode', pmFteMode?'1':'0'); }catch(e){} }
+    else return;
+    bcUpdateFteBtn();
     if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); }
   }
-  function pmUpdateFteBtn(){
-    var b=document.getElementById('pm-fte-toggle');
-    if(b){ b.textContent=(pmFteMode?'Showing: FTE':'Showing: Hours'); b.classList.toggle('active', pmFteMode); }
+  function bcUpdateFteBtn(){
+    var b=document.getElementById('bc-fte-toggle'); if(!b) return;
+    var on=(currentArea==='ic'&&icFteMode)||(currentArea==='pm'&&pmFteMode);
+    b.textContent=(on?'Showing: FTE':'Showing: Hours'); b.classList.toggle('active', on);
+  }
+  function cbToggleFte(){
+    cbFteMode=!cbFteMode;
+    try{ localStorage.setItem('cbFteMode', cbFteMode?'1':'0'); }catch(e){}
+    cbUpdateFteBtn();
+    if(typeof icRenderCostChart==='function') icRenderCostChart();
+  }
+  function cbUpdateFteBtn(){
+    var b=document.getElementById('cb-fte-toggle');
+    if(b){ b.textContent=(cbFteMode?'Showing: FTE':'Showing: Hours'); b.classList.toggle('active', cbFteMode); }
   }
   function bcSaveFteBasis(){
     var m=parseFloat((document.getElementById('set-fte-month')||{}).value);
@@ -7447,10 +7529,107 @@
     if(me) me.value=bcFteHrsMonth();
     if(we) we.value=bcFteHrsWeek();
   }
+  // ── Resource hours: calendar-anchored memory (mirror of the timeline) ──
+  // res.hdays maps absolute day-number -> hours. Hours typed into a period are
+  // spread evenly across that period's days; each view re-totals from hdays, so
+  // weeks sum into months and switching views back and forth is lossless.
+  // Working days (Mon-Fri) of a column's span. Day-number 0 (1970-01-01) is a
+  // Thursday, so weekday = (dayNum+4)%7 with 0=Sun..6=Sat; keep 1..5.
+  function _icColWorkDays(i){
+    var days=_icColDays(i); if(!days) return null;
+    var out=[]; for(var k=0;k<days.length;k++){ var wd=(days[k]+4)%7; if(wd>=1&&wd<=5) out.push(days[k]); }
+    return out;
+  }
+  function _icResWriteCol(res, idx, v){
+    var all=_icColDays(idx); if(!all) return; // no date context -> legacy index mode
+    if(!res.hdays) res.hdays={};
+    // clear the whole column span first (incl. weekends / stale values)
+    for(var c=0;c<all.length;c++) delete res.hdays[all[c]];
+    if(v>0){ var wd=_icColWorkDays(idx); if(!wd||!wd.length) wd=all; var per=v/wd.length; for(var k=0;k<wd.length;k++) res.hdays[wd[k]]=per; }
+  }
+  function _icResRebuildOne(res){
+    if(!icDates.start) return; // legacy index mode (no calendar to anchor to)
+    if(!res.hdays){
+      // migrate once: spread current per-column hours across each column's days
+      res.hdays={};
+      var ks=Object.keys(res.hours||{});
+      for(var j=0;j<ks.length;j++){ var hv=res.hours[ks[j]]; if(hv){ var dd=_icColWorkDays(Number(ks[j])); if(!dd||!dd.length) dd=_icColDays(Number(ks[j])); if(dd&&dd.length){ var per=hv/dd.length; for(var x=0;x<dd.length;x++) res.hdays[dd[x]]=(res.hdays[dd[x]]||0)+per; } } }
+    }
+    // rebuild per-column hours from hdays for the current view
+    var p=icGetPeriods(), nh={};
+    for(var i=0;i<p.count;i++){ var dz=_icColDays(i); if(!dz) continue; var sum=0; for(var y=0;y<dz.length;y++){ if(res.hdays[dz[y]]) sum+=res.hdays[dz[y]]; } if(sum>1e-9) nh[i]=sum; }
+    res.hours=nh;
+  }
+  // Per-cell phase allocation, calendar-anchored (sibling to hdays). res.adays maps
+  // a working day -> {nodeKey: percent}. On any view a column's split is rebuilt from
+  // its days, hours-weighted, so it follows the calendar and survives view switches.
+  function _icAllocWriteCol(res, idx, map){
+    var all=_icColDays(idx); if(!all) return; // legacy index mode
+    if(!res.adays) res.adays={};
+    for(var c=0;c<all.length;c++) delete res.adays[all[c]]; // clear column span first
+    if(map){ var wd=_icColWorkDays(idx)||all; for(var k=0;k<wd.length;k++){ var mm={}; for(var kk in map) mm[kk]=map[kk]; res.adays[wd[k]]=mm; } }
+  }
+  // Deepest painted phase-node keys covering a single calendar day (mirrors
+  // icDeepestNodesForMonth but at day granularity, using the timeline's pdays).
+  var _icDayNodeCache=null;
+  function _icDeepestKeysForDay(d){
+    if(_icDayNodeCache && _icDayNodeCache[d]) return _icDayNodeCache[d];
+    var out=[];
+    for(var pi=0;pi<icPhases.length;pi++){
+      var ph=icPhases[pi], phHit=false, subs=ph.subPhases||[];
+      for(var si=0;si<subs.length;si++){
+        var sp=subs[si], spHit=false, acts=sp.subSubPhases||[];
+        for(var ai=0;ai<acts.length;ai++){ var act=acts[ai]; if(act.pdays&&act.pdays[d]){ out.push('a|'+ph.id+'|'+sp.id+'|'+act.id); spHit=true; phHit=true; } }
+        if(!spHit && sp.pdays && sp.pdays[d]){ out.push('s|'+ph.id+'|'+sp.id); phHit=true; }
+      }
+      if(!phHit && ph.pdays && ph.pdays[d]) out.push('p|'+ph.id);
+    }
+    if(_icDayNodeCache) _icDayNodeCache[d]=out;
+    return out;
+  }
+  function _icRebuildResAllocOne(res){
+    if(!icDates.start) return; // legacy index mode: keep res.alloc as-is
+    if(!res.adays){
+      // migrate once from the existing per-column alloc (current view)
+      res.adays={};
+      if(res.alloc){ var ks0=Object.keys(res.alloc); for(var j=0;j<ks0.length;j++){ var m=res.alloc[ks0[j]]; if(m){ var wd=_icColWorkDays(Number(ks0[j])); if(wd){ for(var x=0;x<wd.length;x++){ var mm={}; for(var kk in m) mm[kk]=m[kk]; res.adays[wd[x]]=mm; } } } } }
+    }
+    // rebuild each column's split, hours-weighted. Days without an explicit split
+    // contribute their DEFAULT even split across that day's painted phases, so the
+    // even-split periods are counted in the roll-up (not silently dropped).
+    var p=icGetPeriods(), na={};
+    for(var i=0;i<p.count;i++){
+      var days=_icColDays(i); if(!days) continue;
+      var acc={}, wsum=0;
+      for(var y=0;y<days.length;y++){
+        var d=days[y]; var w=(res.hdays&&res.hdays[d])?res.hdays[d]:0; if(w<=0) continue;
+        var split=res.adays[d];
+        if(!split){ var keys=_icDeepestKeysForDay(d); if(!keys.length) continue; var ev=100/keys.length; split={}; for(var k=0;k<keys.length;k++) split[keys[k]]=ev; }
+        wsum+=w;
+        for(var z in split){ acc[z]=(acc[z]||0)+w*split[z]; }
+      }
+      if(wsum>0){
+        var out={}, oks=Object.keys(acc); for(var q=0;q<oks.length;q++) out[oks[q]]=Math.round((acc[oks[q]]/wsum)*1e6)/1e6;
+        // keep res.alloc sparse: only store when it differs from a plain even split
+        var evv=oks.length?100/oks.length:0, allEven=oks.length>0 && oks.every(function(k){ return Math.abs(out[k]-evv)<0.05; });
+        if(!allEven) na[i]=out;
+      }
+    }
+    res.alloc=na;
+  }
+  function _icRebuildAllResHours(){
+    if(!icDates.start) return;
+    if(typeof _icRebuildAllPainted==='function') _icRebuildAllPainted(); // ensure phase pdays exist
+    _icDayNodeCache={};
+    (icITResources||[]).concat(icBizResources||[]).forEach(function(res){ _icResRebuildOne(res); _icRebuildResAllocOne(res); });
+    _icDayNodeCache=null;
+  }
+
   function icRenderResources(type){
     var resources=icGetResourceArr(type);
     var tbl=document.getElementById('ic-res-'+(type==='it'?'it':'biz')+'-table');
     if(!tbl) return;
+    _icRebuildAllResHours();
     var p=icGetPeriods();
     var calRanges=icYearPeriodRanges(p);
 
@@ -7522,9 +7701,9 @@
           var hrs=res.hours[i]||0;
           var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
           var redCls = (noGrade && hrs>0) ? ' ic-hrs-no-grade' : '';
-          rb+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+((res.alloc&&res.alloc[i]&&Object.keys(res.alloc[i]).length)?' ic-hrs-alloc':'')+'" '+(hrs>0?'value="'+pmHd(hrs)+'"':'placeholder="&#8212;"')+' min="0" step="'+(pmFteActive()?'0.1':'8')+'" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
+          rb+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+((res.alloc&&res.alloc[i]&&Object.keys(res.alloc[i]).length)?' ic-hrs-alloc':'')+'" '+(hrs>0?'value="'+_icResHd(hrs,i)+'"':'placeholder="&#8212;"')+' min="0" step="'+(pmFteActive()?'0.1':'8')+'" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
         }
-        rb+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-hrs">'+( totalHrs>0?pmSumDisp(totalHrs,actMonths):'&mdash;')+'</td>';
+        rb+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-hrs">'+( totalHrs>0?_icResAvgFte(function(q){return res.hours[q]||0;},p.count):'&mdash;')+'</td>';
         rb+='<td class="ic-res-sumcol'+(totalDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-days">'+( totalDays||'&mdash;')+'</td>';
         var resRate=icGetResRate(res,type);
         var grand=0;
@@ -7562,8 +7741,8 @@
         b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
         b+='<div class="ic-row-actions"><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
         b+='</div></td>';
-        for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?pmHd(clCol[i]):'')+'</td>'; }
-        b+='<td class="ic-res-sumcol ic-cluster-cell'+(clHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-hrs">'+(clHrs>0?pmSumDisp(clHrs,clAct):'&mdash;')+'</td>';
+        for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?_icResHd(clCol[i],i):'')+'</td>'; }
+        b+='<td class="ic-res-sumcol ic-cluster-cell'+(clHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-hrs">'+(clHrs>0?_icResAvgFte(function(q){return clCol[q]||0;},p.count):'&mdash;')+'</td>';
         b+='<td class="ic-res-sumcol ic-cluster-cell'+(clDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-days">'+(clDays||'&mdash;')+'</td>';
         for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-cluster-cell'+(clYr[y]>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-yr'+y+'">'+(clYr[y]>0?icFmtDKK(clYr[y]):'&mdash;')+'</td>'; }
         b+='<td class="ic-res-sumcol ic-cluster-cell ic-res-grandtotal-cell" data-sumid="'+type+'-cl-'+cl.id+'-grand">'+(clGrand>0?icFmtDKK(clGrand):'&mdash;')+'</td>';
@@ -7585,8 +7764,8 @@
       var oAct=0; for(var _oi=0;_oi<p.count;_oi++){ if(oCol[_oi]>0) oAct++; }
       b+='<tr class="ic-res-totals-row">';
       b+='<td class="ic-res-name-col ic-res-total-label">Total</td><td class="ic-res-rate-col"></td>';
-      for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell'+bnd+'" data-sumid="'+type+'-col-'+i+'">'+(oCol[i]>0?pmHd(oCol[i]):'')+'</td>'; }
-      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-hrs">'+(oHrs>0?pmSumDisp(oHrs,oAct):'&mdash;')+'</td>';
+      for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell'+bnd+'" data-sumid="'+type+'-col-'+i+'">'+(oCol[i]>0?_icResHd(oCol[i],i):'')+'</td>'; }
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-hrs">'+(oHrs>0?_icResAvgFte(function(q){return oCol[q]||0;},p.count):'&mdash;')+'</td>';
       b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-days">'+(oHrs>0?(oHrs/7.5).toFixed(1):'&mdash;')+'</td>';
       for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-yr'+y+'">'+(oYr[y]>0?icFmtDKK(oYr[y]):'&mdash;')+'</td>'; }
       b+='<td class="ic-res-sumcol ic-res-grandtotal-cell ic-totrow-sum" data-sumid="'+type+'-total-grand">'+(oGrand>0?icFmtDKK(oGrand):'&mdash;')+'</td>';
@@ -7635,8 +7814,9 @@
         var r=icGetResourceArr(t).find(function(x){return x.id===id;});
         if(!r) return;
         var v=parseFloat(this.value)||0;
-        if(pmFteActive()) v=v*bcFteDivisor();
+        if(pmFteActive()) v=v*_icResFteBasis(idx);
         if(v<=0) delete r.hours[idx]; else r.hours[idx]=v;
+        _icResWriteCol(r, idx, v);
         icLiveSummaryUpdate(t);
         icRenderCostChart();
         this.classList.toggle('ic-hrs-filled', v>0);
@@ -7822,11 +8002,11 @@
     var bh='';
     var tree=icBuildCostTree(p);
     bh+='<div class="ic-cost-colhead"><span class="ic-cost-colhead-name"></span><span class="ic-cost-cells ic-cost-cells-head">'
-      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'Timer':'Hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+(cbFteMode?'FTE':(currentLang==='da'?'Timer':'Hrs'))+'</span>'
       +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'Pris':'Cost')+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'IT t':'IT hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+(cbFteMode?'IT FTE':(currentLang==='da'?'IT t':'IT hrs'))+'</span>'
       +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'IT pris':'IT cost')+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+(currentLang==='da'?'Forr. t':'Biz hrs')+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+(cbFteMode?'Biz FTE':(currentLang==='da'?'Forr. t':'Biz hrs'))+'</span>'
       +'<span class="ic-cc ic-cc-c">'+(currentLang==='da'?'Forr. pris':'Biz cost')+'</span>'
       +'</span></div>';
 
@@ -7927,10 +8107,18 @@
   function icCloseAllocPopup(){ var p=document.getElementById('ic-alloc-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); _icAllocCtx=null; document.removeEventListener('mousedown', _icAllocOutside, true); }
   function _icAllocOutside(e){ var p=document.getElementById('ic-alloc-pop'); if(p && !p.contains(e.target)) icCloseAllocPopup(); }
   function _icAllocSum(){ var s=0; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ s+=(parseFloat(i.value)||0); }); return s; }
+  // hours (or FTE, matching the grid toggle) that a given % represents for this cell
+  function _icAllocAmt(pct){
+    if(!_icAllocCtx) return '';
+    var idx=_icAllocCtx.idx, H=_icAllocCtx.cellH||0, hrs=H*pct/100;
+    if(typeof pmFteActive==='function' && pmFteActive()){ var b=(typeof _icResFteBasis==='function')?_icResFteBasis(idx):0; var fte=b?hrs/b:0; return (Math.round(fte*100)/100)+' FTE'; }
+    return (Math.round(hrs*10)/10)+' h';
+  }
   function icAllocRecount(){
     var s=_icAllocSum(); var ok=Math.abs(s-100)<0.001;
     var c=document.getElementById('ic-alloc-count'); if(c){ c.textContent='Allocated: '+(Math.round(s*10)/10)+'% / 100%'; c.style.color=ok?'#15803d':'#dc2626'; }
     var ap=document.getElementById('ic-alloc-apply'); if(ap){ ap.disabled=!ok; ap.style.opacity=ok?'1':'0.5'; ap.style.cursor=ok?'pointer':'not-allowed'; }
+    document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(inp){ var amt=inp.parentNode.querySelector('.ic-alloc-amt'); if(amt) amt.textContent=_icAllocAmt(parseFloat(inp.value)||0); });
   }
   function icAllocApply(){
     if(!_icAllocCtx) return; if(Math.abs(_icAllocSum()-100)>=0.001) return;
@@ -7938,6 +8126,7 @@
     if(!res.alloc) res.alloc={};
     var map={}; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ map[i.getAttribute('data-key')]=(parseFloat(i.value)||0); });
     res.alloc[_icAllocCtx.idx]=map;
+    _icAllocWriteCol(res, _icAllocCtx.idx, map);
     var t=_icAllocCtx.type; icCloseAllocPopup();
     icRenderResources(t); if(typeof icRenderCostChart==='function') icRenderCostChart();
   }
@@ -7945,6 +8134,7 @@
     if(!_icAllocCtx) return;
     var res=icGetResourceArr(_icAllocCtx.type).find(function(r){return r.id===_icAllocCtx.resId;});
     if(res && res.alloc) delete res.alloc[_icAllocCtx.idx];
+    if(res) _icAllocWriteCol(res, _icAllocCtx.idx, null);
     var t=_icAllocCtx.type; icCloseAllocPopup();
     icRenderResources(t); if(typeof icRenderCostChart==='function') icRenderCostChart();
   }
@@ -7958,18 +8148,19 @@
     var saved=res.alloc&&res.alloc[idx];
     var validSaved = saved && Object.keys(saved).length===nodes.length && nodes.every(function(n){return saved[n.key]!=null;});
     var pop=document.createElement('div'); pop.id='ic-alloc-pop';
-    pop.style.cssText='position:fixed;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:340px;max-height:70vh;overflow:auto;font-family:inherit;padding:14px 16px';
+    pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:340px;max-height:70vh;overflow:auto;font-family:inherit;padding:14px 16px';
     var html='';
     html+='<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:2px">Allocate hours — '+bcEsc(res.name)+'</div>';
     html+='<div style="font-size:12px;color:#64748b;margin-bottom:8px">'+bcEsc(mlabel)+' · split across painted phases</div>';
     html+='<div id="ic-alloc-count" style="font-size:12px;font-weight:600;margin-bottom:10px"></div>';
     var even=icEvenSplit(nodes.length);
     nodes.forEach(function(n,ni){
-      var v=validSaved?saved[n.key]:even[ni];
+      var v=validSaved?(Math.round(saved[n.key]*10)/10):even[ni];
       html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
         +'<span style="flex:1;font-size:12px;color:#334155">'+bcEsc(n.label)+'</span>'
-        +'<input type="number" class="ic-alloc-inp" data-key="'+bcEsc(n.key)+'" value="'+v+'" min="0" max="100" step="1" style="width:64px;padding:5px 7px;border:1px solid #cbd5e1;border-radius:7px;text-align:right">'
-        +'<span style="font-size:12px;color:#64748b">%</span></div>';
+        +'<input type="number" class="ic-alloc-inp" data-key="'+bcEsc(n.key)+'" value="'+v+'" min="0" max="100" step="1" style="width:56px;padding:5px 7px;border:1px solid #cbd5e1;border-radius:7px;text-align:right">'
+        +'<span style="font-size:12px;color:#64748b">%</span>'
+        +'<span class="ic-alloc-amt" style="font-size:11px;color:#64748b;min-width:58px;text-align:right"></span></div>';
     });
     html+='<div style="display:flex;gap:8px;margin-top:12px">'
       +'<button id="ic-alloc-reset" class="header-io-btn" style="flex:1">Reset to even</button>'
@@ -7978,9 +8169,10 @@
     pop.innerHTML=html;
     document.body.appendChild(pop);
     var vw=window.innerWidth, vh=window.innerHeight, r=pop.getBoundingClientRect();
-    pop.style.left=Math.max(8, Math.min(x, vw-r.width-12))+'px';
-    pop.style.top =Math.max(8, Math.min(y, vh-r.height-12))+'px';
-    _icAllocCtx={type:type,resId:resId,idx:idx};
+    var _lx=Math.max(8, Math.min(x, vw-r.width-12)), _ly=Math.max(8, Math.min(y, vh-r.height-12));
+    pop.style.left=(_lx+window.scrollX)+'px';
+    pop.style.top =(_ly+window.scrollY)+'px';
+    _icAllocCtx={type:type,resId:resId,idx:idx,cellH:(res.hours[idx]||0)};
     pop.querySelectorAll('.ic-alloc-inp').forEach(function(inp){ inp.oninput=icAllocRecount; });
     document.getElementById('ic-alloc-reset').onclick=icAllocReset;
     document.getElementById('ic-alloc-cancel').onclick=icCloseAllocPopup;
@@ -8130,7 +8322,7 @@
       h+='<span class="ic-toggle-spacer"></span>';
     }
     h+='<span class="saving-bar-name">'+node.name.replace(/&/g,'&amp;')+'</span></div>';
-    var _fh=function(x){return x>0?(''+Math.round(x)):'—';};
+    var _fh=function(x){ if(!(x>0)) return '—'; if(typeof cbFteMode!=='undefined'&&cbFteMode){ return (Math.round((x/bcFteDivisor())*100)/100); } return ''+Math.round(x); };
     var _fc=function(x){return x>0?icFmtDKK(x):'—';};
     h+='<span class="ic-cost-cells">'
       +'<span class="ic-cc ic-cc-h">'+_fh(node.hours)+'</span>'
@@ -8177,7 +8369,8 @@
       breakdown: document.getElementById('icex-breakdown')  && document.getElementById('icex-breakdown').checked,
       addcosts:  document.getElementById('icex-addcosts')   && document.getElementById('icex-addcosts').checked,
       sanity:    document.getElementById('icex-sanity')     && document.getElementById('icex-sanity').checked,
-      ratecard:  document.getElementById('icex-ratecard')   && document.getElementById('icex-ratecard').checked
+      ratecard:  document.getElementById('icex-ratecard')   && document.getElementById('icex-ratecard').checked,
+      fte:       document.getElementById('icex-fte')       && document.getElementById('icex-fte').checked
     };
     var btn = document.getElementById('ic-export-generate-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
@@ -8212,6 +8405,29 @@
 
     // FIX 2: convert DKK → display currency for all monetary output
     function toDisp(dkk) { return Math.round(dkkToDisplay(dkk)); }
+    var FB = (cfg.fte && typeof bcFteDivisor==='function') ? bcFteDivisor() : 1;
+    function _hv(h){ return cfg.fte ? (h?(h/FB):null) : (h||null); }
+    function _hr(h){ return cfg.fte ? (h?(h/FB):0) : (h||0); }
+    function _avgv(tot,actM){ return cfg.fte ? ((tot&&actM)?(tot/(actM*FB)):null) : (tot||null); }
+    function _avgr(tot,actM){ return cfg.fte ? ((tot&&actM)?(tot/(actM*FB)):0) : (tot||0); }
+    var _dayMul = cfg.fte ? ('*'+FB) : '';
+    function _allocF(rng){ return cfg.fte ? ('IFERROR(AVERAGEIF('+rng+',">0"),0)') : ('SUM('+rng+')'); }
+    var _basisArr=[]; for(var _bi=0;_bi<p.count;_bi++){ if(cfg.fte){ var _bn=(typeof _icColWorkDayCount==='function')?_icColWorkDayCount(_bi):0; var _bhpd=(typeof _icHrsPerWorkDay==='function')?_icHrsPerWorkDay():FB; _basisArr.push((icDates.start&&_bn>0&&_bhpd>0)?(Math.round(_bhpd*_bn*1e6)/1e6):FB); } else { _basisArr.push(1); } }
+    var _basisArrStr='{'+_basisArr.join(',')+'}';
+    var _useWd = !!(cfg.fte && icDates.start);
+    // Per-period working-day basis is stored as plain numbers in a hidden helper
+    // sheet and referenced as normal cells. This is locale-safe (no decimal array
+    // constants that a comma-decimal locale could misread) and works for any number
+    // of months, including a single trailing month.
+    var _basisSheetName='WDBasis', _wsBasis=null;
+    if(_useWd){ try{ _wsBasis=wb.addWorksheet(_basisSheetName); _wsBasis.state='veryHidden'; var _brow=_wsBasis.getRow(1); for(var _bk=0;_bk<p.count;_bk++){ _brow.getCell(_bk+1).value=_basisArr[_bk]; } }catch(e){ _useWd=false; } }
+    function _basisRangeRef(pStart,pCount){ return "'"+_basisSheetName+"'!$"+_colL(pStart+1)+'$1:$'+_colL(pStart+pCount)+'$1'; }
+    function _hoursExpr(rangeRef, pStart, pCount){ if(_useWd){ return 'SUMPRODUCT('+rangeRef+','+_basisRangeRef(pStart,pCount)+')'; } if(cfg.fte){ return 'SUM('+rangeRef+')*'+FB; } return 'SUM('+rangeRef+')'; }
+    function _hvAt(h,i){ return cfg.fte ? (h?(h/_basisArr[i]):0) : (h||null); }
+    function _hrAt(h,i){ return cfg.fte ? (h?(h/_basisArr[i]):0) : (h||0); }
+    function _avgvCol(get){ if(!cfg.fte){ var _t=0; for(var _i=0;_i<p.count;_i++) _t+=get(_i)||0; return _t||null; } var _s=0,_c=0; for(var _i=0;_i<p.count;_i++){ var _hh=get(_i)||0; if(_hh>0){ _s+=_hh/_basisArr[_i]; _c++; } } return _c?(_s/_c):null; }
+    function _avgrCol(get){ return _avgvCol(get)||0; }
+    function _daysF(rng){ return _hoursExpr(rng,0,p.count)+'/7.5'; }
     var _icFx = { summary:null, addcost:null, breakdown:null, dataMult:null };
     var _icMainRateCell = {};
     function _icMetaOf(t){ return _icSectionsMeta.filter(function(m){return m.type===t;})[0]; }
@@ -8417,7 +8633,7 @@
 
       var hdrs = ['Name','Grade'];
       p.labels.forEach(function(l){ hdrs.push(l); });
-      hdrs.push('Alloc. Hours','Alloc. Days');
+      hdrs.push(cfg.fte?'Avg FTE':'Alloc. Hours','Alloc. Days');
       calRanges.forEach(function(rng){ hdrs.push(rng.label+' '+currentCurrency); });
       hdrs.push('Total '+currentCurrency);
       var hdrRow = ws.addRow(hdrs);
@@ -8429,6 +8645,7 @@
       hdrRow.getCell(totalCols+2).alignment = {horizontal:'left', vertical:'middle'};
 
       var monthC0=3, monthCN=2+p.count, ahCol=3+p.count, adCol=4+p.count, ycCol0=5+p.count, totalCol=totalCols;
+      if(cfg.fte){ for(var _mc=monthC0;_mc<=monthCN;_mc++) ws.getColumn(_mc).numFmt='0.00;-0.00;;@'; ws.getColumn(ahCol).numFmt='0.00'; ws.getColumn(adCol).numFmt='0.0'; }
       var meta={ type:type, mult:mult, monthC0:monthC0, monthCN:monthCN, ahCol:ahCol, adCol:adCol, ycCol0:ycCol0, totalCol:totalCol, members:[], clusters:[], totalRow:null, totals:null };
 
       var totHrs=0, totGrand=0;
@@ -8439,10 +8656,10 @@
       function addOneRes(res){
         var resRate = icGetResRate(res, type);
         var tHrs=0, rowData=[res.name, gradeNameFor(res,type)];
-        for (var i=0; i<p.count; i++) { var h=res.hours[i]||0; tHrs+=h; colTots[i]+=h; rowData.push(h||null); }
+        var actM=0; for (var i=0; i<p.count; i++) { var h=res.hours[i]||0; if(h>0)actM++; tHrs+=h; colTots[i]+=h; rowData.push(_hvAt(h,i)); }
         totHrs += tHrs;
         var ad = tHrs ? parseFloat((tHrs/7.5).toFixed(1)) : null;
-        rowData.push(tHrs||null, ad);
+        rowData.push(_avgvCol(function(i){return res.hours[i]||0;}), ad);
         var grand=0, ycVals=[];
         calRanges.forEach(function(rng,y){ var yt=0; for(var m=rng.start;m<=rng.end;m++) yt+=(res.hours[m]||0)*resRate; grand+=yt; yrTots[y]+=yt; var dv=toDisp(yt); ycVals.push(dv); rowData.push(dv||null); });
         totGrand+=grand; rowData.push(toDisp(grand)||null);
@@ -8455,16 +8672,17 @@
         row.getCell(3+p.count).alignment={horizontal:'right'};
         row.getCell(4+p.count).alignment={horizontal:'right'};
         row.getCell(1).note='res:'+res.id;
-        meta.members.push({ rowNum:row.number, res:res, rate:toDisp(resRate), grade:gradeNameFor(res,type), tHrs:tHrs, ad:ad, ycVals:ycVals, grand:toDisp(grand) });
+        meta.members.push({ rowNum:row.number, res:res, rate:toDisp(resRate), grade:gradeNameFor(res,type), tHrs:tHrs, actM:actM, ad:ad, ycVals:ycVals, grand:toDisp(grand) });
       }
       function addClusterHeaderRow(cl, clRes){
         var clHrs=0, clGrand=0; var clCol=new Array(p.count).fill(0); var clYr=new Array(calRanges.length).fill(0);
         clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++){ clCol[i]+=(res.hours[i]||0); clHrs+=(res.hours[i]||0); } calRanges.forEach(function(rng,y){ for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; }); });
         clYr.forEach(function(v){ clGrand+=v; });
+        var clActM=0; for(var _ci=0;_ci<p.count;_ci++){ if(clCol[_ci]>0) clActM++; }
         var clDays = clHrs?parseFloat((clHrs/7.5).toFixed(1)):null;
         var rd=[cl.name,''];
-        for (var i=0;i<p.count;i++) rd.push(clCol[i]||null);
-        rd.push(clHrs||null, clDays);
+        for (var i=0;i<p.count;i++) rd.push(_hvAt(clCol[i],i));
+        rd.push(_avgvCol(function(i){return clCol[i]||0;}), clDays);
         clYr.forEach(function(v){ rd.push(toDisp(v)||null); }); rd.push(toDisp(clGrand)||null);
         var r=ws.addRow(rd);
         if(cl&&cl.id) r.getCell(1).note='cl:'+cl.id;
@@ -8473,7 +8691,7 @@
         for (var c=3+p.count+2;c<=totalCols;c++) r.getCell(c).numFmt='#,##0';
         r.getCell(1).alignment={horizontal:'left'};
         rowParity=0;
-        return { rowNum:r.number, clCol:clCol.slice(), clHrs:clHrs, clDays:clDays, clYrDisp:clYr.map(function(v){return toDisp(v);}), clGrand:toDisp(clGrand) };
+        return { rowNum:r.number, clCol:clCol.slice(), clHrs:clHrs, clActM:clActM, clDays:clDays, clYrDisp:clYr.map(function(v){return toDisp(v);}), clGrand:toDisp(clGrand) };
       }
       if (clusters && clusters.length){
         var known={}; clusters.forEach(function(c){ known[c.id]=true; });
@@ -8496,8 +8714,9 @@
       }
 
       var totData=['Total',''];
-      for(var i=0;i<p.count;i++) totData.push(colTots[i]||null);
-      totData.push(totHrs||null, totHrs?parseFloat((totHrs/7.5).toFixed(1)):null);
+      var totActM=0; for(var _ti=0;_ti<p.count;_ti++){ if(colTots[_ti]>0) totActM++; }
+      for(var i=0;i<p.count;i++) totData.push(_hv(colTots[i]));
+      totData.push(_avgv(totHrs,totActM), totHrs?parseFloat((totHrs/7.5).toFixed(1)):null);
       yrTots.forEach(function(y){ totData.push(toDisp(y)||null); }); totData.push(toDisp(totGrand)||null);
       var tRow=ws.addRow(totData); styleTotals(tRow, totalCols);
       tRow.getCell(totalCols).fill={type:'pattern',pattern:'solid',fgColor:{argb:ORANGE}};
@@ -8505,7 +8724,7 @@
       for(var c=3;c<=totalCols;c++) tRow.getCell(c).alignment={horizontal:'right'};
       for(var c=3+p.count+2;c<=totalCols;c++) tRow.getCell(c).numFmt='#,##0';
       meta.totalRow=tRow.number;
-      meta.totals={ colTots:colTots.slice(), totHrs:totHrs, totDays:(totHrs?parseFloat((totHrs/7.5).toFixed(1)):0), yrDisp:yrTots.map(function(v){return toDisp(v);}), grand:toDisp(totGrand) };
+      meta.totals={ colTots:colTots.slice(), totHrs:totHrs, actM:totActM, totDays:(totHrs?parseFloat((totHrs/7.5).toFixed(1)):0), yrDisp:yrTots.map(function(v){return toDisp(v);}), grand:toDisp(totGrand) };
       _icSectionsMeta.push(meta);
     }
 
@@ -8562,8 +8781,9 @@
         var multRef='Data!$B$'+multRowFor(meta.type);
         meta.members.forEach(function(mem){
           var rn=mem.rowNum;
-          setF(rn, meta.ahCol, 'SUM('+_colL(meta.monthC0)+rn+':'+_colL(meta.monthCN)+rn+')', mem.tHrs||0);
-          setF(rn, meta.adCol, _colL(meta.ahCol)+rn+'/7.5', mem.ad||0);
+          var _mrng=_colL(meta.monthC0)+rn+':'+_colL(meta.monthCN)+rn;
+          setF(rn, meta.ahCol, _allocF(_mrng), _avgrCol(function(i){return mem.res.hours[i]||0;}));
+          setF(rn, meta.adCol, _daysF(_mrng), mem.ad||0);
           var _vk='VLOOKUP("'+(meta.type==="it"?"IT":"Biz")+' - "&TRIM(B'+rn+'),Data!$A$'+_rcF+':$B$'+_rcL+',2,FALSE)';
           var rateExpr=_rcF? ('IFERROR('+_vk+',0)') : ('Data!$C$'+mem.rateRow);
           var _rcCell=ws.getRow(rn).getCell(2 + p.count + 2 + calRanges.length + 1 + 2);
@@ -8572,16 +8792,17 @@
           _rcCell.font={size:9, italic:true, color:{argb:'FF999999'}};
           calRanges.forEach(function(rng,y){
             var c1=_colL(meta.monthC0+rng.start)+rn, c2=_colL(meta.monthC0+rng.end)+rn;
-            setF(rn, meta.ycCol0+y, 'SUM('+c1+':'+c2+')*('+rateExpr+')', mem.ycVals[y]||0);
+            setF(rn, meta.ycCol0+y, (_hoursExpr(c1+':'+c2, rng.start, rng.end-rng.start+1)+'*('+rateExpr+')'), mem.ycVals[y]||0);
           });
           setF(rn, meta.totalCol, 'SUM('+_colL(meta.ycCol0)+rn+':'+_colL(meta.ycCol0+calRanges.length-1)+rn+')', mem.grand||0);
         });
         meta.clusters.forEach(function(cl){
           if(!cl.count || cl.first===null) return;
           var crn=cl.rowNum;
-          for(var c=meta.monthC0;c<=meta.monthCN;c++){ setF(crn, c, 'SUM('+_colL(c)+cl.first+':'+_colL(c)+cl.last+')', cl.clCol[c-meta.monthC0]); }
-          setF(crn, meta.ahCol, 'SUM('+_colL(meta.ahCol)+cl.first+':'+_colL(meta.ahCol)+cl.last+')', cl.clHrs);
-          setF(crn, meta.adCol, _colL(meta.ahCol)+crn+'/7.5', cl.clDays);
+          for(var c=meta.monthC0;c<=meta.monthCN;c++){ setF(crn, c, 'SUM('+_colL(c)+cl.first+':'+_colL(c)+cl.last+')', _hrAt(cl.clCol[c-meta.monthC0], c-meta.monthC0)); }
+          var _crng=_colL(meta.monthC0)+crn+':'+_colL(meta.monthCN)+crn;
+          setF(crn, meta.ahCol, _allocF(_crng), _avgrCol(function(i){return cl.clCol[i]||0;}));
+          setF(crn, meta.adCol, _daysF(_crng), cl.clDays);
           for(var y=0;y<calRanges.length;y++){ var cc=meta.ycCol0+y; setF(crn, cc, 'SUM('+_colL(cc)+cl.first+':'+_colL(cc)+cl.last+')', cl.clYrDisp[y]); }
           setF(crn, meta.totalCol, 'SUM('+_colL(meta.totalCol)+cl.first+':'+_colL(meta.totalCol)+cl.last+')', cl.clGrand);
         });
@@ -8590,29 +8811,32 @@
           var cluRows=meta.clusters.filter(function(c){return c.count>0;}).map(function(c){return c.rowNum;});
           if(cluRows.length){
             function sumClu(col){ return 'SUM('+cluRows.map(function(r){return _colL(col)+r;}).join(',')+')'; }
-            for(var c=meta.monthC0;c<=meta.monthCN;c++) setF(trn,c,sumClu(c),T.colTots[c-meta.monthC0]);
-            setF(trn, meta.ahCol, sumClu(meta.ahCol), T.totHrs);
-            setF(trn, meta.adCol, _colL(meta.ahCol)+trn+'/7.5', T.totDays);
+            for(var c=meta.monthC0;c<=meta.monthCN;c++) setF(trn,c,sumClu(c),_hrAt(T.colTots[c-meta.monthC0], c-meta.monthC0));
+            setF(trn, meta.ahCol, _allocF(_colL(meta.monthC0)+trn+':'+_colL(meta.monthCN)+trn), _avgrCol(function(i){return T.colTots[i]||0;}));
+            setF(trn, meta.adCol, _daysF(_colL(meta.monthC0)+trn+':'+_colL(meta.monthCN)+trn), T.totDays);
             for(var y=0;y<calRanges.length;y++) setF(trn, meta.ycCol0+y, sumClu(meta.ycCol0+y), T.yrDisp[y]);
             setF(trn, meta.totalCol, sumClu(meta.totalCol), T.grand);
           }
         } else if(meta.members.length){
           var f=meta.members[0].rowNum, l=meta.members[meta.members.length-1].rowNum;
-          for(var c=meta.monthC0;c<=meta.monthCN;c++) setF(trn,c,'SUM('+_colL(c)+f+':'+_colL(c)+l+')',T.colTots[c-meta.monthC0]);
-          setF(trn, meta.ahCol, 'SUM('+_colL(meta.ahCol)+f+':'+_colL(meta.ahCol)+l+')', T.totHrs);
-          setF(trn, meta.adCol, _colL(meta.ahCol)+trn+'/7.5', T.totDays);
+          for(var c=meta.monthC0;c<=meta.monthCN;c++) setF(trn,c,'SUM('+_colL(c)+f+':'+_colL(c)+l+')',_hrAt(T.colTots[c-meta.monthC0], c-meta.monthC0));
+          setF(trn, meta.ahCol, _allocF(_colL(meta.monthC0)+trn+':'+_colL(meta.monthCN)+trn), _avgrCol(function(i){return T.colTots[i]||0;}));
+          setF(trn, meta.adCol, _daysF(_colL(meta.monthC0)+trn+':'+_colL(meta.monthCN)+trn), T.totDays);
           for(var y=0;y<calRanges.length;y++) setF(trn, meta.ycCol0+y, 'SUM('+_colL(meta.ycCol0+y)+f+':'+_colL(meta.ycCol0+y)+l+')', T.yrDisp[y]);
           setF(trn, meta.totalCol, 'SUM('+_colL(meta.totalCol)+f+':'+_colL(meta.totalCol)+l+')', T.grand);
         }
       });
       // Build import map (read back by the Excel importer)
       _icFx.wsData = wsData;
+      if(typeof _icRebuildAllPainted==='function'){ try{ _icRebuildAllPainted(); }catch(e){} }
       _icFx.map = {
         __marker:'ICIMPORT', version:1, currency:currentCurrency,
         period:{ period:icPeriod, duration:(document.getElementById('ic-duration')?(parseInt(document.getElementById('ic-duration').value)||2):2), extraMonths:(document.getElementById('ic-extra-months')?(parseInt(document.getElementById('ic-extra-months').value)||0):0), dateStart:icDates.start?icDates.start.getTime():null, dateEnd:icDates.end?icDates.end.getTime():null, monthCount:p.count },
         contingency:{ itPctCell:'B'+rITpct, bizPctCell:'B'+rBizpct },
-        grades:_mapGrades,
+        grades:_mapGrades, fte:!!cfg.fte, fteBasis:FB, fteBasisArr:(cfg.fte?_basisArr:null),
         clusters: (icITClusters||[]).map(function(c){return {id:c.id,type:'it',name:c.name};}).concat((icBizClusters||[]).map(function(c){return {id:c.id,type:'biz',name:c.name};})),
+        phases: (icPhases||[]).map(function(ph){ return {id:ph.id,name:ph.name,color:ph.color,groupId:ph.groupId,expanded:ph.expanded,painted:ph.painted||{},subPhases:(ph.subPhases||[]).map(function(sp){ return {id:sp.id,name:sp.name,color:sp.color,expanded:sp.expanded,painted:sp.painted||{},subSubPhases:(sp.subSubPhases||[]).map(function(a){ return {id:a.id,name:a.name,color:a.color,painted:a.painted||{}}; })}; })}; }),
+        groups: (icGroups||[]).map(function(g){ return {id:g.id,name:g.name,expanded:g.expanded}; }),
         resources: [], addcost:null
       };
       _icSectionsMeta.forEach(function(meta){
@@ -8858,11 +9082,11 @@
       var cbHdrFont={bold:true,size:10,color:{argb:NAVY}};
       var cbHdr=ws.addRow([]); cbHdr.height=18;
       _cbCell(cbHdr, CB.name, 2, 'Phase / Category', 'left',  LIGHT2, cbHdrFont);
-      _cbCell(cbHdr, CB.alloc,2, 'Alloc Hours',       'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.alloc,2, cfg.fte?'Alloc FTE':'Alloc Hours',       'right', LIGHT2, cbHdrFont);
       _cbCell(cbHdr, CB.cost, 2, 'Cost ('+cbCur+')',  'right', LIGHT2, cbHdrFont);
-      _cbCell(cbHdr, CB.ith,  2, 'IT Hours',          'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.ith,  2, cfg.fte?'IT FTE':'IT Hours',          'right', LIGHT2, cbHdrFont);
       _cbCell(cbHdr, CB.itc,  2, 'IT Cost ('+cbCur+')','right', LIGHT2, cbHdrFont);
-      _cbCell(cbHdr, CB.bizh, 2, 'Biz Hours',         'right', LIGHT2, cbHdrFont);
+      _cbCell(cbHdr, CB.bizh, 2, cfg.fte?'Biz FTE':'Biz Hours',         'right', LIGHT2, cbHdrFont);
       _cbCell(cbHdr, CB.bizc, 2, 'Biz Cost ('+cbCur+')','right', LIGHT2, cbHdrFont);
       _cbCell(cbHdr, CB.pct,  1, '% of Total',        'right', LIGHT2, cbHdrFont);
       var cbFirstDataRow=cbHdr.number;
@@ -8890,7 +9114,7 @@
         wsD.addRow([]);
         var hLbl=wsD.addRow(['COST BREAKDOWN per-month helper (range-based; do not edit)']); hLbl.getCell(1).font={italic:true,color:{argb:'FF888888'},size:9};
         function _hoursF(meta,m){ if(!meta||!meta.totalRow) return null; return "'Investment Case'!"+_colL(meta.monthC0+m)+meta.totalRow; }
-        function _costF(meta,blocks,m,multRef){ if(!meta||!blocks.length) return null; var mc=_colL(meta.monthC0+m); var terms=blocks.map(function(b){ return "SUMPRODUCT('Investment Case'!"+mc+b.first+":"+mc+b.last+",'Investment Case'!"+_RC+b.first+":"+_RC+b.last+")"; }); return '('+terms.join('+')+')*'+multRef; }
+        function _costF(meta,blocks,m,multRef){ if(!meta||!blocks.length) return null; var mc=_colL(meta.monthC0+m); var terms=blocks.map(function(b){ return "SUMPRODUCT('Investment Case'!"+mc+b.first+":"+mc+b.last+",'Investment Case'!"+_RC+b.first+":"+_RC+b.last+")"; }); return '('+terms.join('+')+')*'+(cfg.fte?(_basisArr[m]+'*'):'')+multRef; }
         function _addMonthly(label, fn){ var r=wsD.addRow([label]); for(var m=0;m<p.count;m++){ var fx=fn(m); r.getCell(2+m).value = fx?{formula:fx, result:0}:0; } return r.number; }
         var rItH=_addMonthly('IT hours/mo',  function(m){ return _hoursF(itM,m); });
         var rBzH=_addMonthly('Biz hours/mo', function(m){ return _hoursF(bzM,m); });
@@ -8920,7 +9144,8 @@
           if(multRef && !mem.rateRow) continue;
           var range="'Investment Case'!"+_colL(mem.mc0)+mem.row+":"+_colL(mem.mc0+p.count-1)+mem.row;
           var sp='SUMPRODUCT({'+corr.join(',')+'},'+range+')';
-          terms.push(multRef?('('+sp+')*Data!$C$'+mem.rateRow+'*'+multRef):sp);
+          var spCost=_useWd?('SUMPRODUCT({'+corr.join(',')+'},'+range+','+_basisRangeRef(0,p.count)+')'):(cfg.fte?('('+sp+')*'+FB):('('+sp+')'));
+          terms.push(multRef?(spCost+'*Data!$C$'+mem.rateRow+'*'+multRef):sp);
         }
         return terms.length?('+'+terms.join('+')):'';
       }
@@ -8934,20 +9159,21 @@
         var nameFont = indent===0?{bold:true,color:{argb:NAVY}}:undefined;
         var row=ws.addRow([]); row.height=15; var rn=row.number;
         var dyn = monthRows && node.weights;
-        function vH(val,aggRow,corr){ if(!(val>0)) return null; return (dyn&&aggRow)?{formula:_sp(node.weights,aggRow)+corr, result:Math.round(val)}:Math.round(val); }
+        function vH(val,aggRow,corr){ if(!(val>0)) return null; var rv=cfg.fte?(Math.round((val/FB)*100)/100):Math.round(val); return (dyn&&aggRow)?{formula:_sp(node.weights,aggRow)+corr, result:rv}:rv; }
         function vC(dispVal,aggRow,corr){ if(!(dispVal>0)) return null; return (dyn&&aggRow)?{formula:_sp(node.weights,aggRow)+corr, result:dispVal}:dispVal; }
         var itHv=vH(node.itHours||0, dyn?monthRows.itH:0, _corrTerms(node,'it',null));
         var bzHv=vH(node.bizHours||0, dyn?monthRows.bzH:0, _corrTerms(node,'biz',null));
         var itCv=vC(toDisp(node.itCost||0), dyn?monthRows.itC:0, _corrTerms(node,'it',_cbItMult));
         var bzCv=vC(toDisp(node.bizCost||0), dyn?monthRows.bzC:0, _corrTerms(node,'biz',_cbBzMult));
-        var allocV = (dyn && node.hours>0) ? {formula:_colL(CB.ith)+rn+'+'+_colL(CB.bizh)+rn, result:Math.round(node.hours)} : (node.hours>0?Math.round(node.hours):null);
+        var _ah=node.hours>0?(cfg.fte?Math.round((node.hours/FB)*100)/100:Math.round(node.hours)):null;
+        var allocV = (dyn && node.hours>0) ? {formula:_colL(CB.ith)+rn+'+'+_colL(CB.bizh)+rn, result:_ah} : _ah;
         var costV  = (dyn && rowCost>0)   ? {formula:_colL(CB.itc)+rn+'+'+_colL(CB.bizc)+rn, result:toDisp(rowCost)} : (toDisp(rowCost)||null);
         _cbCell(row, CB.name, 2, indentStr+lbl, 'left',  bgArgb, nameFont);
-        _cbCell(row, CB.alloc,2, allocV, 'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.alloc,2, allocV, 'right', bgArgb, undefined, cfg.fte?'0.00':'#,##0');
         _cbCell(row, CB.cost, 2, costV,  'right', bgArgb, undefined, '#,##0');
-        _cbCell(row, CB.ith,  2, itHv,   'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.ith,  2, itHv,   'right', bgArgb, undefined, cfg.fte?'0.00':'#,##0');
         _cbCell(row, CB.itc,  2, itCv,   'right', bgArgb, undefined, '#,##0');
-        _cbCell(row, CB.bizh, 2, bzHv,   'right', bgArgb, undefined, '#,##0');
+        _cbCell(row, CB.bizh, 2, bzHv,   'right', bgArgb, undefined, cfg.fte?'0.00':'#,##0');
         _cbCell(row, CB.bizc, 2, bzCv,   'right', bgArgb, undefined, '#,##0');
         _cbCell(row, CB.pct,  1, pct, 'right', bgArgb);
         cbItems.push({name:lbl,value:rowCost,color:baseColor,displayVal:pct,isGroup:indent===0,bgColor:tintHex(baseColor, indent===0?0.15:0.10)});
@@ -9065,7 +9291,7 @@
       var ca = ws.addRow(['Allocated IT Hours', allocTot||null]);
       ca.height = 16; ca.getCell(1).fill = ca.getCell(2).fill = {type:'pattern',pattern:'solid',fgColor:{argb:LIGHT}};
       ca.getCell(2).alignment = {horizontal:'right'};
-      var _itMsan=_icMetaOf('it'); if(_itMsan && allocTot) ca.getCell(2).value={formula:_colL(_itMsan.ahCol)+_itMsan.totalRow, result:allocTot};
+      var _itMsan=_icMetaOf('it'); if(_itMsan && allocTot){ var _sanF=cfg.fte?(_hoursExpr(_colL(_itMsan.monthC0)+_itMsan.totalRow+':'+_colL(_itMsan.monthCN)+_itMsan.totalRow,0,p.count)):(_colL(_itMsan.ahCol)+_itMsan.totalRow); ca.getCell(2).value={formula:_sanF, result:allocTot}; }
       scCompItems.push({ name: 'Allocated IT Hours', value: allocTot,
         color: allocColorHex, displayVal: (allocTot||0) + ' hrs', isGroup: false, bgColor: '#f0f4f8' });
 
@@ -10860,7 +11086,9 @@ view_formula_for:'Vis formler for:'}
         if(note.indexOf('cl:')===0){ var cid=note.slice(3); curCluster=cid; clusterNames[cid]=c1||clusterNames[cid]; continue; }
         if(c1==='Total'||c1==='Name'||!c1) continue;
         var gradeText=_icXText(row.getCell(2).value).trim();
-        var hours={}; for(var mi=0; mi<monthCount; mi++){ var hv=_icXNum(row.getCell(3+mi).value); if(hv) hours[mi]=hv; }
+        var _fteBasis=(map.fte&&map.fteBasis>0)?map.fteBasis:0;
+        var _fteArr=(map.fte&&map.fteBasisArr&&map.fteBasisArr.length)?map.fteBasisArr:null;
+        var hours={}; for(var mi=0; mi<monthCount; mi++){ var hv=_icXNum(row.getCell(3+mi).value); if(map.fte&&hv){ var _b=_fteArr?(_fteArr[mi]||_fteBasis):_fteBasis; if(_b) hv=hv*_b; } if(hv) hours[mi]=hv; }
         var rid, mapr;
         if(note.indexOf('res:')===0){ rid=note.slice(4); mapr=resById[rid]||{}; }
         else { rid=( (curType==='it')?'it':'biz')+(icNextResId++); mapr={}; addedCount++; }
@@ -10979,6 +11207,13 @@ view_formula_for:'Vis formler for:'}
       icDates.start = map.period.dateStart ? new Date(map.period.dateStart) : icDates.start;
       icDates.end   = map.period.dateEnd   ? new Date(map.period.dateEnd)   : icDates.end;
     }
+    if(map.phases){ try{ icPhases = JSON.parse(JSON.stringify(map.phases)); }catch(e){} }
+    if(map.groups){ try{ icGroups = JSON.parse(JSON.stringify(map.groups)); }catch(e){} }
+    // refresh the start/end date button labels (Excel import path doesn't otherwise)
+    var _icMN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var _icSB=document.getElementById('ic-start-btn'), _icSL=document.getElementById('ic-start-label'), _icEB=document.getElementById('ic-end-btn'), _icEL=document.getElementById('ic-end-label');
+    if(_icSB&&_icSL){ if(icDates.start){ var _icSD=icDates.start; _icSL.textContent=_icSD.getDate()+' '+_icMN[_icSD.getMonth()]+' '+_icSD.getFullYear(); _icSB.classList.add('has-date'); } else { _icSL.textContent=(currentLang==='da'?'Vælg dato':'Select date'); _icSB.classList.remove('has-date'); } }
+    if(_icEB&&_icEL){ if(icDates.end){ var _icED=icDates.end; _icEL.textContent=_icED.getDate()+' '+_icMN[_icED.getMonth()]+' '+_icED.getFullYear(); _icEB.classList.add('has-date'); } else { _icEL.textContent=(currentLang==='da'?'Beregnes automatisk':'Auto-calculated'); _icEB.classList.remove('has-date'); } }
     if(typeof icEnsureClusters==='function'){ icEnsureClusters('it'); icEnsureClusters('biz'); }
     if(typeof renderRateCardEditor==='function') renderRateCardEditor();
     if(typeof icUpdateContingencySelectUI==='function') icUpdateContingencySelectUI();
@@ -15449,6 +15684,7 @@ function icDoRestore(idx) {
     </div>
     <div class="settings-body">
       <div class="settings-sidebar">
+        <button class="settings-nav-btn" id="snav-guide" onclick="showSettingsTab(&#39;guide&#39;)"><span class="settings-nav-icon">📖</span><span>Guide</span></button>
         <button class="settings-nav-btn" id="snav-parameters" onclick="showSettingsTab(&#39;parameters&#39;)"><span class="settings-nav-icon">🎛</span><span data-i18n="set_tab_params">Parameters</span></button>
         <button class="settings-nav-btn" id="snav-savings" onclick="showSettingsTab(&#39;savings&#39;)"><span class="settings-nav-icon">📊</span><span data-i18n="set_tab_savings">Benefits</span></button>
         <button class="settings-nav-btn" id="snav-formulas" onclick="showSettingsTab(&#39;formulas&#39;)"><span class="settings-nav-icon">🔢</span><span data-i18n="set_tab_formulas">Formulas</span></button>
@@ -15456,6 +15692,91 @@ function icDoRestore(idx) {
         <button class="settings-nav-btn active" id="snav-setup" onclick="showSettingsTab(&#39;setup&#39;)"><span class="settings-nav-icon">⚙️</span><span data-i18n="set_tab_setup">Setup</span></button>
       </div>
       <div class="settings-content">
+        <div class="settings-panel" id="stab-guide">
+          <div class="settings-panel-title">Guide</div>
+          <div class="settings-panel-sub">A quick reference to what this tool does and how to use each part. For internal use.</div>
+          <div style="max-width:840px;font-size:13px;line-height:1.6;color:#334155">
+
+            <div class="param-section-group-header" style="margin-top:14px">What this tool is</div>
+            <p style="margin:6px 0">This app builds the <strong>business case for SAP solutions</strong>. For a chosen area you can (1) quantify the <strong>benefits and ROI</strong>, (2) build the <strong>investment / cost side</strong> &mdash; people, timeline and other costs, and (3) plan the <strong>implementation</strong>. It is used both with external prospects and as an internal working tool, so keep entries professional and accurate.</p>
+
+            <div class="param-section-group-header" style="margin-top:18px">The five modules</div>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0"><strong>Module 1 &ndash; HR &amp; Recruitment:</strong> benefit &amp; ROI calculator for SuccessFactors HR, recruitment and onboarding improvements.</li>
+              <li style="margin:4px 0"><strong>Module 2 &ndash; Supply Chain &amp; Logistics:</strong> benefit &amp; ROI for supply-chain processes (with several sub-scenarios).</li>
+              <li style="margin:4px 0"><strong>Module 3 &ndash; SAP Commercial Expansion:</strong> benefit &amp; ROI for SD / global sales expansion.</li>
+              <li style="margin:4px 0"><strong>Module 4 &ndash; Investment Case:</strong> the cost side &mdash; IT &amp; Business resources (hours &times; grade rate), a visual timeline with phases, additional yearly costs, contingency mark-ups, and a cost breakdown by phase.</li>
+              <li style="margin:4px 0"><strong>Module 5 &ndash; Project Management:</strong> the implementation plan per SAP edition (phases, sub-phases, activities), with resource planning you can view in hours or FTE.</li>
+            </ul>
+
+            <div class="param-section-group-header" style="margin-top:18px">How the tabs connect</div>
+            <p style="margin:6px 0">The benefit modules (HR, Supply Chain, SAP Commercial) show <strong>ROI = their benefits versus the project&rsquo;s investment</strong>. That investment number comes from the <strong>Investment Case</strong>. Inside the Investment Case, the <strong>Project type</strong> setting decides which module receives it:</p>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0"><strong>Project type = HR</strong> &rarr; the Investment Case&rsquo;s total cost per year flows into the <strong>HR tab&rsquo;s break-even</strong>.</li>
+              <li style="margin:4px 0"><strong>Project type = SAP Commercial Expansion</strong> &rarr; it flows into <strong>that tab&rsquo;s break-even</strong>.</li>
+              <li style="margin:4px 0"><strong>Project type = Default</strong> &rarr; it is not routed anywhere; pick HR or SAP Commercial to link it.</li>
+            </ul>
+            <p style="margin:6px 0">The amount that flows over is <strong>IT + Business resource cost (hours &times; grade rate &times; contingency) plus Additional Costs</strong>, per year.</p>
+
+            <div class="param-section-group-header" style="margin-top:18px">Using the Investment Case</div>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0"><strong>Project setup:</strong> choose the project type, duration and start date.</li>
+              <li style="margin:4px 0"><strong>Resources:</strong> add IT and Business people into <em>clusters</em> (e.g. &ldquo;Implementation team&rdquo;). Each person picks a <strong>Grade</strong> (which sets the rate) and you enter hours per month. Use <strong>Add cluster</strong> to group people.</li>
+              <li style="margin:4px 0"><strong>Timeline &amp; phases:</strong> paint which phases / sub-phases / activities are active each month. This drives the cost breakdown. You can switch the view between months and weeks and the painted phases follow the calendar &mdash; this requires a project start date to be set.</li>
+              <li style="margin:4px 0"><strong>Per-person phase split:</strong> by default a person&rsquo;s hours in a month are split <em>evenly</em> across the phases painted that month. <strong>Right-click a person&rsquo;s hour cell</strong> to set a custom split (e.g. 80% Discover / 20% Prepare) &mdash; the counter must reach 100%.</li>
+              <li style="margin:4px 0"><strong>Additional costs &amp; contingency:</strong> add extra yearly costs; set IT / Business contingency % in Setup.</li>
+              <li style="margin:4px 0"><strong>Cost breakdown:</strong> shows cost by phase, including contingency.</li>
+            </ul>
+
+            <div class="param-section-group-header" style="margin-top:18px">Using Project Management</div>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">Pick the <strong>SAP implementation type</strong> (edition) &mdash; each has its own phase plan.</li>
+              <li style="margin:4px 0">Plan resources the same way (clusters, grades, hours).</li>
+              <li style="margin:4px 0"><strong>Hours / FTE toggle:</strong> switch the grid between hours and FTE. The &ldquo;1 FTE&rdquo; basis (hours per month / week) is editable in Setup. The summary column shows the <em>average</em> FTE across the months a person is active.</li>
+              <li style="margin:4px 0">Park and restore activities. This tab keeps its <strong>own data</strong>, separate from the Investment Case.</li>
+            </ul>
+
+            <div class="param-section-group-header" style="margin-top:18px">Settings panels</div>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0"><strong>Parameters:</strong> view and edit the input parameters per area.</li>
+              <li style="margin:4px 0"><strong>Benefits:</strong> the benefit categories / bars and their formulas.</li>
+              <li style="margin:4px 0"><strong>Formulas:</strong> build and adjust the formulas behind the numbers.</li>
+              <li style="margin:4px 0"><strong>Import / Export:</strong> save all customisations to a JSON file and load it back later.</li>
+              <li style="margin:4px 0"><strong>Setup:</strong> currency, editable exchange rates (DKK per unit), contingency, grade rate cards, and the FTE basis.</li>
+            </ul>
+
+            <div class="param-section-group-header" style="margin-top:18px">Currency &amp; exchange rates</div>
+            <p style="margin:6px 0">Choose the display currency in <strong>Setup</strong> &mdash; everything converts automatically. You can edit the exchange rates (DKK per 1 EUR / USD / GBP) in Setup as well.</p>
+
+            <div class="param-section-group-header" style="margin-top:18px">Excel export &mdash; what it can and can&rsquo;t do</div>
+            <p style="margin:6px 0"><strong>What it does:</strong></p>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">Exports the full Investment Case (resources, timeline, additional costs, cost breakdown, rate card) as a <strong>live spreadsheet</strong> &mdash; most numbers are formulas that recalculate when you change hours or grades.</li>
+              <li style="margin:4px 0">The cost breakdown reflects each person&rsquo;s <strong>phase split</strong>.</li>
+              <li style="margin:4px 0">You can <strong>re-import</strong> an exported file (Settings &rarr; Import / Export) to load changes back into the app, including custom splits.</li>
+            </ul>
+            <p style="margin:6px 0"><strong>How to edit it in Excel:</strong></p>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">To add a person, <strong>copy an existing person&rsquo;s whole row inside a cluster</strong> (so all the hidden formulas and the rate helper come along), then change the name, grade and hours.</li>
+              <li style="margin:4px 0">The <strong>&ldquo;Rate helper&rdquo;</strong> column shows <strong>&ldquo;&darr; copy&rdquo;</strong> &mdash; copy it down when you add rows. It carries each row&rsquo;s rate, looked up from the grade. If a grade is mistyped it shows <strong>&ldquo;grade misspelled&rdquo;</strong> and that row&rsquo;s cost goes to 0 &mdash; fix the grade.</li>
+              <li style="margin:4px 0">Every resource row already has formulas for <strong>every year</strong>, so you can add hours in any year.</li>
+            </ul>
+            <p style="margin:6px 0"><strong>What it can&rsquo;t do:</strong></p>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">It can&rsquo;t auto-create a new resource &mdash; you must copy a row. It can&rsquo;t give a brand-new Excel person a <em>custom</em> phase split (do that in the app).</li>
+              <li style="margin:4px 0"><strong>Structural changes</strong> (adding people / phases, custom splits) are best made in the app and re-exported.</li>
+              <li style="margin:4px 0">Export needs an <strong>internet connection</strong> (it loads the Excel library online).</li>
+            </ul>
+
+            <div class="param-section-group-header" style="margin-top:18px">Good to know</div>
+            <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">The app always opens on the <strong>landing page</strong>.</li>
+              <li style="margin:4px 0">Use <strong>&ldquo;back it up&rdquo;</strong> to make a safety copy of the file.</li>
+              <li style="margin:4px 0">The structure checker may report a few harmless &ldquo;duplicate ID&rdquo; warnings &mdash; they don&rsquo;t break anything.</li>
+            </ul>
+
+          </div>
+        </div>
         <div class="settings-panel" id="stab-parameters">
           <div class="settings-panel-title" data-i18n="set_params_title">Parameter Editor</div>
           <div class="settings-panel-sub" data-i18n="set_params_sub">View and edit all parameters. Built-in parameters show their defaults; custom parameters can be fully edited or removed.</div>
@@ -15572,7 +15893,7 @@ function icDoRestore(idx) {
               <div class="io-card-desc">Hours that equal one full-time employee (FTE). Used by the Hours / FTE switch in the Project Management tab.</div>
               <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px">
                 <label style="font-size:13px;display:flex;flex-direction:column;gap:5px;font-weight:600;color:#334155">Hours per FTE-month
-                  <input type="number" id="set-fte-month" min="1" step="1" style="width:120px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font-weight:400" oninput="bcSaveFteBasis()">
+                  <input type="number" id="set-fte-month" min="1" step="0.5" style="width:120px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font-weight:400" oninput="bcSaveFteBasis()">
                 </label>
                 <label style="font-size:13px;display:flex;flex-direction:column;gap:5px;font-weight:600;color:#334155">Hours per FTE-week
                   <input type="number" id="set-fte-week" min="1" step="0.5" style="width:120px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font-weight:400" oninput="bcSaveFteBasis()">
