@@ -8022,6 +8022,7 @@
         color:'#9aa5b1',
         cost:tree.unassigned,
         hours:_ua.hours||0, itCost:_ua.itCost||0, itHours:_ua.itHours||0, bizCost:_ua.bizCost||0, bizHours:_ua.bizHours||0,
+        fte:tree.unassignedFte||0, itFte:tree.unassignedItFte||0, bizFte:tree.unassignedBizFte||0,
         children:tree.unassignedChildren
       };
       bh+=icRenderCostNodeHtml(unassignedNode, grand);
@@ -8195,6 +8196,14 @@
     var phaseW={}, subW={}, actW={}, unassignedW=new Array(p.count).fill(0);
     function _wadd(store,key,m,v){ if(!store[key]) store[key]=new Array(p.count).fill(0); store[key][m]+=v; }
     function _mwadd(key,resId,m,v){ if(!memberDirectW[key]) memberDirectW[key]={}; if(!memberDirectW[key][resId]) memberDirectW[key][resId]=new Array(p.count).fill(0); memberDirectW[key][resId][m]+=v; }
+    // ── Stable person-months FTE: track each node's hours per CALENDAR MONTH,
+    // then divide each month by its own working-day basis (7.5 x working days). This
+    // is view-independent (same number in months or weeks view).
+    var _cbHasCal=!!icDates.start, _pmDist=[], _pmTot=[], _fullWD={}, _mh={};
+    function _wdOfMonthKey(mk){ if(_fullWD[mk]!=null) return _fullWD[mk]; var pr=mk.split('-'),y=+pr[0],mo=+pr[1]; var d0=Math.floor(Date.UTC(y,mo,1)/86400000),d1=Math.floor(Date.UTC(y,mo+1,1)/86400000),c=0; for(var d=d0;d<d1;d++){ var wd=(d+4)%7; if(wd>=1&&wd<=5)c++; } _fullWD[mk]=c; return c; }
+    if(_cbHasCal){ for(var _pmi=0;_pmi<p.count;_pmi++){ var _wds=(typeof _icColWorkDays==='function')?_icColWorkDays(_pmi):null; var _dist={},_tot=0; if(_wds){ for(var _wk=0;_wk<_wds.length;_wk++){ var _dn=_wds[_wk],_dt=new Date(_dn*86400000),_mk=_dt.getUTCFullYear()+'-'+_dt.getUTCMonth(); _dist[_mk]=(_dist[_mk]||0)+1; _tot++; } } _pmDist[_pmi]=_dist; _pmTot[_pmi]=_tot; } }
+    function _addMH(key,type,m,h){ if(!_cbHasCal||!(h>0)) return; var dist=_pmDist[m],tot=_pmTot[m]; if(!tot) return; if(!_mh[key]) _mh[key]={}; for(var mk in dist){ var hh=h*dist[mk]/tot, e=_mh[key][mk]; if(!e){ e=_mh[key][mk]={h:0,ith:0,bizh:0}; } e.h+=hh; if(type==='it') e.ith+=hh; else e.bizh+=hh; } }
+    function _mhToFte(key){ var mm=_mh[key]; if(!mm) return {fte:0,itFte:0,bizFte:0}; var fa=0,fi=0,fb=0; for(var mk in mm){ var b=7.5*_wdOfMonthKey(mk); if(b>0){ fa+=mm[mk].h/b; fi+=mm[mk].ith/b; fb+=mm[mk].bizh/b; } } return {fte:fa,itFte:fi,bizFte:fb}; }
 
     for(var m=0;m<p.count;m++){
       var deepest=[];
@@ -8234,7 +8243,7 @@
           _add(unassignedAgg, R.type, rc, rhh);
           var entry=unassignedByRes[R.id];
           if(!entry){ entry={agg:_blank(),months:[]}; unassignedByRes[R.id]=entry; }
-          _add(entry.agg, R.type, rc, rhh); entry.months.push(m);
+          _add(entry.agg, R.type, rc, rhh); entry.months.push(m); _addMH('un|'+R.id, R.type, m, rhh);
         }
       } else {
         var n=deepest.length;
@@ -8249,6 +8258,7 @@
             else { key=parts[1]+'|'+parts[2]+'|'+parts[3]; store=actDirect; }
             if(!store[key]) store[key]=_blank();
             _add(store[key], Rr.type, rc3*_w[di], rh3*_w[di]);
+            _addMH(key, Rr.type, m, rh3*_w[di]);
             _mwadd(key, Rr.id, m, _w[di]);
           }
         }
@@ -8263,7 +8273,9 @@
       var wt=_wblank(); if(directW) _wmerge(wt,directW);
       var mw={}; if(directMW) _mwmerge(mw,directMW);
       children.forEach(function(c){ _merge(agg,c); _wmerge(wt,c.weights); _mwmerge(mw,c.memberW); });
-      return {key:key,name:name,color:color,cost:agg.cost,hours:agg.hours,itCost:agg.itCost,itHours:agg.itHours,bizCost:agg.bizCost,bizHours:agg.bizHours,weights:wt,memberW:mw,children:children};
+      var _df=_cbHasCal?_mhToFte(key):{fte:0,itFte:0,bizFte:0}, _nfte=_df.fte,_nit=_df.itFte,_nbz=_df.bizFte;
+      children.forEach(function(c){ _nfte+=(c.fte||0); _nit+=(c.itFte||0); _nbz+=(c.bizFte||0); });
+      return {key:key,name:name,color:color,cost:agg.cost,hours:agg.hours,itCost:agg.itCost,itHours:agg.itHours,bizCost:agg.bizCost,bizHours:agg.bizHours,fte:_nfte,itFte:_nit,bizFte:_nbz,weights:wt,memberW:mw,children:children};
     }
 
     var phaseNodes=[];
@@ -8304,10 +8316,12 @@
       var periodLabels=entry.months.slice().sort(function(a,b){return a-b;}).map(function(m){return p.labels[m]||('M'+(m+1));});
       var nm=r.name+' — '+periodLabels.join(', ');
       var a=entry.agg;
-      unassignedChildren.push({key:'unassigned|'+r.id, name:nm, color:'#9aa5b1', cost:a.cost,hours:a.hours,itCost:a.itCost,itHours:a.itHours,bizCost:a.bizCost,bizHours:a.bizHours, children:[]});
+      var _uf=_cbHasCal?_mhToFte('un|'+r.id):{fte:0,itFte:0,bizFte:0};
+      unassignedChildren.push({key:'unassigned|'+r.id, name:nm, color:'#9aa5b1', cost:a.cost,hours:a.hours,itCost:a.itCost,itHours:a.itHours,bizCost:a.bizCost,bizHours:a.bizHours,fte:_uf.fte,itFte:_uf.itFte,bizFte:_uf.bizFte, children:[]});
     });
 
-    return {groups:groupNodes, unassigned:unassignedAgg.cost, unassignedAgg:unassignedAgg, unassignedW:unassignedW, unassignedChildren:unassignedChildren};
+    var _uT={fte:0,itFte:0,bizFte:0}; unassignedChildren.forEach(function(c){ _uT.fte+=(c.fte||0); _uT.itFte+=(c.itFte||0); _uT.bizFte+=(c.bizFte||0); });
+    return {groups:groupNodes, unassigned:unassignedAgg.cost, unassignedAgg:unassignedAgg, unassignedW:unassignedW, unassignedChildren:unassignedChildren, unassignedFte:_uT.fte, unassignedItFte:_uT.itFte, unassignedBizFte:_uT.bizFte};
   }
 
   function icRenderCostNodeHtml(node, grand){
@@ -8322,14 +8336,14 @@
       h+='<span class="ic-toggle-spacer"></span>';
     }
     h+='<span class="saving-bar-name">'+node.name.replace(/&/g,'&amp;')+'</span></div>';
-    var _fh=function(x){ if(!(x>0)) return '—'; if(typeof cbFteMode!=='undefined'&&cbFteMode){ return (Math.round((x/bcFteDivisor())*100)/100); } return ''+Math.round(x); };
+    var _fh=function(hrs, fte){ if(typeof cbFteMode!=='undefined'&&cbFteMode){ var v=(fte!=null)?fte:((hrs>0&&typeof bcFteDivisor==='function')?hrs/bcFteDivisor():0); return v>0?(Math.round(v*100)/100):'—'; } return hrs>0?(''+Math.round(hrs)):'—'; };
     var _fc=function(x){return x>0?icFmtDKK(x):'—';};
     h+='<span class="ic-cost-cells">'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.hours)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.hours, node.fte)+'</span>'
       +'<span class="ic-cc ic-cc-c ic-cc-sum">'+_fc(node.cost)+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.itHours)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.itHours, node.itFte)+'</span>'
       +'<span class="ic-cc ic-cc-c">'+_fc(node.itCost)+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.bizHours)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.bizHours, node.bizFte)+'</span>'
       +'<span class="ic-cc ic-cc-c">'+_fc(node.bizCost)+'</span>'
       +'</span></div>';
     h+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+(node.color||'#999')+'"></div></div></div>';
