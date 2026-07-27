@@ -27,7 +27,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -1497,7 +1497,7 @@
     }
     .fb-chips { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
     .fb-chip {
-      font-family: 'SF Mono', 'Fira Mono', monospace, inherit;
+      font-family: ui-monospace, Menlo, Consolas, monospace, inherit;
       font-size: 11px; font-weight: 600;
       padding: 3px 8px; border-radius: 6px;
       border: 1.5px solid var(--border);
@@ -1525,7 +1525,7 @@
 
     .fb-formula-input {
       width: 100%; min-height: 60px;
-      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
       font-size: 13px; line-height: 1.5;
       border: 1.5px solid var(--border); border-radius: 8px;
       padding: 10px 12px; outline: none; resize: vertical;
@@ -4687,7 +4687,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
       <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-timeline&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
-      <button class="ic-add-phase-btn" onclick="icAddPhase()">+ Add phase</button>
+      <button class="ic-add-phase-btn" onclick="icAddGroup()">+ Add cluster</button>
       <button class="ic-parked-btn" id="ic-parked-btn" onclick="icOpenDrawer()" style="margin-left:auto;opacity:0.65">
         📦 Parked items <span class="ic-parked-badge" id="ic-parked-count">0</span>
       </button>
@@ -4699,6 +4699,52 @@
 </section>
 
 
+<style>
+.ic-vac-section{ max-width:1280px; margin:0 auto 40px; padding:0 48px; }
+.ic-vac-inner{ background:transparent; border:none; border-radius:0; padding:0; }
+.ic-vac-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; }
+.ic-vac-title{ font-size:14px; font-weight:700; color:var(--navy); }
+.ic-vac-sub{ font-size:12px; color:var(--text-secondary); margin-top:2px; }
+.ic-vac-list{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.ic-vac-chip{ display:inline-flex; align-items:center; gap:8px; background:#eef1f5; border:1px solid #d7dce4; border-radius:999px; padding:5px 12px; font-size:12px; color:var(--text); }
+.ic-vac-chip button{ border:none; background:none; color:#94a3b8; cursor:pointer; font-size:13px; line-height:1; padding:0; }
+.ic-vac-chip button:hover{ color:#dc2626; }
+.ic-vac-empty{ font-size:12px; color:#94a3b8; }
+.ic-vac-clear{ border:1px solid var(--border); background:none; border-radius:999px; padding:5px 12px; font-size:12px; color:var(--text-secondary); cursor:pointer; }
+.ic-vac-clear:hover{ background:#f1f5f9; }
+td.ic-vac-col, th.ic-vac-col{ background:#e7ebf1; }
+td.ic-vac-col .ic-hrs-input{ background:transparent; }
+/* Timeline: overlay a grey wash so the vacation band reads down the whole column, even over painted phases. */
+.ic-timeline-table td.ic-vac-col{ position:relative; }
+.ic-timeline-table td.ic-vac-col::after{ content:''; position:absolute; inset:0; background:rgba(90,105,135,0.16); pointer-events:none; }
+.ic-res-selbox{ cursor:pointer; margin-right:6px; width:14px; height:14px; flex:0 0 auto; accent-color:var(--accent,#F07800); }
+tr.ic-res-selected > td{ background:#eaf3ff !important; }
+tr.ic-res-selected:hover > td{ background:#e0edff !important; }
+.ic-copy-btn{ font-size:13px; }
+.ic-paste-pill{ display:inline-flex; align-items:center; gap:4px; margin-left:8px; background:var(--accent,#F07800); color:#fff; border:none; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.ic-paste-pill:hover{ filter:brightness(1.08); }
+.ic-paste-wrap{ display:inline-flex; align-items:stretch; margin-left:8px; vertical-align:middle; }
+.ic-paste-wrap .ic-paste-pill{ margin-left:0; border-radius:999px 0 0 999px; }
+.ic-paste-x{ background:#d76a00; color:#fff; border:none; border-left:1px solid rgba(255,255,255,.4); border-radius:0 999px 999px 0; padding:2px 8px; font-size:11px; line-height:1; cursor:pointer; }
+.ic-paste-x:hover{ background:#b95a00; }
+.ic-clip-status{ display:none; align-items:center; gap:6px; background:#eef1f5; border:1px solid #d7dce4; border-radius:999px; padding:3px 10px; font-size:11px; color:var(--text-secondary,#555); }
+.ic-clip-status button{ border:none; background:none; color:#94a3b8; cursor:pointer; font-size:12px; line-height:1; padding:0; }
+.ic-clip-status button:hover{ color:#dc2626; }
+</style>
+<!-- ── Vacation weeks ── -->
+<section class="ic-vac-section" id="ic-section-vac">
+  <div class="ic-vac-inner">
+    <div class="ic-vac-head">
+      <div>
+        <div class="ic-vac-title" data-i18n="ic_vac_title">Vacation weeks</div>
+        <div class="ic-vac-sub" data-i18n="ic_vac_sub">Mark weeks as vacation &mdash; shown greyed in the week view. Cells stay editable.</div>
+      </div>
+      <button class="ic-add-phase-btn" onclick="icOpenVacPicker(this)" data-i18n="ic_vac_add">+ Add vacation period</button>
+    </div>
+    <div id="ic-vac-list" class="ic-vac-list"></div>
+  </div>
+</section>
+
 <!-- ── IT Resources ── -->
 <section class="ic-resources-section" id="ic-section-it">
   <div class="ic-section-inner">
@@ -4709,6 +4755,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-it&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
+        <span id="ic-clip-it" class="ic-clip-status" style="display:none"></span>
         <button class="ic-add-phase-btn" onclick="icAddCluster(&#39;it&#39;)">+ Add cluster</button>
         <button class="ic-add-phase-btn" id="bc-fte-toggle" onclick="bcToggleFte()" title="Switch the grid between hours and FTE">Showing: Hours</button>
       </div>
@@ -4729,6 +4776,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-biz&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
+        <span id="ic-clip-biz" class="ic-clip-status" style="display:none"></span>
         <button class="ic-add-phase-btn" onclick="icAddCluster(&#39;biz&#39;)">+ Add cluster</button>
       </div>
     </div>
@@ -5369,6 +5417,8 @@
 
   // ── Investment Case ──
   var icPeriod = 'months';
+  var icVacPeriods = [];   // [{id, from:MondayDayNum, to:MondayDayNum}] inclusive — vacation weeks
+  var icNextVacId = 1;
   var icGroups = [
     {id:'grp1', name:'Implementation project', expanded:true},
     {id:'grp2', name:'Roll out', expanded:true}
@@ -5767,6 +5817,7 @@
       nextScId:20,
       period:'months', duration:2, extraMonths:0,
       dateStart:null, dateEnd:null,
+      vacPeriods: [],
       parked: [],
       itContingencyPct: 0, bizContingencyPct: 0
     };
@@ -5795,6 +5846,7 @@
       extraMonths: exEl?(parseInt(exEl.value)||0):0,
       dateStart: icDates.start?icDates.start.getTime():null,
       dateEnd: icDates.end?icDates.end.getTime():null,
+      vacPeriods: JSON.parse(JSON.stringify(icVacPeriods)),
       parked: JSON.parse(JSON.stringify(icParked||[])),
       itContingencyPct: icItContingencyPct,
       bizContingencyPct: icBizContingencyPct
@@ -5834,6 +5886,7 @@
 
     icDates.start = snap.dateStart ? new Date(snap.dateStart) : null;
     icDates.end   = snap.dateEnd   ? new Date(snap.dateEnd)   : null;
+    icVacPeriods = JSON.parse(JSON.stringify(snap.vacPeriods||[])); icNextVacId=(icVacPeriods.reduce(function(_m,_p){return Math.max(_m,_p.id||0);},0))+1;
 
     var _mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var _sBtn=document.getElementById('ic-start-btn'), _sLbl=document.getElementById('ic-start-label');
@@ -5884,9 +5937,7 @@
     icSetTypeLabel(val);
     icCloseCustomSelects();
     if(val===icProjectType) return;
-    // Leaving the neutral "Default" state: just load the chosen type fresh, no prompt
-    if(icProjectType==='default'){ icApplyProjectType(val, false); return; }
-    // Switching between chosen types (or back to Default): ask keep vs clean
+    // Any type switch (including from Default) asks keep vs clean, so work isn't lost.
     icOpenTypeSwitchConfirm(val);
   }
   var icPendingType = null;
@@ -6023,7 +6074,7 @@
       var resRate = icGetResRate(res, type);
       var totalHrs = 0, actMonths = 0;
       for (var i = 0; i < p.count; i++) { var _h=(res.hours[i]||0); totalHrs += _h; if(_h>0) actMonths++; }
-      var totalDays = totalHrs ? (totalHrs / 7.5).toFixed(1) : 0;
+      var totalDays = totalHrs ? _icDaysStr(totalHrs) : 0;
 
       setCell(type+'-'+res.id+'-hrs',  totalHrs  ? _icResAvgFte(function(q){return res.hours[q]||0;},p.count)  : '—', totalHrs > 0);
       setCell(type+'-'+res.id+'-days', totalDays ? totalDays : '—', !!totalDays);
@@ -6049,7 +6100,7 @@
         clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++) clHrs+=(res.hours[i]||0); for(var y=0;y<calRanges.length;y++){ var rng=calRanges[y]; for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; } });
         for(var y=0;y<calRanges.length;y++){ clGrand+=clYr[y]; setCell(type+'-cl-'+cl.id+'-yr'+y, clYr[y]?icFmtDKK(clYr[y]):'\u2014', clYr[y]>0); }
         setCell(type+'-cl-'+cl.id+'-hrs', clHrs?_icResAvgFte(function(q){var cc=0;clRes.forEach(function(res){cc+=(res.hours[q]||0);});return cc;},p.count):'\u2014', clHrs>0);
-        setCell(type+'-cl-'+cl.id+'-days', clHrs?(clHrs/7.5).toFixed(1):'\u2014', clHrs>0);
+        setCell(type+'-cl-'+cl.id+'-days', clHrs?_icDaysStr(clHrs):'\u2014', clHrs>0);
         setCell(type+'-cl-'+cl.id+'-grand', clGrand?icFmtDKK(clGrand):'\u2014');
       });
     }
@@ -6069,7 +6120,7 @@
     }
 
     setCell(type+'-total-hrs',  totHrs ? _icResAvgFte(function(q){var c=0;for(var ri=0;ri<resources.length;ri++)c+=(resources[ri].hours[q]||0);return c;},p.count) : '—');
-    setCell(type+'-total-days', totHrs ? (totHrs / 7.5).toFixed(1) : '—');
+    setCell(type+'-total-days', totHrs ? _icDaysStr(totHrs) : '—');
     for (var y = 0; y < calRanges.length; y++) {
       var rng = calRanges[y], yt = 0;
       for (var ri = 0; ri < resources.length; ri++) {
@@ -6351,6 +6402,7 @@
     var el=document.getElementById('ic-setup-summary');
     if(el && !icDates.start) el.textContent=totalMo+' '+(currentLang==='da'?'måneder · ':'months · ')+periods+' '+label;
     icAutoComputeEndDate();
+    if(typeof icRenderVacList==='function') icRenderVacList();
     icRenderTimeline();
     icRenderResources('it');
     icRenderResources('biz');
@@ -6384,6 +6436,69 @@
     d.setDate(d.getDate()-((d.getDay()+6)%7));
     return d;
   }
+  // ── Vacation weeks (visual only) ──────────────────────────────────────
+  // All project weeks as {md:MondayDayNumber, date, label}. Independent of the
+  // current period view so the vacation picker can list weeks even in months view.
+  function _icWeekList(){
+    if(!icDates.start) return [];
+    var wa=_icWeekAnchor(); if(!wa) return [];
+    var count;
+    if(icDates.end){ count=Math.max(1, Math.floor((icDates.end-wa)/(7*86400000))+1); }
+    else { count=Math.max(1, Math.ceil(icTotalMonths()/12*52)); }
+    var out=[];
+    for(var i=0;i<count;i++){ var d=new Date(wa.getFullYear(),wa.getMonth(),wa.getDate()+i*7); out.push({ md:_icDayNum(d), date:d, label:d.getFullYear()+'-W'+icISOWeek(d) }); }
+    return out;
+  }
+  // Is week column i (current weeks view) a vacation week? Weeks view only.
+  function _icIsVacWeek(i){
+    if(typeof icPeriod==='undefined' || icPeriod!=='weeks' || !icDates.start || !icVacPeriods.length) return false;
+    var wa=_icWeekAnchor(); if(!wa) return false;
+    var md=_icDayNum(new Date(wa.getFullYear(),wa.getMonth(),wa.getDate()+i*7));
+    for(var k=0;k<icVacPeriods.length;k++){ if(md>=icVacPeriods[k].from && md<=icVacPeriods[k].to) return true; }
+    return false;
+  }
+  function icCloseVacPop(){ var p=document.getElementById('ic-vac-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); }
+  function icRerenderVac(){ icRenderVacList(); if(typeof icRenderTimeline==='function') icRenderTimeline(); if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); } }
+  function icRenderVacList(){
+    var el=document.getElementById('ic-vac-list'); if(!el) return;
+    if(!icVacPeriods.length){ el.innerHTML='<span class="ic-vac-empty">'+(currentLang==='da'?'Ingen ferieperioder endnu.':'No vacation periods yet.')+'</span>'; return; }
+    var wl=_icWeekList();
+    function lbl(md){ for(var i=0;i<wl.length;i++){ if(wl[i].md===md) return wl[i].label; } return 'wk'; }
+    var h='';
+    icVacPeriods.slice().sort(function(a,b){return a.from-b.from;}).forEach(function(pd){
+      h+='<span class="ic-vac-chip">'+bcEsc(lbl(pd.from))+' &rarr; '+bcEsc(lbl(pd.to))+'<button onclick="icRemoveVac('+pd.id+')" title="Remove">&#10005;</button></span>';
+    });
+    h+='<button class="ic-vac-clear" onclick="icClearVac()">'+(currentLang==='da'?'Ryd alle':'Clear all')+'</button>';
+    el.innerHTML=h;
+  }
+  function icOpenVacPicker(trigger){
+    icCloseVacPop();
+    var wl=_icWeekList();
+    if(!wl.length){ alert(currentLang==='da'?'Sæt en projektstartdato først for at tilføje ferieuger.':'Set a project start date first to add vacation weeks.'); return; }
+    var pop=document.createElement('div'); pop.id='ic-vac-pop';
+    pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:340px;font-family:inherit;padding:14px 16px';
+    var opts=''; for(var i=0;i<wl.length;i++){ opts+='<option value="'+wl[i].md+'">'+bcEsc(wl[i].label)+'</option>'; }
+    var html='<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">'+(currentLang==='da'?'Tilføj ferieperiode':'Add vacation period')+'<button onclick="icCloseVacPop()" style="float:right;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px">&#10005;</button></div>';
+    html+='<div style="display:flex;gap:8px;margin-bottom:12px">';
+    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Fra uge':'From week')+'</label><select id="ic-vac-from" style="width:100%;padding:6px;border:1px solid #cbd5e1;border-radius:7px">'+opts+'</select></div>';
+    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Til uge':'To week')+'</label><select id="ic-vac-to" style="width:100%;padding:6px;border:1px solid #cbd5e1;border-radius:7px">'+opts+'</select></div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:8px;justify-content:flex-end"><button class="ic-vac-clear" onclick="icCloseVacPop()">'+(currentLang==='da'?'Annuller':'Cancel')+'</button><button style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 16px;cursor:pointer;font-weight:600" onclick="icApplyVac()">'+(currentLang==='da'?'Anvend':'Apply')+'</button></div>';
+    pop.innerHTML=html;
+    document.body.appendChild(pop);
+    var r=(trigger&&trigger.getBoundingClientRect)?trigger.getBoundingClientRect():{bottom:120,left:40};
+    var vw=window.innerWidth, pr=pop.getBoundingClientRect();
+    pop.style.top=(r.bottom+window.scrollY+6)+'px';
+    pop.style.left=(Math.max(8, Math.min(r.left, vw-pr.width-12))+window.scrollX)+'px';
+  }
+  function icApplyVac(){
+    var fEl=document.getElementById('ic-vac-from'), tEl=document.getElementById('ic-vac-to'); if(!fEl||!tEl) return;
+    var from=parseInt(fEl.value), to=parseInt(tEl.value); if(isNaN(from)||isNaN(to)) return; if(from>to){ var t=from; from=to; to=t; }
+    icVacPeriods.push({ id:icNextVacId++, from:from, to:to });
+    icCloseVacPop(); icRerenderVac();
+  }
+  function icRemoveVac(id){ icVacPeriods=icVacPeriods.filter(function(p){return p.id!==id;}); icRerenderVac(); }
+  function icClearVac(){ icVacPeriods=[]; icRerenderVac(); }
   function icGetPeriods(){
     var years=Math.ceil(icTotalMonths()/12);
     var isWeeks=icPeriod==='weeks';
@@ -6544,7 +6659,7 @@
     }
     for(var i=0;i<p.count;i++){
       var boundary=(p.yearGroups&&p.yearGroups.length)?( yrBoundaries[i]?' ic-yr-boundary':''):(((i+1)%p.perYear===0)?' ic-yr-boundary':'');
-      h+='<th class="ic-period-th'+boundary+'">'+p.labels[i]+'</th>';
+      h+='<th class="ic-period-th'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+'">'+p.labels[i]+'</th>';
     }
     h+='</tr></thead>';
 
@@ -6562,6 +6677,7 @@
         b+='<input type="text" class="ic-name-input" value="'+grp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-grpid="'+grp.id+'" data-action="rename-group">';
         b+='<div class="ic-row-actions">';
         b+='<button class="ic-row-btn ic-add-sub-btn" data-action="add-phase-to-group" data-grpid="'+grp.id+'" title="Add phase">&#65291; Add phase</button>';
+        b+='<button class="ic-row-btn ic-del-btn" data-action="delete-group" data-grpid="'+grp.id+'" title="Delete cluster">&#10005;</button>';
         b+='</div></div></td>';
         for(var gi=0;gi<p.count;gi++){
           var grpHitColor=null;
@@ -6641,7 +6757,7 @@
             sty=painted?'background:'+phColor+';':'';
           }
           var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-          var cls='ic-cell'+boundary+(painted?' ic-painted':'');
+          var cls='ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'');
           b+='<td class="'+cls+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="" data-idx="'+i+'"></td>';
         }
         b+='</tr>';
@@ -6691,7 +6807,7 @@
               sty=painted?'background:'+spColor+';':'';
             }
             var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-            var cls='ic-cell'+boundary+(painted?' ic-painted':'');
+            var cls='ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'');
             b+='<td class="'+cls+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-idx="'+i+'"></td>';
           }
           b+='</tr>';
@@ -6713,7 +6829,7 @@
             for(var i=0;i<p.count;i++){
               var painted=act.painted[i];
               var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-              var cls='ic-cell'+boundary+(painted?' ic-painted':'');
+              var cls='ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'');
               var sty=painted?'background:'+actColor+';':'';
               b+='<td class="'+cls+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-idx="'+i+'"></td>';
             }
@@ -6767,7 +6883,7 @@
               painted=ph.painted[i]; sty=painted?'background:'+phColor+';':'';
             }
             var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-            b+='<td class="ic-cell'+boundary+(painted?' ic-painted':'')+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="" data-idx="'+i+'"></td>';
+            b+='<td class="ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'')+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="" data-idx="'+i+'"></td>';
           }
           b+='</tr>';
           if(ph.subPhases) ph.subPhases.forEach(function(sp){
@@ -6804,7 +6920,7 @@
                 painted=sp.painted[i];sty=painted?'background:'+spColor+';':'';
               }
               var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-              b+='<td class="ic-cell'+boundary+(painted?' ic-painted':'')+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-idx="'+i+'"></td>';
+              b+='<td class="ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'')+'" style="'+sty+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-idx="'+i+'"></td>';
             }
             b+='</tr>';
             sp.subSubPhases.forEach(function(act){
@@ -6823,7 +6939,7 @@
               for(var i=0;i<p.count;i++){
                 var painted=act.painted[i];
                 var boundary=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-                b+='<td class="ic-cell'+boundary+(painted?' ic-painted':'')+'" style="'+(painted?'background:'+actColor+';':'')+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-idx="'+i+'"></td>';
+                b+='<td class="ic-cell'+boundary+(_icIsVacWeek(i)?' ic-vac-col':'')+(painted?' ic-painted':'')+'" style="'+(painted?'background:'+actColor+';':'')+'" data-action="paint" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-idx="'+i+'"></td>';
               }
               b+='</tr>';
             });
@@ -6844,6 +6960,9 @@
     });
     tbl.querySelectorAll('[data-action="add-phase-to-group"]').forEach(function(el){
       el.onclick=function(){ icAddPhase(this.getAttribute('data-grpid')); };
+    });
+    tbl.querySelectorAll('[data-action="delete-group"]').forEach(function(el){
+      el.onclick=function(){ icDeleteGroup(this.getAttribute('data-grpid')); };
     });
     tbl.querySelectorAll('[data-action="toggle-phase"]').forEach(function(el){
       el.onclick=function(){ icTogglePhase(this.getAttribute('data-phid')); };
@@ -7264,8 +7383,9 @@
     var opts = '';
     for (var i = 0; i < p.count; i++) opts += '<option value="'+i+'">'+(i+1)+' – '+icPeriodOptLabel(p,i)+'</option>';
 
+    var _fteM=(typeof pmFteActive==='function'&&pmFteActive());
     _icResRangePopup.innerHTML =
-      '<div class="ic-range-popup-title">Bulk fill hours'
+      '<div class="ic-range-popup-title">Bulk fill '+(_fteM?'FTE':'hours')
       +'<button class="ic-range-close-btn" onclick="icCloseResRange()">✕</button></div>'
       +'<div class="ic-range-row">'
       +'<div class="ic-range-field"><label class="ic-range-label">From</label>'
@@ -7274,8 +7394,8 @@
       +'<select class="ic-range-select" id="ic-rr-to">'+opts+'</select></div>'
       +'</div>'
       +'<div class="ic-range-row">'
-      +'<div class="ic-range-field"><label class="ic-range-label">Hours per period</label>'
-      +'<input type="number" class="ic-range-input" id="ic-rr-hrs" min="0" step="8" value="148" style="width:90px"></div>'
+      +'<div class="ic-range-field"><label class="ic-range-label">'+(_fteM?'FTE':'Hours')+' per period</label>'
+      +'<input type="text" inputmode="decimal" class="ic-range-input" id="ic-rr-hrs" value="'+(_fteM?'1':'148')+'" style="width:90px"></div>'
       +'</div>'
       +'<div class="ic-range-actions">'
       +'<button class="ic-range-apply" onclick="icApplyResRange(_icResRangeOpen_type,_icResRangeOpen_resId)">Apply</button>'
@@ -7299,11 +7419,12 @@
     var toEl   = document.getElementById('ic-rr-to');
     var hrsEl  = document.getElementById('ic-rr-hrs');
     if (!fromEl||!toEl||!hrsEl) return;
-    var from = parseInt(fromEl.value), to = parseInt(toEl.value), hrs = parseFloat(hrsEl.value)||0;
+    var from = parseInt(fromEl.value), to = parseInt(toEl.value), raw = _icPnum(hrsEl.value), _fte=(typeof pmFteActive==='function'&&pmFteActive());
     if (from > to) { var tmp=from; from=to; to=tmp; }
     var res = icGetResourceArr(type).find(function(r){return r.id===resId;});
     if (!res) return;
     for (var i = from; i <= to; i++) {
+      var hrs = _fte ? raw*_icResFteBasis(i) : raw;
       if (hrs > 0) res.hours[i] = hrs; else delete res.hours[i];
       _icResWriteCol(res, i, hrs);
     }
@@ -7384,6 +7505,20 @@
 
   function icDeletePhase(phId){
     icPhases=icPhases.filter(function(p){return p.id!==phId;});
+    icRenderTimeline();
+  }
+
+  function icAddGroup(){
+    icGroups.push({id:'grp'+(icNextGrpId++),name:(currentLang==='da'?'Ny gruppe':'New cluster'),expanded:true});
+    icRenderTimeline();
+  }
+
+  function icDeleteGroup(grpId){
+    if(!icGroups || icGroups.length<=1){ alert(currentLang==='da'?'Mindst \u00e9n klynge er p\u00e5kr\u00e6vet.':'At least one cluster is required.'); return; }
+    var hasPhases=icPhases.some(function(p){return (p.groupId||'grp1')===grpId;});
+    if(hasPhases && !confirm(currentLang==='da'?'Slet denne klynge og alle dens faser?':'Delete this cluster and all of its phases?')) return;
+    icGroups=icGroups.filter(function(g){return g.id!==grpId;});
+    icPhases=icPhases.filter(function(p){return (p.groupId||'grp1')!==grpId;});
     icRenderTimeline();
   }
 
@@ -7494,8 +7629,8 @@
   function _icColWorkDayCount(i){ var wd=_icColWorkDays(i); return wd?wd.length:0; }
   function _icHrsPerWorkDay(){ var w=bcFteHrsWeek(); return (w>0)?w/5:7.5; }
   function _icResFteBasis(i){ var n=_icColWorkDayCount(i); var hpd=_icHrsPerWorkDay(); return (icDates.start&&n>0&&hpd>0)?(hpd*n):bcFteDivisor(); }
-  function _icResHd(h,i){ if(!(h>0)) return 0; if(pmFteActive()) return Math.round((h/_icResFteBasis(i))*100)/100; return Math.round(h*100)/100; }
-  function _icResAvgFte(get,count){ if(!pmFteActive()){ var t=0; for(var q=0;q<count;q++) t+=get(q)||0; return Math.round(t*100)/100; } var sum=0,cnt=0; for(var q=0;q<count;q++){ var hh=get(q)||0; if(hh>0){ sum+=hh/_icResFteBasis(q); cnt++; } } return cnt>0?Math.round((sum/cnt)*100)/100:0; }
+  function _icResHd(h,i){ if(!(h>0)) return 0; if(pmFteActive()) return _icComma(Math.round((h/_icResFteBasis(i))*100)/100); return _icComma(Math.round(h*100)/100); }
+  function _icResAvgFte(get,count){ if(!pmFteActive()){ var t=0; for(var q=0;q<count;q++) t+=get(q)||0; return _icComma(Math.round(t*100)/100); } var sum=0,cnt=0; for(var q=0;q<count;q++){ var hh=get(q)||0; if(hh>0){ sum+=hh/_icResFteBasis(q); cnt++; } } return _icComma(cnt>0?Math.round((sum/cnt)*100)/100:0); }
   function bcToggleFte(){
     if(currentArea==='ic'){ icFteMode=!icFteMode; try{ localStorage.setItem('icFteMode', icFteMode?'1':'0'); }catch(e){} }
     else if(currentArea==='pm'){ pmFteMode=!pmFteMode; try{ localStorage.setItem('pmFteMode', pmFteMode?'1':'0'); }catch(e){} }
@@ -7540,6 +7675,92 @@
     var out=[]; for(var k=0;k<days.length;k++){ var wd=(days[k]+4)%7; if(wd>=1&&wd<=5) out.push(days[k]); }
     return out;
   }
+  // Working days of week column i grouped into the (<=2) calendar months it spans.
+  // Returns {early:[dayNums], late:[dayNums]} for a straddling week, or null if the
+  // week sits inside one month.
+  function _icWeekMonthSplit(i){
+    var wd=_icColWorkDays(i); if(!wd||!wd.length) return null;
+    var byM={}; for(var k=0;k<wd.length;k++){ var d=wd[k], dt=new Date(d*86400000), mk=dt.getUTCFullYear()+'-'+dt.getUTCMonth(); (byM[mk]=byM[mk]||[]).push(d); }
+    var mks=Object.keys(byM); if(mks.length<2) return null;
+    mks.sort(function(a,b){ return Math.min.apply(null,byM[a])-Math.min.apply(null,byM[b]); });
+    return { early:byM[mks[0]], late:byM[mks[1]] };
+  }
+  // EXPORT: for a resource, record the earlier-month fraction of any straddling week
+  // whose real split differs from the plain day-proportional one (the weeks that would
+  // otherwise smear on a week-view re-import). Returns {colIdx:fraction} or null.
+  function _icComputeHsplit(res, count){
+    if(!res.hdays || !icDates.start) return null;
+    var out=null;
+    for(var i=0;i<count;i++){
+      var sp=_icWeekMonthSplit(i); if(!sp) continue;
+      var eH=0,lH=0,z;
+      for(z=0;z<sp.early.length;z++) eH+=res.hdays[sp.early[z]]||0;
+      for(z=0;z<sp.late.length;z++)  lH+=res.hdays[sp.late[z]]||0;
+      var tot=eH+lH; if(tot<=1e-9) continue;
+      var fr=eH/tot, pr=sp.early.length/(sp.early.length+sp.late.length);
+      if(Math.abs(fr-pr)>0.001){ if(!out) out={}; out[i]=Math.round(fr*1e4)/1e4; }
+    }
+    return out;
+  }
+  // IMPORT: rebuild a resource's day-level hours from its per-week hours, honouring
+  // stored straddle fractions so a week-view round-trip doesn't smear across months.
+  function _icImportBuildHdays(res, frac){
+    if(!icDates.start) return;
+    res.hdays={};
+    var p=icGetPeriods();
+    for(var i=0;i<p.count;i++){
+      var h=(res.hours&&res.hours[i])?res.hours[i]:0; if(h<=0) continue;
+      var wd=_icColWorkDays(i); if(!wd||!wd.length) continue;
+      var fr=(frac && frac[i]!=null)?frac[i]:null, sp=(fr!=null)?_icWeekMonthSplit(i):null, z;
+      if(fr!=null && sp){
+        var ePer=sp.early.length?(h*fr)/sp.early.length:0, lPer=sp.late.length?(h*(1-fr))/sp.late.length:0;
+        for(z=0;z<sp.early.length;z++) res.hdays[sp.early[z]]=ePer;
+        for(z=0;z<sp.late.length;z++)  res.hdays[sp.late[z]]=lPer;
+      } else {
+        var per=h/wd.length; for(z=0;z<wd.length;z++) res.hdays[wd[z]]=per;
+      }
+    }
+  }
+  // Week column i split into its (<=2) calendar months by ALL days (painting covers
+  // calendar days incl. weekends). {early:[days], late:[days]} or null if one month.
+  function _icWeekMonthSplitAll(i){
+    var days=_icColDays(i); if(!days||!days.length) return null;
+    var byM={}; for(var k=0;k<days.length;k++){ var d=days[k], dt=new Date(d*86400000), mk=dt.getUTCFullYear()+'-'+dt.getUTCMonth(); (byM[mk]=byM[mk]||[]).push(d); }
+    var mks=Object.keys(byM); if(mks.length<2) return null;
+    mks.sort(function(a,b){ return Math.min.apply(null,byM[a])-Math.min.apply(null,byM[b]); });
+    return { early:byM[mks[0]], late:byM[mks[1]] };
+  }
+  // EXPORT: for a phase-node, record which side of a straddling week it covers when it
+  // covers only one side ('e' early / 'l' late) — the cases that would otherwise smear
+  // painting into the neighbouring month on a week-view re-import. Returns {colIdx:code} or null.
+  function _icComputePsplit(node, count){
+    if(!node.pdays || !icDates.start) return null;
+    var out=null;
+    for(var i=0;i<count;i++){
+      if(!node.painted || !node.painted[i]) continue;
+      var sp=_icWeekMonthSplitAll(i); if(!sp) continue;
+      var eCov=false,lCov=false,z;
+      for(z=0;z<sp.early.length;z++){ if(node.pdays[sp.early[z]]){ eCov=true; break; } }
+      for(z=0;z<sp.late.length;z++){ if(node.pdays[sp.late[z]]){ lCov=true; break; } }
+      if(eCov&&!lCov){ if(!out)out={}; out[i]='e'; }
+      else if(lCov&&!eCov){ if(!out)out={}; out[i]='l'; }
+    }
+    return out;
+  }
+  // IMPORT: rebuild a phase-node's painted days from its per-week painting, honouring
+  // stored side codes so a straddling week doesn't paint into the neighbouring month.
+  function _icImportBuildPdays(node, codes){
+    if(!icDates.start) return;
+    node.pdays={};
+    var keys=Object.keys(node.painted||{});
+    for(var j=0;j<keys.length;j++){
+      if(!node.painted[keys[j]]) continue;
+      var i=Number(keys[j]), days=_icColDays(i); if(!days) continue;
+      var code=codes&&codes[i], x;
+      if(code==='e'||code==='l'){ var sp=_icWeekMonthSplitAll(i); if(sp){ var side=(code==='e')?sp.early:sp.late; for(x=0;x<side.length;x++) node.pdays[side[x]]=1; continue; } }
+      for(x=0;x<days.length;x++) node.pdays[days[x]]=1;
+    }
+  }
   function _icResWriteCol(res, idx, v){
     var all=_icColDays(idx); if(!all) return; // no date context -> legacy index mode
     if(!res.hdays) res.hdays={};
@@ -7557,7 +7778,7 @@
     }
     // rebuild per-column hours from hdays for the current view
     var p=icGetPeriods(), nh={};
-    for(var i=0;i<p.count;i++){ var dz=_icColDays(i); if(!dz) continue; var sum=0; for(var y=0;y<dz.length;y++){ if(res.hdays[dz[y]]) sum+=res.hdays[dz[y]]; } if(sum>1e-9) nh[i]=sum; }
+    for(var i=0;i<p.count;i++){ var dz=_icColDays(i); if(!dz) continue; var sum=0; for(var y=0;y<dz.length;y++){ if(res.hdays[dz[y]]) sum+=res.hdays[dz[y]]; } if(sum>1e-9) nh[i]=Math.round(sum*100)/100; }
     res.hours=nh;
   }
   // Per-cell phase allocation, calendar-anchored (sibling to hdays). res.adays maps
@@ -7571,7 +7792,7 @@
   }
   // Deepest painted phase-node keys covering a single calendar day (mirrors
   // icDeepestNodesForMonth but at day granularity, using the timeline's pdays).
-  var _icDayNodeCache=null;
+  var _icDayNodeCache=null, _icColDeepest=null;
   function _icDeepestKeysForDay(d){
     if(_icDayNodeCache && _icDayNodeCache[d]) return _icDayNodeCache[d];
     var out=[];
@@ -7609,10 +7830,16 @@
         for(var z in split){ acc[z]=(acc[z]||0)+w*split[z]; }
       }
       if(wsum>0){
-        var out={}, oks=Object.keys(acc); for(var q=0;q<oks.length;q++) out[oks[q]]=Math.round((acc[oks[q]]/wsum)*1e6)/1e6;
-        // keep res.alloc sparse: only store when it differs from a plain even split
-        var evv=oks.length?100/oks.length:0, allEven=oks.length>0 && oks.every(function(k){ return Math.abs(out[k]-evv)<0.05; });
-        if(!allEven) na[i]=out;
+        // Keep only the phases actually painted in THIS period (drop e.g. a phase that
+        // came from a straddling week but lands in a different month), then rescale the
+        // rest to 100% — proportional redistribution.
+        var pk=(_icColDeepest&&_icColDeepest[i])?_icColDeepest[i]:Object.keys(acc);
+        var rsum=0; for(var q=0;q<pk.length;q++) rsum+=(acc[pk[q]]||0);
+        if(rsum>0){
+          var out={}; for(var q2=0;q2<pk.length;q2++) out[pk[q2]]=Math.round(((acc[pk[q2]]||0)/rsum)*100*1e4)/1e4;
+          var evv=pk.length?100/pk.length:0, allEven=pk.length>0 && pk.every(function(k){ return Math.abs(out[k]-evv)<0.05; });
+          if(!allEven) na[i]=out;
+        }
       }
     }
     res.alloc=na;
@@ -7621,8 +7848,9 @@
     if(!icDates.start) return;
     if(typeof _icRebuildAllPainted==='function') _icRebuildAllPainted(); // ensure phase pdays exist
     _icDayNodeCache={};
+    _icColDeepest={}; var _ccp=icGetPeriods(); for(var _ci=0;_ci<_ccp.count;_ci++){ _icColDeepest[_ci]=(typeof icDeepestNodesForMonth==='function')?icDeepestNodesForMonth(_ci).map(function(n){return n.key;}):null; }
     (icITResources||[]).concat(icBizResources||[]).forEach(function(res){ _icResRebuildOne(res); _icRebuildResAllocOne(res); });
-    _icDayNodeCache=null;
+    _icDayNodeCache=null; _icColDeepest=null;
   }
 
   function icRenderResources(type){
@@ -7643,7 +7871,7 @@
     h+='<th class="ic-res-rate-col ic-th-name">Grade</th>';
     for(var i=0;i<p.count;i++){
       var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
-      h+='<th class="ic-period-th'+bnd+'">'+p.labels[i]+'</th>';
+      h+='<th class="ic-period-th'+bnd+(_icIsVacWeek(i)?' ic-vac-col':'')+'">'+p.labels[i]+'</th>';
     }
     h+='<th class="ic-res-sumcol-th">'+(pmFteActive()?(currentLang==='da'?'Gns. FTE':'Avg FTE'):(currentLang==='da'?'Timer i alt':'Alloc. Hours'))+'</th>';
     h+='<th class="ic-res-sumcol-th">'+(currentLang==='da'?'Dage i alt':'Alloc. Days')+'</th>';
@@ -7661,11 +7889,12 @@
       var rb='';
         var totalHrs=0, actMonths=0;
         for(var i=0;i<p.count;i++){ var _h=(res.hours[i]||0); totalHrs+=_h; if(_h>0) actMonths++; }
-        var totalDays=totalHrs>0?(totalHrs/7.5).toFixed(1):'';
-        rb+='<tr class="ic-res-row" data-drag="resource" data-resid="'+res.id+'" data-restype="'+type+'" data-clusterid="'+(res.clusterId||'')+'">';
-        rb+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
+        var totalDays=totalHrs>0?_icDaysStr(totalHrs):'';
+        rb+='<tr class="ic-res-row'+((icResSel[type]&&icResSel[type][res.id])?' ic-res-selected':'')+'" data-drag="resource" data-resid="'+res.id+'" data-restype="'+type+'" data-clusterid="'+(res.clusterId||'')+'">';
+        rb+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner"><input type="checkbox" class="ic-res-selbox" data-action="sel-res" data-type="'+type+'" data-resid="'+res.id+'"'+((icResSel[type]&&icResSel[type][res.id])?' checked':'')+'><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
         rb+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
         rb+='<div class="ic-row-actions">'
+          +'<button class="ic-row-btn ic-copy-btn" data-action="copy-res" data-type="'+type+'" data-resid="'+res.id+'" title="Copy this person (copies all selected if any)">&#10697;</button>'
           +'<button class="ic-row-btn ic-range-btn" data-action="open-res-range" data-type="'+type+'" data-resid="'+res.id+'" title="Bulk fill hours">⏱</button>'
           +'<button class="ic-row-btn ic-del-btn" data-action="del-res" data-type="'+type+'" data-resid="'+res.id+'" title="Delete">&#10005;</button>'
           +'</div>';
@@ -7701,7 +7930,7 @@
           var hrs=res.hours[i]||0;
           var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':'';
           var redCls = (noGrade && hrs>0) ? ' ic-hrs-no-grade' : '';
-          rb+='<td class="ic-res-cell'+bnd+'"><input type="number" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+((res.alloc&&res.alloc[i]&&Object.keys(res.alloc[i]).length)?' ic-hrs-alloc':'')+'" '+(hrs>0?'value="'+_icResHd(hrs,i)+'"':'placeholder="&#8212;"')+' min="0" step="'+(pmFteActive()?'0.1':'8')+'" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
+          rb+='<td class="ic-res-cell'+bnd+(_icIsVacWeek(i)?' ic-vac-col':'')+'"><input type="text" inputmode="decimal" class="ic-hrs-input'+(hrs>0?' ic-hrs-filled':'')+redCls+((res.alloc&&res.alloc[i]&&Object.keys(res.alloc[i]).length)?' ic-hrs-alloc':'')+'" '+(hrs>0?'value="'+_icResHd(hrs,i)+'"':'placeholder="&#8212;"')+' min="0" step="'+(pmFteActive()?'0.1':'8')+'" data-action="res-hours" data-type="'+type+'" data-resid="'+res.id+'" data-idx="'+i+'"></td>';
         }
         rb+='<td class="ic-res-sumcol'+(totalHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-hrs">'+( totalHrs>0?_icResAvgFte(function(q){return res.hours[q]||0;},p.count):'&mdash;')+'</td>';
         rb+='<td class="ic-res-sumcol'+(totalDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-'+res.id+'-days">'+( totalDays||'&mdash;')+'</td>';
@@ -7734,14 +7963,15 @@
         });
         for(var y=0;y<calRanges.length;y++) clGrand+=clYr[y];
         var clAct=0; for(var _ci=0;_ci<p.count;_ci++){ if(clCol[_ci]>0) clAct++; }
-        var clDays=clHrs>0?(clHrs/7.5).toFixed(1):'';
+        var clDays=clHrs>0?_icDaysStr(clHrs):'';
         b+='<tr class="ic-cluster-row" data-clusterid="'+cl.id+'">';
         b+='<td class="ic-res-name-col ic-cluster-name-cell" colspan="2"><div class="ic-name-inner">';
         b+='<button class="ic-toggle-btn" data-action="toggle-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">'+(cl.expanded?'&#9660;':'&#9658;')+'</button>';
         b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
+        b+=(icResClipboard.length?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Paste copied resources into this cluster">'+(currentLang==='da'?'Inds\u00e6t':'Paste')+' ('+icResClipboard.length+')</button><button class="ic-paste-x" data-action="clear-clip" title="'+(currentLang==='da'?'Ryd kopierede':'Clear copied items')+'">&#10005;</button></span>':'');
         b+='<div class="ic-row-actions"><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
         b+='</div></td>';
-        for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?_icResHd(clCol[i],i):'')+'</td>'; }
+        for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+(_icIsVacWeek(i)?' ic-vac-col':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?_icResHd(clCol[i],i):'')+'</td>'; }
         b+='<td class="ic-res-sumcol ic-cluster-cell'+(clHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-hrs">'+(clHrs>0?_icResAvgFte(function(q){return clCol[q]||0;},p.count):'&mdash;')+'</td>';
         b+='<td class="ic-res-sumcol ic-cluster-cell'+(clDays?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-days">'+(clDays||'&mdash;')+'</td>';
         for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-cluster-cell'+(clYr[y]>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-yr'+y+'">'+(clYr[y]>0?icFmtDKK(clYr[y]):'&mdash;')+'</td>'; }
@@ -7764,9 +7994,9 @@
       var oAct=0; for(var _oi=0;_oi<p.count;_oi++){ if(oCol[_oi]>0) oAct++; }
       b+='<tr class="ic-res-totals-row">';
       b+='<td class="ic-res-name-col ic-res-total-label">Total</td><td class="ic-res-rate-col"></td>';
-      for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell'+bnd+'" data-sumid="'+type+'-col-'+i+'">'+(oCol[i]>0?_icResHd(oCol[i],i):'')+'</td>'; }
+      for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell'+bnd+(_icIsVacWeek(i)?' ic-vac-col':'')+'" data-sumid="'+type+'-col-'+i+'">'+(oCol[i]>0?_icResHd(oCol[i],i):'')+'</td>'; }
       b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-hrs">'+(oHrs>0?_icResAvgFte(function(q){return oCol[q]||0;},p.count):'&mdash;')+'</td>';
-      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-days">'+(oHrs>0?(oHrs/7.5).toFixed(1):'&mdash;')+'</td>';
+      b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-days">'+(oHrs>0?_icDaysStr(oHrs):'&mdash;')+'</td>';
       for(var y=0;y<calRanges.length;y++){ b+='<td class="ic-res-sumcol ic-sum-filled ic-totrow-sum" data-sumid="'+type+'-total-yr'+y+'">'+(oYr[y]>0?icFmtDKK(oYr[y]):'&mdash;')+'</td>'; }
       b+='<td class="ic-res-sumcol ic-res-grandtotal-cell ic-totrow-sum" data-sumid="'+type+'-total-grand">'+(oGrand>0?icFmtDKK(oGrand):'&mdash;')+'</td>';
       b+='</tr>';
@@ -7813,7 +8043,7 @@
         var t=this.getAttribute('data-type'),id=this.getAttribute('data-resid'),idx=parseInt(this.getAttribute('data-idx'));
         var r=icGetResourceArr(t).find(function(x){return x.id===id;});
         if(!r) return;
-        var v=parseFloat(this.value)||0;
+        var v=_icPnum(this.value);
         if(pmFteActive()) v=v*_icResFteBasis(idx);
         if(v<=0) delete r.hours[idx]; else r.hours[idx]=v;
         _icResWriteCol(r, idx, v);
@@ -7863,6 +8093,18 @@
     tbl.querySelectorAll('[data-action="del-cluster"]').forEach(function(el){
       el.onclick=function(){ icDeleteCluster(el.getAttribute('data-type'), el.getAttribute('data-clusterid')); };
     });
+    tbl.querySelectorAll('[data-action="sel-res"]').forEach(function(el){
+      el.onclick=function(e){ e.preventDefault(); icResToggleSel(this.getAttribute('data-type'), this.getAttribute('data-resid')); };
+    });
+    tbl.querySelectorAll('[data-action="copy-res"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icResCopy(this.getAttribute('data-type'), this.getAttribute('data-resid')); };
+    });
+    tbl.querySelectorAll('[data-action="paste-cluster"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icResPaste(this.getAttribute('data-type'), this.getAttribute('data-clusterid')); };
+    });
+    tbl.querySelectorAll('[data-action="clear-clip"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icResClearClip(); };
+    });
     // Always refresh cost chart + sanity check after any table re-render
     setTimeout(function(){ icRenderCostChart(); icRenderSanityCheck(); }, 0);
   }
@@ -7873,6 +8115,67 @@
     var arr=icGetResourceArr(type);
     var ids={}; clusters.forEach(function(c){ids[c.id]=true;});
     arr.forEach(function(r){ if(!r.clusterId||!ids[r.clusterId]) r.clusterId=clusters[0].id; });
+  }
+
+  // ── Resource copy / paste (multi-select) ──
+  var icResClipboard = [];               // [{name,grade,hours,hdays,adays,alloc,srcType}]
+  var icResSel = { it:{}, biz:{} };      // id -> true (per table)
+  var icResLastSel = { it:null, biz:null };
+  function icResOrderedIds(type){
+    var res=icGetResourceArr(type), cls=icGetClusterArr(type), out=[];
+    if(cls&&cls.length){
+      cls.forEach(function(cl){ res.forEach(function(r){ if(r.clusterId===cl.id) out.push(r.id); }); });
+      res.forEach(function(r){ if(!cls.some(function(c){return c.id===r.clusterId;})) out.push(r.id); });
+    } else { out=res.map(function(r){return r.id;}); }
+    return out;
+  }
+  function icResToggleSel(type, resid){
+    var sel=icResSel[type];
+    if(sel[resid]) delete sel[resid]; else sel[resid]=true;
+    icResLastSel[type]=resid;
+    icRenderResources(type);
+  }
+  function icResCopy(type, resid){
+    var sel=icResSel[type];
+    var ids=icResOrderedIds(type).filter(function(id){return sel[id];});
+    if(!ids.length && resid) ids=[resid];
+    if(!ids.length) return;
+    var arr=icGetResourceArr(type);
+    icResClipboard = ids.map(function(id){
+      var r=arr.find(function(x){return x.id===id;}); if(!r) return null;
+      return { name:r.name, grade:r.grade,
+        hours:JSON.parse(JSON.stringify(r.hours||{})),
+        hdays:JSON.parse(JSON.stringify(r.hdays||{})),
+        adays:JSON.parse(JSON.stringify(r.adays||{})),
+        alloc:JSON.parse(JSON.stringify(r.alloc||{})),
+        srcType:type };
+    }).filter(Boolean);
+    icResSel[type]={}; icResLastSel[type]=null;
+    icRenderResources('it'); icRenderResources('biz');
+    icUpdateClipUI();
+  }
+  function icResPaste(type, clusterId){
+    if(!icResClipboard.length) return;
+    var arr=icGetResourceArr(type);
+    icResClipboard.forEach(function(c){
+      var grade = (c.srcType===type) ? c.grade : null; // clear grade when crossing IT <-> Business
+      arr.push({ id:(type==='it'?'it':'biz')+(icNextResId++), name:c.name, grade:grade, clusterId:clusterId,
+        hours:JSON.parse(JSON.stringify(c.hours||{})),
+        hdays:JSON.parse(JSON.stringify(c.hdays||{})),
+        adays:JSON.parse(JSON.stringify(c.adays||{})),
+        alloc:JSON.parse(JSON.stringify(c.alloc||{})) });
+    });
+    icRenderResources(type); icRenderCostChart();
+  }
+  function icResClearClip(){ icResClipboard=[]; icRenderResources('it'); icRenderResources('biz'); icUpdateClipUI(); }
+  function icUpdateClipUI(){
+    ['it','biz'].forEach(function(t){
+      var el=document.getElementById('ic-clip-'+t); if(!el) return;
+      if(icResClipboard.length){
+        el.style.display='inline-flex';
+        el.innerHTML='<span>'+icResClipboard.length+' '+(currentLang==='da'?'kopieret':'copied')+'</span><button onclick="icResClearClip()" title="Clear clipboard">&#10005;</button>';
+      } else { el.style.display='none'; el.innerHTML=''; }
+    });
   }
 
   function icAddCluster(type){
@@ -8070,12 +8373,11 @@
     var n=deepest.length;
     var custom=res && res.alloc && res.alloc[m];
     if(custom){
-      var keys=Object.keys(custom);
-      if(keys.length===n){
-        var sum=0, ok=true;
-        for(var i=0;i<n;i++){ var v=custom[deepest[i]]; if(v==null){ok=false;break;} sum+=v; }
-        if(ok && sum>0){ return deepest.map(function(k){ return custom[k]/sum; }); }
-      }
+      // Use whatever the saved split says for the phases painted now; a phase not in
+      // the saved split (e.g. one added after the split was set) counts as 0. Only
+      // fall back to an even split if none of the painted phases have any weight.
+      var sum=0; for(var i=0;i<n;i++){ sum += (custom[deepest[i]]||0); }
+      if(sum>0){ return deepest.map(function(k){ return (custom[k]||0)/sum; }); }
     }
     return deepest.map(function(){ return 1/n; });
   }
@@ -8107,25 +8409,31 @@
   var _icAllocCtx=null;
   function icCloseAllocPopup(){ var p=document.getElementById('ic-alloc-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); _icAllocCtx=null; document.removeEventListener('mousedown', _icAllocOutside, true); }
   function _icAllocOutside(e){ var p=document.getElementById('ic-alloc-pop'); if(p && !p.contains(e.target)) icCloseAllocPopup(); }
-  function _icAllocSum(){ var s=0; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ s+=(parseFloat(i.value)||0); }); return s; }
+  // Investment Case number formatting: comma decimals; percents to 1 decimal.
+  function _icComma(x){ return String(x).replace('.',','); }
+  function _icPnum(sv){ return parseFloat(String(sv).replace(',','.'))||0; }
+  function _icPct(x){ return String(Math.round((x||0)*10)/10).replace('.',','); }
+  function _icDaysStr(hrs){ return _icComma((hrs/7.5).toFixed(1)); }
+  function _icAllocSum(){ var s=0; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ s+=_icPnum(i.value); }); return s; }
   // hours (or FTE, matching the grid toggle) that a given % represents for this cell
   function _icAllocAmt(pct){
     if(!_icAllocCtx) return '';
     var idx=_icAllocCtx.idx, H=_icAllocCtx.cellH||0, hrs=H*pct/100;
-    if(typeof pmFteActive==='function' && pmFteActive()){ var b=(typeof _icResFteBasis==='function')?_icResFteBasis(idx):0; var fte=b?hrs/b:0; return (Math.round(fte*100)/100)+' FTE'; }
-    return (Math.round(hrs*10)/10)+' h';
+    if(typeof pmFteActive==='function' && pmFteActive()){ var b=(typeof _icResFteBasis==='function')?_icResFteBasis(idx):0; var fte=b?hrs/b:0; return _icComma(Math.round(fte*100)/100)+' FTE'; }
+    return _icComma(Math.round(hrs*10)/10)+' h';
   }
   function icAllocRecount(){
-    var s=_icAllocSum(); var ok=Math.abs(s-100)<0.001;
-    var c=document.getElementById('ic-alloc-count'); if(c){ c.textContent='Allocated: '+(Math.round(s*10)/10)+'% / 100%'; c.style.color=ok?'#15803d':'#dc2626'; }
+    var _nI=document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').length, _tol=_nI*0.05+0.06;
+    var s=_icAllocSum(); var ok=Math.abs(s-100)<_tol;
+    var c=document.getElementById('ic-alloc-count'); if(c){ c.textContent='Allocated: '+(ok?'100':_icPct(s))+'% / 100%'; c.style.color=ok?'#15803d':'#dc2626'; }
     var ap=document.getElementById('ic-alloc-apply'); if(ap){ ap.disabled=!ok; ap.style.opacity=ok?'1':'0.5'; ap.style.cursor=ok?'pointer':'not-allowed'; }
-    document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(inp){ var amt=inp.parentNode.querySelector('.ic-alloc-amt'); if(amt) amt.textContent=_icAllocAmt(parseFloat(inp.value)||0); });
+    document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(inp){ var amt=inp.parentNode.querySelector('.ic-alloc-amt'); if(amt) amt.textContent=_icAllocAmt(_icPnum(inp.value)); });
   }
   function icAllocApply(){
-    if(!_icAllocCtx) return; if(Math.abs(_icAllocSum()-100)>=0.001) return;
+    if(!_icAllocCtx) return; var _nA=document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').length; if(Math.abs(_icAllocSum()-100)>=(_nA*0.05+0.06)) return;
     var res=icGetResourceArr(_icAllocCtx.type).find(function(r){return r.id===_icAllocCtx.resId;}); if(!res) return;
     if(!res.alloc) res.alloc={};
-    var map={}; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ map[i.getAttribute('data-key')]=(parseFloat(i.value)||0); });
+    var map={}; document.querySelectorAll('#ic-alloc-pop .ic-alloc-inp').forEach(function(i){ map[i.getAttribute('data-key')]=_icPnum(i.value); });
     res.alloc[_icAllocCtx.idx]=map;
     _icAllocWriteCol(res, _icAllocCtx.idx, map);
     var t=_icAllocCtx.type; icCloseAllocPopup();
@@ -8147,19 +8455,19 @@
     var mlabel=(per.labels&&per.labels[idx])||('M'+(idx+1));
     if(nodes.length<2){ alert(nodes.length===1?('Only one phase is painted in '+mlabel+' — it already gets 100% of '+res.name+'’s hours.'):('No phase is painted in '+mlabel+' to split '+res.name+'’s hours across.')); return; }
     var saved=res.alloc&&res.alloc[idx];
-    var validSaved = saved && Object.keys(saved).length===nodes.length && nodes.every(function(n){return saved[n.key]!=null;});
+    var _savedSum = saved ? nodes.reduce(function(a,nn){return a+(saved[nn.key]||0);},0) : 0;
+    var validSaved = _savedSum>0;
     var pop=document.createElement('div'); pop.id='ic-alloc-pop';
     pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:340px;max-height:70vh;overflow:auto;font-family:inherit;padding:14px 16px';
     var html='';
     html+='<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:2px">Allocate hours — '+bcEsc(res.name)+'</div>';
     html+='<div style="font-size:12px;color:#64748b;margin-bottom:8px">'+bcEsc(mlabel)+' · split across painted phases</div>';
     html+='<div id="ic-alloc-count" style="font-size:12px;font-weight:600;margin-bottom:10px"></div>';
-    var even=icEvenSplit(nodes.length);
     nodes.forEach(function(n,ni){
-      var v=validSaved?(Math.round(saved[n.key]*10)/10):even[ni];
+      var v=validSaved?((saved[n.key]||0)/_savedSum*100):(100/nodes.length);
       html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
         +'<span style="flex:1;font-size:12px;color:#334155">'+bcEsc(n.label)+'</span>'
-        +'<input type="number" class="ic-alloc-inp" data-key="'+bcEsc(n.key)+'" value="'+v+'" min="0" max="100" step="1" style="width:56px;padding:5px 7px;border:1px solid #cbd5e1;border-radius:7px;text-align:right">'
+        +'<input type="text" inputmode="decimal" class="ic-alloc-inp" data-key="'+bcEsc(n.key)+'" value="'+_icPct(v)+'" style="width:56px;padding:5px 7px;border:1px solid #cbd5e1;border-radius:7px;text-align:right">'
         +'<span style="font-size:12px;color:#64748b">%</span>'
         +'<span class="ic-alloc-amt" style="font-size:11px;color:#64748b;min-width:58px;text-align:right"></span></div>';
     });
@@ -8336,7 +8644,7 @@
       h+='<span class="ic-toggle-spacer"></span>';
     }
     h+='<span class="saving-bar-name">'+node.name.replace(/&/g,'&amp;')+'</span></div>';
-    var _fh=function(hrs, fte){ if(typeof cbFteMode!=='undefined'&&cbFteMode){ var v=(fte!=null)?fte:((hrs>0&&typeof bcFteDivisor==='function')?hrs/bcFteDivisor():0); return v>0?(Math.round(v*100)/100):'—'; } return hrs>0?(''+Math.round(hrs)):'—'; };
+    var _fh=function(hrs, fte){ if(typeof cbFteMode!=='undefined'&&cbFteMode){ var v=(fte!=null)?fte:((hrs>0&&typeof bcFteDivisor==='function')?hrs/bcFteDivisor():0); return v>0?_icComma(Math.round(v*100)/100):'—'; } return hrs>0?_icComma(Math.round(hrs)):'—'; };
     var _fc=function(x){return x>0?icFmtDKK(x):'—';};
     h+='<span class="ic-cost-cells">'
       +'<span class="ic-cc ic-cc-h">'+_fh(node.hours, node.fte)+'</span>'
@@ -8650,8 +8958,11 @@
       hdrs.push(cfg.fte?'Avg FTE':'Alloc. Hours','Alloc. Days');
       calRanges.forEach(function(rng){ hdrs.push(rng.label+' '+currentCurrency); });
       hdrs.push('Total '+currentCurrency);
+      var _vacSet={}; if(typeof icPeriod!=='undefined' && icPeriod==='weeks'){ for(var _vi=0;_vi<p.count;_vi++){ if(_icIsVacWeek(_vi)) _vacSet[_vi]=1; } }
+      function _vacGrey(rowObj){ for(var _vk in _vacSet){ try{ rowObj.getCell(3+Number(_vk)).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE7EBF1'}}; }catch(e){} } }
       var hdrRow = ws.addRow(hdrs);
       styleHeader(hdrRow, totalCols, NROW);
+      _vacGrey(hdrRow);
       for (var c=3; c<=totalCols; c++) hdrRow.getCell(c).alignment = {horizontal:'center',vertical:'middle'};
       ws.getColumn(totalCols+2).width = 13;
       hdrRow.getCell(totalCols+2).value = 'Rate helper \u2192 copy down for new rows';
@@ -8682,6 +8993,7 @@
         if (rowParity%2===0) { for(var c=1;c<=totalCols;c++) row.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:LIGHT}}; }
         rowParity++;
         for (var c=3+p.count+2; c<=totalCols; c++) { row.getCell(c).numFmt='#,##0'; row.getCell(c).alignment={horizontal:'right'}; }
+        _vacGrey(row);
         row.getCell(1).alignment={horizontal:'left',indent:1};
         row.getCell(3+p.count).alignment={horizontal:'right'};
         row.getCell(4+p.count).alignment={horizontal:'right'};
@@ -8703,6 +9015,7 @@
         for (var c=1;c<=totalCols;c++){ r.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDDE3EC'}}; r.getCell(c).font={bold:true,size:10}; }
         for (var c=3;c<=totalCols;c++) r.getCell(c).alignment={horizontal:'right'};
         for (var c=3+p.count+2;c<=totalCols;c++) r.getCell(c).numFmt='#,##0';
+        _vacGrey(r);
         r.getCell(1).alignment={horizontal:'left'};
         rowParity=0;
         return { rowNum:r.number, clCol:clCol.slice(), clHrs:clHrs, clActM:clActM, clDays:clDays, clYrDisp:clYr.map(function(v){return toDisp(v);}), clGrand:toDisp(clGrand) };
@@ -8737,6 +9050,7 @@
       tRow.getCell(totalCols).font={bold:true,size:11,color:{argb:WHITE}};
       for(var c=3;c<=totalCols;c++) tRow.getCell(c).alignment={horizontal:'right'};
       for(var c=3+p.count+2;c<=totalCols;c++) tRow.getCell(c).numFmt='#,##0';
+      _vacGrey(tRow);
       meta.totalRow=tRow.number;
       meta.totals={ colTots:colTots.slice(), totHrs:totHrs, actM:totActM, totDays:(totHrs?parseFloat((totHrs/7.5).toFixed(1)):0), yrDisp:yrTots.map(function(v){return toDisp(v);}), grand:toDisp(totGrand) };
       _icSectionsMeta.push(meta);
@@ -8851,13 +9165,15 @@
         clusters: (icITClusters||[]).map(function(c){return {id:c.id,type:'it',name:c.name};}).concat((icBizClusters||[]).map(function(c){return {id:c.id,type:'biz',name:c.name};})),
         phases: (icPhases||[]).map(function(ph){ return {id:ph.id,name:ph.name,color:ph.color,groupId:ph.groupId,expanded:ph.expanded,painted:ph.painted||{},subPhases:(ph.subPhases||[]).map(function(sp){ return {id:sp.id,name:sp.name,color:sp.color,expanded:sp.expanded,painted:sp.painted||{},subSubPhases:(sp.subSubPhases||[]).map(function(a){ return {id:a.id,name:a.name,color:a.color,painted:a.painted||{}}; })}; })}; }),
         groups: (icGroups||[]).map(function(g){ return {id:g.id,name:g.name,expanded:g.expanded}; }),
-        resources: [], addcost:null
+        resources: [], addcost:null, hsplit:{}, psplit:{}, vacPeriods: JSON.parse(JSON.stringify(icVacPeriods))
       };
       _icSectionsMeta.forEach(function(meta){
         meta.members.forEach(function(mem){
           _icFx.map.resources.push({ id:mem.res.id, type:meta.type, clusterId:mem.res.clusterId||null, gradeId:mem.res.grade||null, alloc:mem.res.alloc||null });
+          if(icPeriod==='weeks'){ var _hs=_icComputeHsplit(mem.res, p.count); if(_hs) _icFx.map.hsplit[mem.res.id]=_hs; }
         });
       });
+      if(icPeriod==='weeks'){ (icPhases||[]).forEach(function(ph){ var _pp1=_icComputePsplit(ph,p.count); if(_pp1)_icFx.map.psplit[ph.id]=_pp1; (ph.subPhases||[]).forEach(function(sp){ var _pp2=_icComputePsplit(sp,p.count); if(_pp2)_icFx.map.psplit[sp.id]=_pp2; (sp.subSubPhases||[]).forEach(function(a){ var _pp3=_icComputePsplit(a,p.count); if(_pp3)_icFx.map.psplit[a.id]=_pp3; }); }); }); }
       wsData.state = 'hidden';
     }
 
@@ -8972,6 +9288,8 @@
       }
 
       var GANTT_EMPTY = 'FFF5F7FA'; // light grey for unpainted cells
+      var _vacTL={}; if(typeof icPeriod!=='undefined' && icPeriod==='weeks'){ for(var _vt=0;_vt<p.count;_vt++){ if(_icIsVacWeek(_vt)) _vacTL[_vt]=1; } }
+      function _vacEmpty(i, base){ return _vacTL[i] ? 'FFE7EBF1' : base; }
 
       // ── Group → Phase → Sub-phase rows ──
       icGroups.forEach(function(grp) {
@@ -9012,7 +9330,7 @@
           try { ws.mergeCells(phRow.number, 1, phRow.number, 2); } catch(e) {}
           for (var _gpi3 = 0; _gpi3 < p.count; _gpi3++) {
             var phc = phRow.getCell(GANTT_PC + _gpi3);
-            solidFill(phc, ph.painted[_gpi3] ? phArgb : GANTT_EMPTY);
+            solidFill(phc, ph.painted[_gpi3] ? phArgb : _vacEmpty(_gpi3, GANTT_EMPTY));
             ganttBorder(phc);
           }
 
@@ -9032,7 +9350,7 @@
             try { ws.mergeCells(spRow.number, 1, spRow.number, 2); } catch(e) {}
             for (var _gpi4 = 0; _gpi4 < p.count; _gpi4++) {
               var spc = spRow.getCell(GANTT_PC + _gpi4);
-              solidFill(spc, sp.painted[_gpi4] ? spArgb : 'FFFAFAFA');
+              solidFill(spc, sp.painted[_gpi4] ? spArgb : _vacEmpty(_gpi4, 'FFFAFAFA'));
               ganttBorder(spc);
             }
           });
@@ -9720,7 +10038,7 @@
     var el = document.getElementById('ic-sanity-result');
     if(!el) return;
     var estimated = icSanityTotal();
-    var itAlloc   = icGetAllocated('it');
+    var itAlloc   = icGetAllocated('it'); itAlloc = Math.round(itAlloc*2)/2;
 
     if(estimated===0){
       el.innerHTML='<div style="color:var(--text-secondary);font-size:13px">Enter estimated hours on the left to see the comparison.</div>';
@@ -9728,7 +10046,7 @@
     }
 
     var diff = itAlloc - estimated;
-    var diffStr = diff===0 ? 'Exact match' : (diff>0?'+':'')+diff+' hrs ('+(diff>0?'over':'under')+')';
+    var diffStr = diff===0 ? 'Exact match' : (diff>0?'+':'')+_icComma(diff)+' hrs ('+(diff>0?'over':'under')+')';
     var maxVal = Math.max(itAlloc, estimated, 1);
     var allocPct = (itAlloc/maxVal*100).toFixed(1);
     var estPct   = (estimated/maxVal*100).toFixed(1);
@@ -9746,7 +10064,7 @@
         catBars += '<div class="saving-bar">';
         catBars += '<div class="saving-bar-header">';
         catBars += '<span class="saving-bar-name">'+c.name.replace(/&/g,'&amp;')+'</span>';
-        catBars += '<span class="saving-bar-amount">'+c.hours+' hrs</span>';
+        catBars += '<span class="saving-bar-amount">'+_icComma(Math.round(c.hours*2)/2)+' hrs</span>';
         catBars += '</div>';
         catBars += '<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:#4A90D9"></div></div>';
         catBars += '</div>';
@@ -9759,8 +10077,8 @@
     html2 += '<span class="ic-sanity-row-title">'+(currentLang==='da'?'IT Ressourcer':'IT Resources')+'</span>';
     html2 += icSanityBadge(itAlloc, estimated);
     html2 += '</div>';
-    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Allokeret':'Allocated')+'</span><span class="ic-sanity-stat-value">'+itAlloc+' hrs</span></div>';
-    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Estimeret (bottom-up)':'Estimated (bottom-up)')+'</span><span class="ic-sanity-stat-value">'+estimated+' hrs</span></div>';
+    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Allokeret':'Allocated')+'</span><span class="ic-sanity-stat-value">'+_icComma(itAlloc)+' hrs</span></div>';
+    html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Estimeret (bottom-up)':'Estimated (bottom-up)')+'</span><span class="ic-sanity-stat-value">'+_icComma(estimated)+' hrs</span></div>';
     html2 += '<div class="ic-sanity-stat"><span class="ic-sanity-stat-label">'+(currentLang==='da'?'Forskel':'Difference')+'</span><span class="ic-sanity-stat-value" style="color:'+(diff>0?'#c25000':'#1a7a3a')+'">'+diffStr+'</span></div>';
     html2 += '<div class="ic-sanity-bar-wrap">';
     html2 += '<div class="ic-sanity-bar-label">'+(currentLang==='da'?'Allokeret vs Estimeret':'Allocated vs Estimated')+'</div>';
@@ -9768,8 +10086,8 @@
     html2 += '<div class="ic-sanity-alloc" style="width:'+allocPct+'%;background:'+color+'"></div>';
     html2 += '</div>';
     html2 += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:4px">';
-    html2 += '<span>'+(currentLang==='da'?'Allokeret: ':'Allocated: ')+itAlloc+' hrs</span>';
-    html2 += '<span>'+(currentLang==='da'?'Estimeret: ':'Estimated: ')+estimated+' hrs</span>';
+    html2 += '<span>'+(currentLang==='da'?'Allokeret: ':'Allocated: ')+_icComma(itAlloc)+' hrs</span>';
+    html2 += '<span>'+(currentLang==='da'?'Estimeret: ':'Estimated: ')+_icComma(estimated)+' hrs</span>';
     html2 += '</div>';
     html2 += '</div></div>';
     html2 += catBars;
@@ -10810,6 +11128,7 @@ view_formula_for:'Vis formler for:'}
     document.getElementById('saving-area-sc').style.display = sArea==='sc' ? '' : 'none';
     var saSd = document.getElementById('saving-area-sd'); if(saSd) saSd.style.display = sArea==='sd' ? '' : 'none';
     document.getElementById('settings-overlay').style.display='flex';
+    document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden';
   }
   function closeSettings(){
     var overlay = document.getElementById('settings-overlay');
@@ -10826,6 +11145,7 @@ view_formula_for:'Vis formler for:'}
       overlay.style.display = 'none';
       overlay.classList.remove('closing');
       if (shell) shell.classList.remove('closing');
+      document.documentElement.style.overflow=''; document.body.style.overflow='';
     }, 320);
   }
 
@@ -11221,8 +11541,11 @@ view_formula_for:'Vis formler for:'}
       icDates.start = map.period.dateStart ? new Date(map.period.dateStart) : icDates.start;
       icDates.end   = map.period.dateEnd   ? new Date(map.period.dateEnd)   : icDates.end;
     }
+    if(map.hsplit && icPeriod==='weeks' && icDates.start){ icITResources.concat(icBizResources).forEach(function(res){ var _fr=map.hsplit[res.id]; if(_fr) _icImportBuildHdays(res, _fr); }); }
     if(map.phases){ try{ icPhases = JSON.parse(JSON.stringify(map.phases)); }catch(e){} }
     if(map.groups){ try{ icGroups = JSON.parse(JSON.stringify(map.groups)); }catch(e){} }
+    if(map.vacPeriods){ try{ icVacPeriods = JSON.parse(JSON.stringify(map.vacPeriods)); icNextVacId=(icVacPeriods.reduce(function(_m,_p){return Math.max(_m,_p.id||0);},0))+1; }catch(e){} }
+    if(map.psplit!==undefined && icPeriod==='weeks' && icDates.start){ (icPhases||[]).forEach(function(ph){ _icImportBuildPdays(ph, map.psplit[ph.id]); (ph.subPhases||[]).forEach(function(sp){ _icImportBuildPdays(sp, map.psplit[sp.id]); (sp.subSubPhases||[]).forEach(function(a){ _icImportBuildPdays(a, map.psplit[a.id]); }); }); }); }
     // refresh the start/end date button labels (Excel import path doesn't otherwise)
     var _icMN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var _icSB=document.getElementById('ic-start-btn'), _icSL=document.getElementById('ic-start-label'), _icEB=document.getElementById('ic-end-btn'), _icEL=document.getElementById('ic-end-label');
@@ -15388,11 +15711,11 @@ function pmDefaultPhasesForType(type) {
   return base;
 }
 function pmDefaultState(type) {
-  return { phases: pmDefaultPhasesForType(type||pmSelectedType), itRes: [{id:'r1',name:'Project Manager',rate:1200,hours:{}}], bizRes: [{id:'r10',name:'Business Lead',rate:600,hours:{}}], itClusters:[{id:'itc1',name:'Implementation team',expanded:true}], bizClusters:[{id:'bizc1',name:'Implementation team',expanded:true}], nextClusterId:10, addCosts: [], sanityCats: [], nextPhId:10,nextSpId:30,nextSspId:500,nextResId:20,nextAcId:10,nextScId:20, period:'months', duration:2, extraMonths:0, dateStart:null, dateEnd:null, itContingencyPct:0, bizContingencyPct:0 };
+  return { phases: pmDefaultPhasesForType(type||pmSelectedType), itRes: [{id:'r1',name:'Project Manager',rate:1200,hours:{}}], bizRes: [{id:'r10',name:'Business Lead',rate:600,hours:{}}], itClusters:[{id:'itc1',name:'Implementation team',expanded:true}], bizClusters:[{id:'bizc1',name:'Implementation team',expanded:true}], nextClusterId:10, addCosts: [], sanityCats: [], nextPhId:10,nextSpId:30,nextSspId:500,nextResId:20,nextAcId:10,nextScId:20, period:'months', duration:2, extraMonths:0, dateStart:null, dateEnd:null, vacPeriods:[], itContingencyPct:0, bizContingencyPct:0 };
 }
 function pmSnapshotIc() {
   var durEl=document.getElementById('ic-duration'), exEl=document.getElementById('ic-extra-months');
-  return { phases:JSON.parse(JSON.stringify(icPhases)), itRes:JSON.parse(JSON.stringify(icITResources)), bizRes:JSON.parse(JSON.stringify(icBizResources)), itClusters:JSON.parse(JSON.stringify(icITClusters)), bizClusters:JSON.parse(JSON.stringify(icBizClusters)), nextClusterId:icNextClusterId, addCosts:JSON.parse(JSON.stringify(icAddCosts)), sanityCats:JSON.parse(JSON.stringify(icSanityCategories)), nextPhId:icNextPhId,nextSpId:icNextSpId,nextSspId:icNextSspId,nextResId:icNextResId,nextAcId:icNextAcId,nextScId:icNextScId, period:icPeriod, duration:durEl?parseInt(durEl.value)||2:2, extraMonths:exEl?parseInt(exEl.value)||0:0, dateStart:icDates.start?icDates.start.getTime():null, dateEnd:icDates.end?icDates.end.getTime():null, itContingencyPct:icItContingencyPct, bizContingencyPct:icBizContingencyPct };
+  return { phases:JSON.parse(JSON.stringify(icPhases)), itRes:JSON.parse(JSON.stringify(icITResources)), bizRes:JSON.parse(JSON.stringify(icBizResources)), itClusters:JSON.parse(JSON.stringify(icITClusters)), bizClusters:JSON.parse(JSON.stringify(icBizClusters)), nextClusterId:icNextClusterId, addCosts:JSON.parse(JSON.stringify(icAddCosts)), sanityCats:JSON.parse(JSON.stringify(icSanityCategories)), nextPhId:icNextPhId,nextSpId:icNextSpId,nextSspId:icNextSspId,nextResId:icNextResId,nextAcId:icNextAcId,nextScId:icNextScId, period:icPeriod, duration:durEl?parseInt(durEl.value)||2:2, extraMonths:exEl?parseInt(exEl.value)||0:0, dateStart:icDates.start?icDates.start.getTime():null, dateEnd:icDates.end?icDates.end.getTime():null, vacPeriods:JSON.parse(JSON.stringify(icVacPeriods)), itContingencyPct:icItContingencyPct, bizContingencyPct:icBizContingencyPct };
 }
 function pmApplySnapshot(snap) {
   icItContingencyPct=snap.itContingencyPct||0; icBizContingencyPct=snap.bizContingencyPct||0; if(typeof icUpdateContingencySelectUI==="function")icUpdateContingencySelectUI();
@@ -15404,6 +15727,7 @@ function pmApplySnapshot(snap) {
   var exEl=document.getElementById('ic-extra-months'); if(exEl&&snap.extraMonths!==undefined) exEl.value=snap.extraMonths;
   icDates.start = snap.dateStart ? new Date(snap.dateStart) : null;
   icDates.end   = snap.dateEnd   ? new Date(snap.dateEnd)   : null;
+  icVacPeriods = JSON.parse(JSON.stringify(snap.vacPeriods||[])); icNextVacId=(icVacPeriods.reduce(function(_m,_p){return Math.max(_m,_p.id||0);},0))+1;
   // Restore date button labels + has-date class
   var _mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var _sBtn=document.getElementById('ic-start-btn'), _sLbl=document.getElementById('ic-start-label');
@@ -15736,8 +16060,11 @@ function icDoRestore(idx) {
             <ul style="margin:6px 0 6px 18px;padding:0">
               <li style="margin:4px 0"><strong>Project setup:</strong> choose the project type, duration and start date.</li>
               <li style="margin:4px 0"><strong>Resources:</strong> add IT and Business people into <em>clusters</em> (e.g. &ldquo;Implementation team&rdquo;). Each person picks a <strong>Grade</strong> (which sets the rate) and you enter hours per month. Use <strong>Add cluster</strong> to group people.</li>
-              <li style="margin:4px 0"><strong>Timeline &amp; phases:</strong> paint which phases / sub-phases / activities are active each month. This drives the cost breakdown. You can switch the view between months and weeks and the painted phases follow the calendar &mdash; this requires a project start date to be set.</li>
+              <li style="margin:4px 0"><strong>Copy &amp; paste people:</strong> tick the checkbox on each row you want, click the <strong>copy</strong> icon (&#10697;) on any ticked row, then press the orange <strong>Paste</strong> button that appears on any cluster heading &mdash; in either the IT or Business table &mdash; to drop the copies in (you can paste into more than one cluster). Copies bring their hours along; the grade is kept when pasting within the same table and cleared when copying between IT and Business. When you&rsquo;re finished, click the <strong>&times;</strong> beside a Paste button to clear the copied items and hide the orange marks. Works the same in Hours or FTE view.</li>
+              <li style="margin:4px 0"><strong>Hours / FTE toggle:</strong> switch the grid between hours and FTE. FTE is based on <strong>working days (Mon&ndash;Fri)</strong> at <strong>7.5 hours per day</strong>: in <strong>weeks</strong> view, 1 FTE = a full working week = <strong>37.5 hours</strong> (5 &times; 7.5); in <strong>months</strong> view, 1 FTE = that month&rsquo;s <strong>working days &times; 7.5</strong>, so it <strong>varies by month</strong> &mdash; e.g. a 22-working-day month is 165 hours, a 20-day month is 150 hours. Weekends don&rsquo;t count, and because the underlying hours are the same, the FTE shown for the same work differs between weeks and months view. The summary column shows the <em>average</em> FTE across the periods a person is active.</li>
+              <li style="margin:4px 0"><strong>Timeline &amp; phases:</strong> paint which phases / sub-phases / activities are active each month. This drives the cost breakdown. You can switch the view between months and weeks and the painted phases follow the calendar &mdash; this requires a project start date to be set. In <strong>weeks</strong> view, columns are real <strong>Monday&ndash;Sunday</strong> calendar weeks, so the first week starts on the Monday on/before your start date and may include a couple of <strong>pre-start days</strong> (which carry no hours).</li>
               <li style="margin:4px 0"><strong>Per-person phase split:</strong> by default a person&rsquo;s hours in a month are split <em>evenly</em> across the phases painted that month. <strong>Right-click a person&rsquo;s hour cell</strong> to set a custom split (e.g. 80% Discover / 20% Prepare) &mdash; the counter must reach 100%.</li>
+              <li style="margin:4px 0"><strong>Vacation weeks:</strong> in the section just under the timeline, click <strong>Add vacation period</strong> and pick a from&ndash;to week range (add as many periods as you like). Those weeks are shaded grey in the <strong>week view</strong> of both the timeline and the two resource tables. It is visual only &mdash; the cells stay editable and no hours, FTE or costs change &mdash; and the shading also appears in the Excel export.</li>
               <li style="margin:4px 0"><strong>Additional costs &amp; contingency:</strong> add extra yearly costs; set IT / Business contingency % in Setup.</li>
               <li style="margin:4px 0"><strong>Cost breakdown:</strong> shows cost by phase, including contingency.</li>
             </ul>
@@ -15746,7 +16073,7 @@ function icDoRestore(idx) {
             <ul style="margin:6px 0 6px 18px;padding:0">
               <li style="margin:4px 0">Pick the <strong>SAP implementation type</strong> (edition) &mdash; each has its own phase plan.</li>
               <li style="margin:4px 0">Plan resources the same way (clusters, grades, hours).</li>
-              <li style="margin:4px 0"><strong>Hours / FTE toggle:</strong> switch the grid between hours and FTE. The &ldquo;1 FTE&rdquo; basis (hours per month / week) is editable in Setup. The summary column shows the <em>average</em> FTE across the months a person is active.</li>
+              <li style="margin:4px 0"><strong>Hours / FTE toggle:</strong> switch the grid between hours and FTE. FTE is based on <strong>working days (Mon&ndash;Fri)</strong> at <strong>7.5 hours per day</strong>: in <strong>weeks</strong> view, 1 FTE = a full working week = <strong>37.5 hours</strong> (5 &times; 7.5); in <strong>months</strong> view, 1 FTE = that month&rsquo;s <strong>working days &times; 7.5</strong>, so it <strong>varies by month</strong> &mdash; e.g. a 22-working-day month is 165 hours, a 20-day month is 150 hours. Weekends don&rsquo;t count, and because the underlying hours are the same, the FTE shown for the same work differs between weeks and months view. The summary column shows the <em>average</em> FTE across the periods a person is active.</li>
               <li style="margin:4px 0">Park and restore activities. This tab keeps its <strong>own data</strong>, separate from the Investment Case.</li>
             </ul>
 
@@ -15765,6 +16092,7 @@ function icDoRestore(idx) {
             <div class="param-section-group-header" style="margin-top:18px">Excel export &mdash; what it can and can&rsquo;t do</div>
             <p style="margin:6px 0"><strong>What it does:</strong></p>
             <ul style="margin:6px 0 6px 18px;padding:0">
+              <li style="margin:4px 0">The export is a <strong>fixed snapshot in one mode</strong> &mdash; either <strong>hours</strong> or <strong>FTE</strong>, depending on the <strong>&ldquo;Export in FTE&rdquo;</strong> checkbox you tick at export time. Unlike the app, there is <strong>no Hours/FTE toggle inside Excel</strong>; to switch, re-export with the checkbox set the other way.</li>
               <li style="margin:4px 0">Exports the full Investment Case (resources, timeline, additional costs, cost breakdown, rate card) as a <strong>live spreadsheet</strong> &mdash; most numbers are formulas that recalculate when you change hours or grades.</li>
               <li style="margin:4px 0">The cost breakdown reflects each person&rsquo;s <strong>phase split</strong>.</li>
               <li style="margin:4px 0">You can <strong>re-import</strong> an exported file (Settings &rarr; Import / Export) to load changes back into the app, including custom splits.</li>
