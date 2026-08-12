@@ -4734,6 +4734,14 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
 .ic-optsel .ic-custom-select-btn{ min-width:0; padding:7px 10px; font-size:13px; font-weight:500; }
 .ic-optsel .ic-custom-select-menu{ font-size:13px; width:max-content; min-width:100%; max-width:300px; }
 .ic-optsel .ic-custom-select-opt{ white-space:nowrap; }
+.ic-cp-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+.ic-cp-swatch{ height:26px; border:1px solid rgba(0,0,0,.12); border-radius:6px; cursor:pointer; padding:0; transition:transform .08s; }
+.ic-cp-swatch:hover{ transform:scale(1.12); }
+.ic-cp-swatch[data-sel="1"]{ outline:2px solid var(--accent,#F07800); outline-offset:1px; }
+.ic-cp-apply{ background:var(--accent,#F07800); color:#fff; border:none; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.ic-cp-apply:hover{ filter:brightness(1.06); }
+.ic-cp-eye{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:10px; border:1px solid #cbd5e1; background:#fff; border-radius:8px; padding:7px 10px; font-size:12px; color:var(--text,#0f172a); cursor:pointer; }
+.ic-cp-eye:hover{ background:#f1f5f9; }
 .ic-clip-status{ display:none; align-items:center; gap:6px; background:#eef1f5; border:1px solid #d7dce4; border-radius:999px; padding:3px 10px; font-size:11px; color:var(--text-secondary,#555); }
 .ic-clip-status button{ border:none; background:none; color:#94a3b8; cursor:pointer; font-size:12px; line-height:1; padding:0; }
 .ic-clip-status button:hover{ color:#dc2626; }
@@ -6214,13 +6222,14 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     if(typeof icRangeOpen!=='undefined' && icRangeOpen) icCloseRangePopup();
     if(typeof icResRangeOpen!=='undefined' && icResRangeOpen) icCloseResRange();
     icCloseVacPop();
+    icCloseColorPop();
   }
   // A mousedown anywhere outside every open picker closes them all. Capture phase so it
   // still fires when a row button stops the click from bubbling. Clicks inside a picker,
   // on its trigger, or on a dropdown option are ignored.
   document.addEventListener('mousedown', function(e){
     var t=e.target;
-    if(t.closest && ( t.closest('.ic-custom-select') || t.closest('#ic-range-body-popup') || t.closest('#ic-res-range-popup') || t.closest('#ic-vac-pop') || t.closest('[data-action="open-range"]') || t.closest('[data-action="open-res-range"]') || t.closest('[data-i18n="ic_vac_add"]') )) return;
+    if(t.closest && ( t.closest('.ic-custom-select') || t.closest('#ic-range-body-popup') || t.closest('#ic-res-range-popup') || t.closest('#ic-vac-pop') || t.closest('#ic-cp-pop') || t.closest('[data-action="open-cp"]') || t.closest('[data-action="open-range"]') || t.closest('[data-action="open-res-range"]') || t.closest('[data-i18n="ic_vac_add"]') )) return;
     if(_icGradePortal && _icGradePortal.el.contains(t)) return;
     icCloseAllPickers();
   }, true);
@@ -6524,6 +6533,39 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     h+='<button class="ic-vac-clear" onclick="icClearVac()">'+(currentLang==='da'?'Ryd alle':'Clear all')+'</button>';
     el.innerHTML=h;
   }
+  var _icCpColors=['#F5A623','#F07800','#e67e22','#e74c3c','#c0392b','#e91e63','#9b59b6','#673ab7','#3f51b5','#4A90D9','#2980b9','#1A6FAD','#3AADA8','#16a085','#2ecc71','#27ae60','#7AB648','#6B7C3F','#f1c40f','#f39c12','#95a5a6','#607d8b','#34495e','#0f172a'];
+  function icCloseColorPop(){ var p=document.getElementById('ic-cp-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); }
+  function icOpenColorPop(phId, spId, sspId, trigger){
+    icCloseAllPickers();
+    var node=icPhases.find(function(p){return p.id===phId;});
+    var cur='#4A90D9';
+    if(node){ if(sspId){ var _s=node.subPhases.find(function(x){return x.id===spId;}); var _a=_s&&_s.subSubPhases.find(function(x){return x.id===sspId;}); cur=(_a&&_a.color)||cur; } else if(spId){ var _s2=node.subPhases.find(function(x){return x.id===spId;}); cur=(_s2&&_s2.color)||cur; } else cur=node.color||cur; }
+    var pop=document.createElement('div'); pop.id='ic-cp-pop';
+    pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:236px;padding:14px;font-family:inherit';
+    var sw=_icCpColors.map(function(c){ return '<button type="button" class="ic-cp-swatch" data-c="'+c+'" style="background:'+c+'"'+((c.toLowerCase()===String(cur).toLowerCase())?' data-sel="1"':'')+'></button>'; }).join('');
+    var html='<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:10px">'+(currentLang==='da'?'Vælg farve':'Choose colour')+'<button type="button" id="ic-cp-x" style="float:right;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px">&#10005;</button></div>';
+    html+='<div class="ic-cp-grid">'+sw+'</div>';
+    html+='<div style="display:flex;gap:6px;align-items:center;margin-top:12px">';
+    html+='<input type="text" id="ic-cp-hex" placeholder="#RRGGBB" value="'+cur+'" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px">';
+    html+='<button type="button" id="ic-cp-apply" class="ic-cp-apply">'+(currentLang==='da'?'Anvend':'Apply')+'</button>';
+    html+='</div>';
+    html+='<button type="button" id="ic-cp-eye" class="ic-cp-eye"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg><span>'+(currentLang==='da'?'Pipette – vælg fra skærm':'Eyedropper – pick from screen')+'</span></button>';
+    pop.innerHTML=html;
+    document.body.appendChild(pop);
+    var r=(trigger&&trigger.getBoundingClientRect)?trigger.getBoundingClientRect():{bottom:120,left:40};
+    var vw=window.innerWidth, pr=pop.getBoundingClientRect();
+    pop.style.top=(r.bottom+window.scrollY+6)+'px';
+    pop.style.left=(Math.max(8, Math.min(r.left, vw-pr.width-12))+window.scrollX)+'px';
+    pop.querySelectorAll('.ic-cp-swatch').forEach(function(b){ b.onclick=function(){ icSetColor(phId,spId,sspId,this.getAttribute('data-c')); icCloseColorPop(); }; });
+    document.getElementById('ic-cp-x').onclick=icCloseColorPop;
+    function applyHex(){ var el=document.getElementById('ic-cp-hex'); var v=(el.value||'').trim(); if(v[0]!=='#') v='#'+v; if(/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(v)){ icSetColor(phId,spId,sspId,v); icCloseColorPop(); } else { el.style.borderColor='#ef4444'; } }
+    document.getElementById('ic-cp-apply').onclick=applyHex;
+    document.getElementById('ic-cp-hex').onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); applyHex(); } };
+    var eye=document.getElementById('ic-cp-eye');
+    if(window.EyeDropper){ eye.onclick=function(){ try{ var ed=new EyeDropper(); ed.open().then(function(res){ icSetColor(phId,spId,sspId,res.sRGBHex); icCloseColorPop(); }).catch(function(){}); }catch(err){} }; }
+    else { eye.style.display='none'; }
+  }
+
   function icOpenVacPicker(trigger){
     icCloseAllPickers();
     var wl=_icWeekList();
@@ -7153,9 +7195,10 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       el.onclick=function(){ icTogglePhase(this.getAttribute('data-phid')); };
     });
     tbl.querySelectorAll('[data-action="open-cp"]').forEach(function(el){
-      el.onclick=function(){
-        var cp=document.getElementById(this.getAttribute('data-cpid'));
-        if(cp) cp.click();
+      el.onclick=function(e){
+        e.stopPropagation();
+        var inp=document.getElementById(this.getAttribute('data-cpid'));
+        if(inp) icOpenColorPop(inp.getAttribute('data-phid'), inp.getAttribute('data-spid')||null, inp.getAttribute('data-sspid')||null, this);
       };
     });
     tbl.querySelectorAll('[data-action="set-color"]').forEach(function(el){
