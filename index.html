@@ -8238,8 +8238,8 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         b+='<td class="ic-res-name-col ic-cluster-name-cell" colspan="2"><div class="ic-name-inner">';
         b+='<button class="ic-toggle-btn" data-action="toggle-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">'+(cl.expanded?'&#9660;':'&#9658;')+'</button>';
         b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
-        b+=(icResClipboard.length?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Paste copied resources into this cluster">'+(currentLang==='da'?'Inds\u00e6t':'Paste')+' ('+icResClipboard.length+')</button><button class="ic-paste-x" data-action="clear-clip" title="'+(currentLang==='da'?'Ryd kopierede':'Clear copied items')+'">&#10005;</button></span>':'');
-        b+='<div class="ic-row-actions"><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
+        b+=(icResClipboard.length?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Paste copied resources into this cluster">'+(currentLang==='da'?'Inds\u00e6t':'Paste')+' ('+icResClipboard.length+')</button><button class="ic-paste-x" data-action="clear-clip" title="'+(currentLang==='da'?'Ryd kopierede':'Clear copied items')+'">&#10005;</button></span>':(icResClusterClip?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-res-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Paste the copied cluster below this one">'+(currentLang==='da'?'Inds\u00e6t klynge':'Paste cluster')+'</button><button class="ic-paste-x" data-action="clear-res-clusterclip" title="'+(currentLang==='da'?'Ryd kopieret':'Clear copied')+'">&#10005;</button></span>':''));
+        b+='<div class="ic-row-actions"><button class="ic-row-btn ic-copy-btn" data-action="copy-res-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Copy this whole cluster">&#10697;</button><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
         b+='</div></td>';
         for(var i=0;i<p.count;i++){ var bnd=(i+1)%p.perYear===0?' ic-yr-boundary':''; b+='<td class="ic-res-cell ic-cluster-cell'+bnd+(_icIsVacWeek(i)?' ic-vac-col':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-col-'+i+'">'+(clCol[i]>0?_icResHd(clCol[i],i):'')+'</td>'; }
         b+='<td class="ic-res-sumcol ic-cluster-cell'+(clHrs>0?' ic-sum-filled':'')+'" data-sumid="'+type+'-cl-'+cl.id+'-hrs">'+(clHrs>0?_icResAvgFte(function(q){return clCol[q]||0;},p.count):'&mdash;')+'</td>';
@@ -8375,6 +8375,15 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     tbl.querySelectorAll('[data-action="clear-clip"]').forEach(function(el){
       el.onclick=function(e){ e.stopPropagation(); icResClearClip(); };
     });
+    tbl.querySelectorAll('[data-action="copy-res-cluster"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icCopyResCluster(this.getAttribute('data-type'), this.getAttribute('data-clusterid')); };
+    });
+    tbl.querySelectorAll('[data-action="paste-res-cluster"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icPasteResClusterAfter(this.getAttribute('data-type'), this.getAttribute('data-clusterid')); };
+    });
+    tbl.querySelectorAll('[data-action="clear-res-clusterclip"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icClearResClusterClip(); };
+    });
     // Always refresh cost chart + sanity check after any table re-render
     setTimeout(function(){ icRenderCostChart(); icRenderSanityCheck(); }, 0);
   }
@@ -8389,6 +8398,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
 
   // ── Resource copy / paste (multi-select) ──
   var icResClipboard = [];               // [{name,grade,hours,hdays,adays,alloc,srcType}]
+  var icResClusterClip = null;           // { name, srcType, resources:[...] }
   var icResSel = { it:{}, biz:{} };      // id -> true (per table)
   var icResLastSel = { it:null, biz:null };
   function icResOrderedIds(type){
@@ -8420,7 +8430,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         alloc:JSON.parse(JSON.stringify(r.alloc||{})),
         srcType:type };
     }).filter(Boolean);
-    icResSel[type]={}; icResLastSel[type]=null;
+    icResSel[type]={}; icResLastSel[type]=null; icResClusterClip=null;
     icRenderResources('it'); icRenderResources('biz');
     icUpdateClipUI();
   }
@@ -8444,9 +8454,57 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       if(icResClipboard.length){
         el.style.display='inline-flex';
         el.innerHTML='<span>'+icResClipboard.length+' '+(currentLang==='da'?'kopieret':'copied')+'</span><button onclick="icResClearClip()" title="Clear clipboard">&#10005;</button>';
+      } else if(icResClusterClip){
+        el.style.display='inline-flex';
+        el.innerHTML='<span>'+(currentLang==='da'?'Klynge kopieret':'Cluster copied')+'</span><button onclick="icClearResClusterClip()" title="Clear clipboard">&#10005;</button>';
       } else { el.style.display='none'; el.innerHTML=''; }
     });
   }
+  function icCopyResCluster(type, clusterId){
+    var cl=icGetClusterArr(type).find(function(c){return c.id===clusterId;}); if(!cl) return;
+    var arr=icGetResourceArr(type).filter(function(r){return r.clusterId===clusterId;});
+    icResClusterClip={ name:cl.name, srcType:type, resources:arr.map(function(r){ return { name:r.name, grade:r.grade,
+      hours:JSON.parse(JSON.stringify(r.hours||{})), hdays:JSON.parse(JSON.stringify(r.hdays||{})),
+      adays:JSON.parse(JSON.stringify(r.adays||{})), alloc:JSON.parse(JSON.stringify(r.alloc||{})) }; }) };
+    icResClipboard=[]; icResSel={it:{},biz:{}};
+    icRenderResources('it'); icRenderResources('biz'); icUpdateClipUI();
+  }
+  function icPasteResClusterAfter(type, clusterId){
+    if(!icResClusterClip) return;
+    var clusters=icGetClusterArr(type);
+    var newId='cl'+(icNextClusterId++);
+    var ng={ id:newId, name:'Copy of '+icResClusterClip.name, expanded:true };
+    var i=clusters.findIndex(function(c){return c.id===clusterId;});
+    if(i<0) clusters.push(ng); else clusters.splice(i+1,0,ng);
+    var arr=icGetResourceArr(type);
+    icResClusterClip.resources.forEach(function(rc){
+      var grade=(icResClusterClip.srcType===type)?rc.grade:null;
+      arr.push({ id:(type==='it'?'it':'biz')+(icNextResId++), name:rc.name, grade:grade, clusterId:newId,
+        hours:JSON.parse(JSON.stringify(rc.hours||{})), hdays:JSON.parse(JSON.stringify(rc.hdays||{})),
+        adays:JSON.parse(JSON.stringify(rc.adays||{})), alloc:JSON.parse(JSON.stringify(rc.alloc||{})) });
+    });
+    icRenderResources(type); icRenderCostChart();
+  }
+  function icClearResClusterClip(){ icResClusterClip=null; icRenderResources('it'); icRenderResources('biz'); icUpdateClipUI(); }
+
+  // Link horizontal scrolling of the three IC tables (timeline, IT, Business).
+  (function(){
+    function init(){
+      var ids=['ic-timeline-table','ic-res-it-table','ic-res-biz-table'];
+      var wraps=ids.map(function(id){ var t=document.getElementById(id); return t?t.closest('.ic-timeline-wrap'):null; }).filter(Boolean);
+      if(wraps.length<2) return;
+      var lock=false;
+      wraps.forEach(function(w){
+        w.addEventListener('scroll', function(){
+          if(lock) return; lock=true;
+          var sl=w.scrollLeft;
+          wraps.forEach(function(o){ if(o!==w && o.scrollLeft!==sl) o.scrollLeft=sl; });
+          requestAnimationFrame(function(){ lock=false; });
+        });
+      });
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+  })();
 
   function icAddCluster(type){
     var clusters=icGetClusterArr(type);
