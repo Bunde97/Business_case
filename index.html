@@ -1918,7 +1918,7 @@
       background: #fff; border: 1.5px solid var(--border-light);
       border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       padding: 6px; z-index: 9000; display: none;
-      max-height: 260px; overflow-y: auto;
+      max-height: 260px; overflow-y: auto; overscroll-behavior: contain;
     }
     .ic-custom-select.open .ic-custom-select-menu { display: block; }
     .ic-custom-select-opt {
@@ -2276,7 +2276,7 @@
       display: none; position: absolute;
       background: var(--surface); border: 1.5px solid var(--border);
       border-radius: 12px; padding: 14px 16px; z-index: 9999;
-      box-shadow: 0 8px 28px rgba(0,0,0,.18); min-width: 240px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.18); min-width: 300px;
       pointer-events: none;
     }
     .ic-range-popup.open { display: block; pointer-events: auto; }
@@ -4687,6 +4687,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
       <button class="ic-expand-btn" onclick="icOpenFocus(&#39;ic-section-timeline&#39;)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"></path></svg> Expand</button>
+      <span id="ic-tl-clip" class="ic-clip-status" style="display:none"></span>
       <button class="ic-add-phase-btn" onclick="icAddGroup()">+ Add cluster</button>
       <button class="ic-parked-btn" id="ic-parked-btn" onclick="icOpenDrawer()" style="margin-left:auto;opacity:0.65">
         📦 Parked items <span class="ic-parked-badge" id="ic-parked-count">0</span>
@@ -4727,6 +4728,12 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
 .ic-paste-wrap .ic-paste-pill{ margin-left:0; border-radius:999px 0 0 999px; }
 .ic-paste-x{ background:#d76a00; color:#fff; border:none; border-left:1px solid rgba(255,255,255,.4); border-radius:0 999px 999px 0; padding:2px 8px; font-size:11px; line-height:1; cursor:pointer; }
 .ic-paste-x:hover{ background:#b95a00; }
+.ic-tl-selbox{ cursor:pointer; margin-right:4px; width:13px; height:13px; flex:0 0 auto; accent-color:var(--accent,#F07800); }
+tr.ic-tl-selected > td:not(.ic-painted){ background:#eaf3ff !important; }
+html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
+.ic-optsel .ic-custom-select-btn{ min-width:0; padding:7px 10px; font-size:13px; font-weight:500; }
+.ic-optsel .ic-custom-select-menu{ font-size:13px; width:max-content; min-width:100%; max-width:300px; }
+.ic-optsel .ic-custom-select-opt{ white-space:nowrap; }
 .ic-clip-status{ display:none; align-items:center; gap:6px; background:#eef1f5; border:1px solid #d7dce4; border-radius:999px; padding:3px 10px; font-size:11px; color:var(--text-secondary,#555); }
 .ic-clip-status button{ border:none; background:none; color:#94a3b8; cursor:pointer; font-size:12px; line-height:1; padding:0; }
 .ic-clip-status button:hover{ color:#dc2626; }
@@ -6139,7 +6146,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     var wrap = document.getElementById(wrapId);
     if (!wrap) return;
     var isOpen = wrap.classList.contains('open');
-    icCloseCustomSelects();
+    icCloseAllPickers();
     if (!isOpen) {
       var btn  = wrap.querySelector('.ic-custom-select-btn');
       var menu = wrap.querySelector('.ic-custom-select-menu');
@@ -6147,7 +6154,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
         var rect = btn.getBoundingClientRect();
         var origParent = menu.parentNode;
         document.body.appendChild(menu);
-        _icGradePortal = {el: menu, origParent: origParent};
+        _icGradePortal = {el: menu, origParent: origParent, btn: btn};
         menu.style.position  = 'fixed';
         menu.style.zIndex    = '99999';
         menu.style.display   = 'block';
@@ -6174,6 +6181,50 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     });
   }
 
+  // Reusable styled dropdown (same look as the other ic-custom-selects) that stores a value.
+  function icBuildOptSelect(id, opts, value){
+    var selLabel=(opts[0]||{}).label||'';
+    var body=opts.map(function(o){
+      var sel=(String(o.value)===String(value)); if(sel) selLabel=o.label;
+      return '<div class="ic-custom-select-opt'+(sel?' selected':'')+'" data-val="'+String(o.value).replace(/"/g,'&quot;')+'" onclick="icOptSelectPick(this,\''+id+'\')">'+o.label+'</div>';
+    }).join('');
+    return '<div class="ic-custom-select ic-optsel" id="'+id+'" data-value="'+String(value).replace(/"/g,'&quot;')+'" style="width:100%">'
+      +'<div class="ic-custom-select-btn" style="width:100%;box-sizing:border-box" onclick="icToggleCustomSelect(\''+id+'\')"><span class="ic-optsel-label">'+selLabel+'</span>'
+      +'<svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg></div>'
+      +'<div class="ic-custom-select-menu" style="width:100%">'+body+'</div></div>';
+  }
+  function icOptSelectPick(el, id){
+    var wrap=document.getElementById(id); if(!wrap) return;
+    wrap.dataset.value=el.getAttribute('data-val');
+    var lbl=wrap.querySelector('.ic-optsel-label'); if(lbl) lbl.textContent=el.textContent;
+    wrap.querySelectorAll('.ic-custom-select-opt').forEach(function(o){o.classList.toggle('selected',o===el);});
+    icCloseCustomSelects();
+  }
+  function icOptSelectVal(id){ var w=document.getElementById(id); return w?w.dataset.value:''; }
+  function icShowPickBackdrop(closeFn){
+    icHidePickBackdrop();
+    var bd=document.createElement('div'); bd.id='ic-pick-backdrop';
+    bd.style.cssText='position:fixed;inset:0;z-index:9990;background:transparent';
+    bd.onclick=function(){ icHidePickBackdrop(); icCloseCustomSelects(); if(typeof closeFn==='function') closeFn(); };
+    document.body.appendChild(bd);
+  }
+  function icHidePickBackdrop(){ var b=document.getElementById('ic-pick-backdrop'); if(b&&b.parentNode) b.parentNode.removeChild(b); }
+  function icCloseAllPickers(){
+    icCloseCustomSelects();
+    if(typeof icRangeOpen!=='undefined' && icRangeOpen) icCloseRangePopup();
+    if(typeof icResRangeOpen!=='undefined' && icResRangeOpen) icCloseResRange();
+    icCloseVacPop();
+  }
+  // A mousedown anywhere outside every open picker closes them all. Capture phase so it
+  // still fires when a row button stops the click from bubbling. Clicks inside a picker,
+  // on its trigger, or on a dropdown option are ignored.
+  document.addEventListener('mousedown', function(e){
+    var t=e.target;
+    if(t.closest && ( t.closest('.ic-custom-select') || t.closest('#ic-range-body-popup') || t.closest('#ic-res-range-popup') || t.closest('#ic-vac-pop') || t.closest('[data-action="open-range"]') || t.closest('[data-action="open-res-range"]') || t.closest('[data-i18n="ic_vac_add"]') )) return;
+    if(_icGradePortal && _icGradePortal.el.contains(t)) return;
+    icCloseAllPickers();
+  }, true);
+
   document.addEventListener('click', function(e) {
     var inSelect = e.target.closest && e.target.closest('.ic-custom-select');
     var inPortal = _icGradePortal && _icGradePortal.el.contains(e.target);
@@ -6182,14 +6233,16 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
 
   // Close grade dropdown on any scroll (page or container), but not when scrolling inside the menu itself
   document.addEventListener('scroll', function(e) {
-    if (_icGradePortal && _icGradePortal.el.contains(e.target)) return;
-    if (_icGradePortal) icCloseCustomSelects();
+    if (!_icGradePortal) return;
+    if (_icGradePortal.el.contains(e.target)) return;
+    var gb=_icGradePortal.btn;
+    if(gb){ var gr=gb.getBoundingClientRect(); _icGradePortal.el.style.top=(gr.bottom+4)+'px'; _icGradePortal.el.style.left=gr.left+'px'; }
   }, true);
 
   function icToggleCal(field) {
     if (icCalOpen === field) { icCloseCal(); return; }
     // Close range popup if open
-    if (icRangeOpen) { _icRangePopup.classList.remove('open'); icRangeOpen = null; }
+    if (icRangeOpen) { icCloseRangePopup(); }
     icCalOpen = field;
     icCalYearMode = false;
     icCalView = (function(){
@@ -6457,7 +6510,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     for(var k=0;k<icVacPeriods.length;k++){ if(md>=icVacPeriods[k].from && md<=icVacPeriods[k].to) return true; }
     return false;
   }
-  function icCloseVacPop(){ var p=document.getElementById('ic-vac-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); }
+  function icCloseVacPop(){ var p=document.getElementById('ic-vac-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); icHidePickBackdrop(); }
   function icRerenderVac(){ icRenderVacList(); if(typeof icRenderTimeline==='function') icRenderTimeline(); if(typeof icRenderResources==='function'){ icRenderResources('it'); icRenderResources('biz'); } }
   function icRenderVacList(){
     var el=document.getElementById('ic-vac-list'); if(!el) return;
@@ -6472,16 +6525,16 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     el.innerHTML=h;
   }
   function icOpenVacPicker(trigger){
-    icCloseVacPop();
+    icCloseAllPickers();
     var wl=_icWeekList();
     if(!wl.length){ alert(currentLang==='da'?'Sæt en projektstartdato først for at tilføje ferieuger.':'Set a project start date first to add vacation weeks.'); return; }
     var pop=document.createElement('div'); pop.id='ic-vac-pop';
     pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:340px;font-family:inherit;padding:14px 16px';
-    var opts=''; for(var i=0;i<wl.length;i++){ opts+='<option value="'+wl[i].md+'">'+bcEsc(wl[i].label)+'</option>'; }
+    var vopts=wl.map(function(w){return {value:w.md, label:bcEsc(w.label)};}); var vdef=wl[0].md;
     var html='<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">'+(currentLang==='da'?'Tilføj ferieperiode':'Add vacation period')+'<button onclick="icCloseVacPop()" style="float:right;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px">&#10005;</button></div>';
     html+='<div style="display:flex;gap:8px;margin-bottom:12px">';
-    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Fra uge':'From week')+'</label><select id="ic-vac-from" style="width:100%;padding:6px;border:1px solid #cbd5e1;border-radius:7px">'+opts+'</select></div>';
-    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Til uge':'To week')+'</label><select id="ic-vac-to" style="width:100%;padding:6px;border:1px solid #cbd5e1;border-radius:7px">'+opts+'</select></div>';
+    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Fra uge':'From week')+'</label>'+icBuildOptSelect('ic-vac-from', vopts, vdef)+'</div>';
+    html+='<div style="flex:1"><label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Til uge':'To week')+'</label>'+icBuildOptSelect('ic-vac-to', vopts, vdef)+'</div>';
     html+='</div>';
     html+='<div style="display:flex;gap:8px;justify-content:flex-end"><button class="ic-vac-clear" onclick="icCloseVacPop()">'+(currentLang==='da'?'Annuller':'Cancel')+'</button><button style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 16px;cursor:pointer;font-weight:600" onclick="icApplyVac()">'+(currentLang==='da'?'Anvend':'Apply')+'</button></div>';
     pop.innerHTML=html;
@@ -6492,8 +6545,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     pop.style.left=(Math.max(8, Math.min(r.left, vw-pr.width-12))+window.scrollX)+'px';
   }
   function icApplyVac(){
-    var fEl=document.getElementById('ic-vac-from'), tEl=document.getElementById('ic-vac-to'); if(!fEl||!tEl) return;
-    var from=parseInt(fEl.value), to=parseInt(tEl.value); if(isNaN(from)||isNaN(to)) return; if(from>to){ var t=from; from=to; to=t; }
+    var from=parseInt(icOptSelectVal('ic-vac-from')), to=parseInt(icOptSelectVal('ic-vac-to')); if(isNaN(from)||isNaN(to)) return; if(from>to){ var t=from; from=to; to=t; }
     icVacPeriods.push({ id:icNextVacId++, from:from, to:to });
     icCloseVacPop(); icRerenderVac();
   }
@@ -6634,9 +6686,120 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     });
   }
 
+  // Guarantee every phase / sub-phase / activity has a UNIQUE id, and keep the
+  // id counters ahead of everything present. Repairs projects whose ids collided
+  // (e.g. after an Excel import that didn't advance the counter) — a duplicate id
+  // makes find/rename/drag/delete act on the wrong phase.
+  // ── Timeline copy / paste (phases & whole clusters) ──
+  var icTlClip = null;   // { kind:'phases', items:[phase,...] } | { kind:'cluster', name, phases:[...] }
+  var icTlSel  = {};     // phaseId -> true (selected phases)
+
+  function _icClonePhaseFresh(src, groupId){
+    var ph = { id:'ph'+(icNextPhId++), name:src.name, color:src.color||'#999', groupId:groupId,
+      expanded: src.expanded!==false,
+      painted:JSON.parse(JSON.stringify(src.painted||{})),
+      pdays:JSON.parse(JSON.stringify(src.pdays||{})),
+      subPhases:[] };
+    (src.subPhases||[]).forEach(function(sp){
+      var nsp = { id:'sp'+(icNextSpId++), name:sp.name, color:null,
+        expanded: sp.expanded!==false,
+        painted:JSON.parse(JSON.stringify(sp.painted||{})),
+        pdays:JSON.parse(JSON.stringify(sp.pdays||{})),
+        subSubPhases:[] };
+      (sp.subSubPhases||[]).forEach(function(a){
+        nsp.subSubPhases.push({ id:'ssp'+(icNextSspId++), name:a.name, color:null,
+          painted:JSON.parse(JSON.stringify(a.painted||{})),
+          pdays:JSON.parse(JSON.stringify(a.pdays||{})) });
+      });
+      ph.subPhases.push(nsp);
+    });
+    return ph;
+  }
+  function icTlToggleSel(phid){ if(icTlSel[phid]) delete icTlSel[phid]; else icTlSel[phid]=true; icRenderTimeline(); }
+  function icCopyPhases(phid){
+    var ids=Object.keys(icTlSel).filter(function(k){return icTlSel[k];});
+    if(!ids.length && phid) ids=[phid];
+    if(!ids.length) return;
+    var chosen=icPhases.filter(function(p){return ids.indexOf(p.id)>-1;}); // preserve visual order
+    icTlClip={ kind:'phases', items:chosen.map(function(p){return JSON.parse(JSON.stringify(p));}) };
+    icTlSel={};
+    icRenderTimeline(); icUpdateTlClipUI();
+  }
+  function icCopyCluster(grpId){
+    var g=icGroups.find(function(x){return x.id===grpId;}); if(!g) return;
+    var phs=icPhases.filter(function(p){return (p.groupId||'grp1')===grpId;});
+    icTlClip={ kind:'cluster', name:g.name, phases:phs.map(function(p){return JSON.parse(JSON.stringify(p));}) };
+    icTlSel={};
+    icRenderTimeline(); icUpdateTlClipUI();
+  }
+  function icPastePhases(grpId){
+    if(!icTlClip || icTlClip.kind!=='phases') return;
+    icTlClip.items.forEach(function(src){ icPhases.push(_icClonePhaseFresh(src, grpId)); });
+    icRenderTimeline();
+  }
+  function icPasteCluster(){
+    if(!icTlClip || icTlClip.kind!=='cluster') return;
+    var newId='grp'+(icNextGrpId++);
+    icGroups.push({ id:newId, name:'Copy of '+icTlClip.name, expanded:true });
+    icTlClip.phases.forEach(function(src){ icPhases.push(_icClonePhaseFresh(src, newId)); });
+    icRenderTimeline();
+  }
+  function icPasteClusterAfter(grpId){
+    if(!icTlClip || icTlClip.kind!=='cluster') return;
+    var newId='grp'+(icNextGrpId++);
+    var ng={ id:newId, name:'Copy of '+icTlClip.name, expanded:true };
+    var i=icGroups.findIndex(function(g){return g.id===grpId;});
+    if(i<0) icGroups.push(ng); else icGroups.splice(i+1,0,ng);
+    icTlClip.phases.forEach(function(src){ icPhases.push(_icClonePhaseFresh(src, newId)); });
+    icRenderTimeline();
+  }
+  function icClearTlClip(){ icTlClip=null; icTlSel={}; icRenderTimeline(); icUpdateTlClipUI(); }
+  function icUpdateTlClipUI(){
+    var el=document.getElementById('ic-tl-clip'); if(!el) return;
+    if(icTlClip && icTlClip.kind==='cluster'){
+      el.style.display='inline-flex';
+      el.innerHTML='<span>Cluster \''+(icTlClip.name||'').replace(/</g,'&lt;')+'\' copied — press Paste cluster on a heading</span><button onclick="icClearTlClip()" title="Clear">&#10005;</button>';
+    } else if(icTlClip && icTlClip.kind==='phases'){
+      el.style.display='inline-flex';
+      el.innerHTML='<span>'+icTlClip.items.length+' phase'+(icTlClip.items.length>1?'s':'')+' copied — press Paste on a heading</span><button onclick="icClearTlClip()" title="Clear">&#10005;</button>';
+    } else { el.style.display='none'; el.innerHTML=''; }
+  }
+
+  function _icNormalizePhaseIds(){
+    if(!Array.isArray(icPhases)) return;
+    function suffix(id, pfx){ if(typeof id==='string' && id.indexOf(pfx)===0){ var n=parseInt(id.slice(pfx.length),10); return isNaN(n)?0:n; } return 0; }
+    var maxPh=0, maxSp=0, maxSsp=0;
+    icPhases.forEach(function(ph){
+      maxPh=Math.max(maxPh, suffix(ph.id,'ph'));
+      (ph.subPhases||[]).forEach(function(sp){
+        maxSp=Math.max(maxSp, suffix(sp.id,'sp'));
+        (sp.subSubPhases||[]).forEach(function(a){ maxSsp=Math.max(maxSsp, suffix(a.id,'ssp')); });
+      });
+    });
+    if(typeof icNextPhId!=='number'  || icNextPhId<=maxPh)  icNextPhId=maxPh+1;
+    if(typeof icNextSpId!=='number'  || icNextSpId<=maxSp)  icNextSpId=maxSp+1;
+    if(typeof icNextSspId!=='number' || icNextSspId<=maxSsp) icNextSspId=maxSsp+1;
+    var seenPh={}, seenSp={}, seenSsp={};
+    icPhases.forEach(function(ph){
+      if(!ph.id || seenPh[ph.id]) ph.id='ph'+(icNextPhId++);
+      seenPh[ph.id]=1;
+      (ph.subPhases||[]).forEach(function(sp){
+        if(!sp.id || seenSp[sp.id]) sp.id='sp'+(icNextSpId++);
+        seenSp[sp.id]=1;
+        sp.color=null;                 // sub-phase colour always follows the phase (darker)
+        (sp.subSubPhases||[]).forEach(function(a){
+          if(!a.id || seenSsp[a.id]) a.id='ssp'+(icNextSspId++);
+          seenSsp[a.id]=1;
+          a.color=null;                // activity colour always follows the phase (darker)
+        });
+      });
+    });
+  }
+
   function icRenderTimeline(){
     var tbl=document.getElementById('ic-timeline-table');
     if(!tbl) return;
+    _icNormalizePhaseIds();
     var p=icGetPeriods();
     _icRebuildAllPainted();
 
@@ -6674,8 +6837,10 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
         b+='<td class="ic-name-col ic-group-name-cell">';
         b+='<div class="ic-name-inner">';
         b+='<button class="ic-toggle-btn" data-action="toggle-group" data-grpid="'+grp.id+'">'+(grp.expanded?'&#9660;':'&#9658;')+'</button>';
-        b+='<input type="text" class="ic-name-input" value="'+grp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-grpid="'+grp.id+'" data-action="rename-group">';
+        b+='<input type="text" class="ic-name-input" value="'+grp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+grp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-grpid="'+grp.id+'" data-action="rename-group">';
+        b+=(icTlClip&&icTlClip.kind==='phases'?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-phases" data-grpid="'+grp.id+'" title="Paste copied phases into this cluster">Paste ('+icTlClip.items.length+')</button><button class="ic-paste-x" data-action="clear-tlclip" title="Clear copied">&#10005;</button></span>':(icTlClip&&icTlClip.kind==='cluster'?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-cluster-after" data-grpid="'+grp.id+'" title="Paste the copied cluster below this heading">Paste cluster</button><button class="ic-paste-x" data-action="clear-tlclip" title="Clear copied">&#10005;</button></span>':''));
         b+='<div class="ic-row-actions">';
+        b+='<button class="ic-row-btn ic-copy-btn" data-action="copy-cluster" data-grpid="'+grp.id+'" title="Copy this whole cluster">&#10697;</button>';
         b+='<button class="ic-row-btn ic-add-sub-btn" data-action="add-phase-to-group" data-grpid="'+grp.id+'" title="Add phase">&#65291; Add phase</button>';
         b+='<button class="ic-row-btn ic-del-btn" data-action="delete-group" data-grpid="'+grp.id+'" title="Delete cluster">&#10005;</button>';
         b+='</div></div></td>';
@@ -6720,13 +6885,14 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
           ? '<button class="ic-toggle-btn" data-action="toggle-phase" data-phid="'+ph.id+'">'+(ph.expanded?'&#9660;':'&#9658;')+'</button>'
           : '<span class="ic-toggle-spacer"></span>';
 
-        b+='<tr class="ic-phase-row" data-phid="'+ph.id+'" data-drag="phase" data-grpid="'+(ph.groupId||grp.id)+'">';
+        b+='<tr class="ic-phase-row'+(icTlSel[ph.id]?' ic-tl-selected':'')+'" data-phid="'+ph.id+'" data-drag="phase" data-grpid="'+(ph.groupId||grp.id)+'">';
         b+='<td class="ic-name-col ic-phase-name-cell">';
-        b+='<div class="ic-name-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>'+toggleHtml;
+        b+='<div class="ic-name-inner">'+(renderGroups?'<input type="checkbox" class="ic-tl-selbox" data-action="sel-phase" data-phid="'+ph.id+'"'+(icTlSel[ph.id]?' checked':'')+'>':'')+'<span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>'+toggleHtml;
         b+='<div class="ic-color-swatch" style="background:'+phColor+'" data-action="open-cp" data-cpid="ic-cp-'+ph.id+'" title="Pick colour"></div>';
         b+='<input type="color" id="ic-cp-'+ph.id+'" class="ic-color-input" value="'+phColor+'" data-phid="'+ph.id+'" data-spid="" data-action="set-color">';
         b+='<input type="text" class="ic-name-input" value="'+ph.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+ph.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="" data-action="rename">';
         b+='<div class="ic-row-actions">';
+        b+=(renderGroups?'<button class="ic-row-btn ic-copy-btn" data-action="copy-phase" data-phid="'+ph.id+'" title="Copy phase (copies all selected)">&#10697;</button>':'');
         b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="" title="Set interval">⏱</button></div>';
         b+='<button class="ic-row-btn ic-add-sub-btn" data-action="add-sub" data-phid="'+ph.id+'" title="Add sub-phase">&#65291;</button>';
         b+='<button class="ic-row-btn ic-del-btn" data-action="del-phase" data-phid="'+ph.id+'" title="Delete">&#10005;</button>';
@@ -6776,8 +6942,8 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
           b+='<td class="ic-name-col ic-subphase-name-cell">';
           b+='<div class="ic-name-inner ic-sub-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
           b+=spToggle;
-          b+='<div class="ic-color-swatch" style="background:'+spColor+'" data-action="open-cp" data-cpid="ic-cp-'+sp.id+'" title="Pick colour"></div>';
-          b+='<input type="color" id="ic-cp-'+sp.id+'" class="ic-color-input" value="'+spColor+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-action="set-color">';
+          b+='<div class="ic-color-swatch" style="background:'+spColor+'"></div>';
+          b+='';
           b+='<input type="text" class="ic-name-input" value="'+sp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+sp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-action="rename">';
           b+='<div class="ic-row-actions">';
           b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" title="Set interval">⏱</button></div>';
@@ -6819,8 +6985,8 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
             b+='<td class="ic-name-col ic-activity-name-cell">';
             b+='<div class="ic-name-inner ic-sub-inner ic-act-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
             b+='<span class="ic-act-spacer"></span>';
-            b+='<div class="ic-color-swatch" style="background:'+actColor+'" data-action="open-cp" data-cpid="ic-cp-'+act.id+'" title="Pick colour"></div>';
-            b+='<input type="color" id="ic-cp-'+act.id+'" class="ic-color-input" value="'+actColor+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-action="set-color">';
+            b+='<div class="ic-color-swatch" style="background:'+actColor+'"></div>';
+            b+='';
             b+='<input type="text" class="ic-name-input" value="'+act.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+act.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-action="rename">';
             b+='<div class="ic-row-actions">';
             b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" title="Set interval">⏱</button></div>';
@@ -6854,12 +7020,13 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
             : '<span class="ic-toggle-spacer"></span>';
           b+='<tr class="ic-phase-row" data-phid="'+ph.id+'" data-drag="phase" data-grpid="">';
           b+='<td class="ic-name-col ic-phase-name-cell">';
-          b+='<div class="ic-name-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>'+toggleHtml;
+          b+='<div class="ic-name-inner">'+(renderGroups?'<input type="checkbox" class="ic-tl-selbox" data-action="sel-phase" data-phid="'+ph.id+'"'+(icTlSel[ph.id]?' checked':'')+'>':'')+'<span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>'+toggleHtml;
           b+='<div class="ic-color-swatch" style="background:'+phColor+'" data-action="open-cp" data-cpid="ic-cp-'+ph.id+'" title="Pick colour"></div>';
           b+='<input type="color" id="ic-cp-'+ph.id+'" class="ic-color-input" value="'+phColor+'" data-phid="'+ph.id+'" data-spid="" data-action="set-color">';
           b+='<input type="text" class="ic-name-input" value="'+ph.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+ph.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="" data-action="rename">';
           b+='<div class="ic-row-actions">';
-          b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="" title="Set interval">⏱</button></div>';
+          b+=(renderGroups?'<button class="ic-row-btn ic-copy-btn" data-action="copy-phase" data-phid="'+ph.id+'" title="Copy phase (copies all selected)">&#10697;</button>':'');
+        b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="" title="Set interval">⏱</button></div>';
           b+='<button class="ic-row-btn ic-add-sub-btn" data-action="add-sub" data-phid="'+ph.id+'" title="Add sub-phase">&#65291;</button>';
           b+='<button class="ic-row-btn ic-del-btn" data-action="del-phase" data-phid="'+ph.id+'" title="Delete">&#10005;</button>';
           b+='</div></div></td>';
@@ -6897,8 +7064,8 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
               :'<span class="ic-toggle-spacer"></span>';
             b+='<tr class="ic-subphase-row" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-drag="subphase" style="'+vis+'">';
             b+='<td class="ic-name-col ic-subphase-name-cell"><div class="ic-name-inner ic-sub-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>'+spToggle;
-            b+='<div class="ic-color-swatch" style="background:'+spColor+'" data-action="open-cp" data-cpid="ic-cp-'+sp.id+'" title="Pick colour"></div>';
-            b+='<input type="color" id="ic-cp-'+sp.id+'" class="ic-color-input" value="'+spColor+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-action="set-color">';
+            b+='<div class="ic-color-swatch" style="background:'+spColor+'"></div>';
+            b+='';
             b+='<input type="text" class="ic-name-input" value="'+sp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+sp.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" data-action="rename">';
             b+='<div class="ic-row-actions">';
             b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="" title="Set interval">⏱</button></div>';
@@ -6929,8 +7096,8 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
               b+='<tr class="ic-activity-row" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-drag="activity" style="'+actVis+'">';
               b+='<td class="ic-name-col ic-activity-name-cell"><div class="ic-name-inner ic-sub-inner ic-act-inner"><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
               b+='<span class="ic-act-spacer"></span>';
-              b+='<div class="ic-color-swatch" style="background:'+actColor+'" data-action="open-cp" data-cpid="ic-cp-'+act.id+'" title="Pick colour"></div>';
-              b+='<input type="color" id="ic-cp-'+act.id+'" class="ic-color-input" value="'+actColor+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-action="set-color">';
+              b+='<div class="ic-color-swatch" style="background:'+actColor+'"></div>';
+              b+='';
               b+='<input type="text" class="ic-name-input" value="'+act.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+act.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" data-action="rename">';
               b+='<div class="ic-row-actions">';
               b+='<div class="ic-range-wrap"><button class="ic-row-btn ic-range-btn" data-action="open-range" data-phid="'+ph.id+'" data-spid="'+sp.id+'" data-sspid="'+act.id+'" title="Set interval">⏱</button></div>';
@@ -6963,6 +7130,24 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     });
     tbl.querySelectorAll('[data-action="delete-group"]').forEach(function(el){
       el.onclick=function(){ icDeleteGroup(this.getAttribute('data-grpid')); };
+    });
+    tbl.querySelectorAll('[data-action="sel-phase"]').forEach(function(el){
+      el.onclick=function(e){ e.preventDefault(); icTlToggleSel(this.getAttribute('data-phid')); };
+    });
+    tbl.querySelectorAll('[data-action="copy-phase"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icCopyPhases(this.getAttribute('data-phid')); };
+    });
+    tbl.querySelectorAll('[data-action="copy-cluster"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icCopyCluster(this.getAttribute('data-grpid')); };
+    });
+    tbl.querySelectorAll('[data-action="paste-phases"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icPastePhases(this.getAttribute('data-grpid')); };
+    });
+    tbl.querySelectorAll('[data-action="paste-cluster-after"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icPasteClusterAfter(this.getAttribute('data-grpid')); };
+    });
+    tbl.querySelectorAll('[data-action="clear-tlclip"]').forEach(function(el){
+      el.onclick=function(e){ e.stopPropagation(); icClearTlClip(); };
     });
     tbl.querySelectorAll('[data-action="toggle-phase"]').forEach(function(el){
       el.onclick=function(){ icTogglePhase(this.getAttribute('data-phid')); };
@@ -7271,16 +7456,17 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     return el;
   })();
 
+  function icCloseRangePopup(){ _icRangePopup.classList.remove('open'); icRangeOpen=null; icHidePickBackdrop(); }
   function icOpenRange(phId, spId, sspId) { sspId = sspId || '';
     var key = phId+'|'+spId+'|'+sspId;
-    if (icRangeOpen === key) { _icRangePopup.classList.remove('open'); icRangeOpen=null; return; }
-    // Close calendar if open
+    if (icRangeOpen === key) { icCloseRangePopup(); return; }
+    icCloseAllPickers();
     if (icCalOpen) icCloseCal();
     icRangeOpen = key;
 
     var p = icGetPeriods();
-    var opts = '';
-    for (var i = 0; i < p.count; i++) opts += '<option value="'+i+'">'+(i+1)+' – '+icPeriodOptLabel(p,i)+'</option>';
+    var ropts = [];
+    for (var i = 0; i < p.count; i++) ropts.push({value:i, label:(i+1)+' – '+icPeriodOptLabel(p,i)});
 
     var ph = icPhases.find(function(x){return x.id===phId;});
     var target;
@@ -7292,20 +7478,17 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
       existStart = keys[0]; existDur = keys[keys.length-1] - keys[0] + 1;
     }
 
-    _icRangePopup.innerHTML = '<div class="ic-range-popup-title">'+t('ic_set_interval')+'<button class="ic-range-close-btn" onclick="_icRangePopup.classList.remove(\'open\');icRangeOpen=null;">✕</button></div>'
+    _icRangePopup.innerHTML = '<div class="ic-range-popup-title">'+t('ic_set_interval')+'<button class="ic-range-close-btn" onclick="icCloseRangePopup()">✕</button></div>'
       + '<div class="ic-range-row">'
       + '<div class="ic-range-field"><label class="ic-range-label">Start</label>'
-      + '<select class="ic-range-select" id="ic-rs-start">'+opts+'</select></div>'
-      + '<div class="ic-range-field"><label class="ic-range-label">Duration ('+(icPeriod==='weeks'?'wks':'mo')+')</label>'
+      + icBuildOptSelect('ic-rs-start', ropts, existStart)+'</div>'
+      + '<div class="ic-range-field" style="flex:0 0 auto"><label class="ic-range-label">Duration ('+(icPeriod==='weeks'?'wks':'mo')+')</label>'
       + '<input type="number" class="ic-range-input" id="ic-rs-dur" min="1" max="'+p.count+'" value="'+existDur+'" style="width:64px"></div>'
       + '</div>'
       + '<div class="ic-range-actions">'
       + '<button class="ic-range-apply" onclick="icApplyRange(\''+phId+'\',\''+spId+'\',\''+sspId+'\')">Apply</button>'
       + '<button class="ic-range-clear" onclick="icClearRange(\''+phId+'\',\''+spId+'\',\''+sspId+'\')">'+t('ic_clear')+'</button>'
       + '</div>';
-
-    var sel = document.getElementById('ic-rs-start');
-    if (sel) sel.value = existStart;
 
     // Position relative to the trigger button, offset by scroll so it moves with the page
     var triggerBtn = document.querySelector('[data-action="open-range"][data-phid="'+phId+'"][data-spid="'+spId+'"]');
@@ -7318,10 +7501,9 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
   }
 
   function icApplyRange(phId, spId, sspId) {
-    var startEl = document.getElementById('ic-rs-start');
     var durEl   = document.getElementById('ic-rs-dur');
-    if (!startEl || !durEl) return;
-    var start = parseInt(startEl.value), dur = parseInt(durEl.value)||1;
+    if (!durEl) return;
+    var start = parseInt(icOptSelectVal('ic-rs-start')), dur = parseInt(durEl.value)||1;
     var ph = icPhases.find(function(x){return x.id===phId;});
     if (!ph) return;
     var target;
@@ -7331,7 +7513,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     target.painted = {}; target.pdays = {};
     var p = icGetPeriods();
     for (var i = start; i < Math.min(start+dur, p.count); i++) { target.painted[i] = true; _icPaintWrite(target, i, true); }
-    _icRangePopup.classList.remove('open'); icRangeOpen = null;
+    icCloseRangePopup();
     icRenderTimeline();
   }
 
@@ -7342,14 +7524,14 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     if(sspId){var sp=ph.subPhases.find(function(s){return s.id===spId;});target=sp?sp.subSubPhases.find(function(a){return a.id===sspId;}):null;}
     else{target = spId ? ph.subPhases.find(function(s){return s.id===spId;}) : ph;}
     if (target){ target.painted = {}; target.pdays = {}; }
-    _icRangePopup.classList.remove('open'); icRangeOpen = null;
+    icCloseRangePopup();
     icRenderTimeline();
   }
 
   // Close range popup when clicking outside
   document.addEventListener('click', function(e) {
     if (icRangeOpen && !e.target.closest('.ic-range-wrap') && e.target !== _icRangePopup && !_icRangePopup.contains(e.target)) {
-      _icRangePopup.classList.remove('open'); icRangeOpen = null;
+      icCloseRangePopup();
     }
   });
 
@@ -7369,19 +7551,20 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
   function icCloseResRange() {
     _icResRangePopup.classList.remove('open');
     icResRangeOpen = null;
+    icHidePickBackdrop();
   }
 
   function icOpenResRange(type, resId, triggerEl) {
     var key = type+'|'+resId;
-    if (icResRangeOpen === key) { _icResRangePopup.classList.remove('open'); icResRangeOpen=null; return; }
-    if (icRangeOpen) { _icRangePopup.classList.remove('open'); icRangeOpen=null; }
+    if (icResRangeOpen === key) { icCloseResRange(); return; }
+    icCloseAllPickers();
     icResRangeOpen = key;
     _icResRangeOpen_type = type;
     _icResRangeOpen_resId = resId;
 
     var p = icGetPeriods();
-    var opts = '';
-    for (var i = 0; i < p.count; i++) opts += '<option value="'+i+'">'+(i+1)+' – '+icPeriodOptLabel(p,i)+'</option>';
+    var rropts = [];
+    for (var i = 0; i < p.count; i++) rropts.push({value:i, label:(i+1)+' – '+icPeriodOptLabel(p,i)});
 
     var _fteM=(typeof pmFteActive==='function'&&pmFteActive());
     _icResRangePopup.innerHTML =
@@ -7389,9 +7572,9 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
       +'<button class="ic-range-close-btn" onclick="icCloseResRange()">✕</button></div>'
       +'<div class="ic-range-row">'
       +'<div class="ic-range-field"><label class="ic-range-label">From</label>'
-      +'<select class="ic-range-select" id="ic-rr-from">'+opts+'</select></div>'
+      +icBuildOptSelect('ic-rr-from', rropts, 0)+'</div>'
       +'<div class="ic-range-field"><label class="ic-range-label">To</label>'
-      +'<select class="ic-range-select" id="ic-rr-to">'+opts+'</select></div>'
+      +icBuildOptSelect('ic-rr-to', rropts, p.count-1)+'</div>'
       +'</div>'
       +'<div class="ic-range-row">'
       +'<div class="ic-range-field"><label class="ic-range-label">'+(_fteM?'FTE':'Hours')+' per period</label>'
@@ -7402,10 +7585,6 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
       +'<button class="ic-range-clear" onclick="icClearResRange(_icResRangeOpen_type,_icResRangeOpen_resId)">Clear range</button>'
       +'</div>';
 
-    // Default To = last period
-    var toSel = document.getElementById('ic-rr-to');
-    if (toSel) toSel.value = p.count - 1;
-
     if (triggerEl) {
       var rect = triggerEl.getBoundingClientRect();
       _icResRangePopup.style.top  = icPopupTop(rect.bottom) + 'px';
@@ -7415,11 +7594,9 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
   }
 
   function icApplyResRange(type, resId) {
-    var fromEl = document.getElementById('ic-rr-from');
-    var toEl   = document.getElementById('ic-rr-to');
     var hrsEl  = document.getElementById('ic-rr-hrs');
-    if (!fromEl||!toEl||!hrsEl) return;
-    var from = parseInt(fromEl.value), to = parseInt(toEl.value), raw = _icPnum(hrsEl.value), _fte=(typeof pmFteActive==='function'&&pmFteActive());
+    if (!hrsEl) return;
+    var from = parseInt(icOptSelectVal('ic-rr-from')), to = parseInt(icOptSelectVal('ic-rr-to')), raw = _icPnum(hrsEl.value), _fte=(typeof pmFteActive==='function'&&pmFteActive());
     if (from > to) { var tmp=from; from=to; to=tmp; }
     var res = icGetResourceArr(type).find(function(r){return r.id===resId;});
     if (!res) return;
@@ -7428,20 +7605,18 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
       if (hrs > 0) res.hours[i] = hrs; else delete res.hours[i];
       _icResWriteCol(res, i, hrs);
     }
-    _icResRangePopup.classList.remove('open'); icResRangeOpen = null;
+    icCloseResRange();
     icRenderResources(type);
   }
 
   function icClearResRange(type, resId) {
-    var fromEl = document.getElementById('ic-rr-from');
-    var toEl   = document.getElementById('ic-rr-to');
-    if (!fromEl||!toEl) return;
-    var from = parseInt(fromEl.value), to = parseInt(toEl.value);
+    var from = parseInt(icOptSelectVal('ic-rr-from')), to = parseInt(icOptSelectVal('ic-rr-to'));
+    if (isNaN(from)||isNaN(to)) return;
     if (from > to) { var tmp=from; from=to; to=tmp; }
     var res = icGetResourceArr(type).find(function(r){return r.id===resId;});
     if (!res) return;
     for (var i = from; i <= to; i++) { delete res.hours[i]; _icResWriteCol(res, i, 0); }
-    _icResRangePopup.classList.remove('open'); icResRangeOpen = null;
+    icCloseResRange();
     icRenderResources(type);
   }
 
@@ -7508,6 +7683,59 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     icRenderTimeline();
   }
 
+  // Freeze main-page scrolling whenever a full-screen overlay/modal or a side
+  // drawer is open, so scrolling behind a popup is impossible until it closes.
+  (function(){
+    var STATIC_IDS=['ic-restore-modal','pm-restore-modal','settings-overlay','industry-modal','bc-login-overlay','ic-focus-backdrop','ic-parked-drawer','pm-parked-drawer','ic-parked-overlay','pm-parked-overlay'];
+    function anyOpen(){
+      if(document.querySelector('.ic-parked-drawer.open,.pm-parked-drawer.open')) return true;
+      var w=window.innerWidth, h=window.innerHeight, ch=document.body?document.body.children:[];
+      for(var i=0;i<ch.length;i++){
+        var e=ch[i]; if(!e || e.nodeType!==1) continue;
+        var cs; try{ cs=window.getComputedStyle(e); }catch(x){ continue; }
+        if(cs.position!=='fixed' || cs.display==='none' || cs.visibility==='hidden' || cs.opacity==='0') continue;
+        var r=e.getBoundingClientRect();
+        if(r.width>=w*0.9 && r.height>=h*0.9) return true;   // full-viewport overlay = modal
+      }
+      return false;
+    }
+    var raf=null;
+    function sync(){ raf=null; try{ document.documentElement.classList.toggle('ic-scroll-lock', anyOpen()); }catch(e){} }
+    function schedule(){ if(!raf) raf=requestAnimationFrame(sync); }
+    function start(){
+      try{
+        var mo=new MutationObserver(schedule);
+        mo.observe(document.body,{childList:true});
+        STATIC_IDS.forEach(function(id){ var el=document.getElementById(id); if(el) mo.observe(el,{attributes:true,attributeFilter:['style','class']}); });
+        window.addEventListener('resize',schedule);
+        sync();
+      }catch(e){}
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+  })();
+
+  function icConfirm(message, onOk, okLabel){
+    var ov=document.createElement('div');
+    ov.className='ic-confirm-overlay';
+    ov.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1400;background:rgba(15,23,42,.45)';
+    var box=document.createElement('div');
+    box.className='ic-restore-modal-box';
+    box.style.cssText='max-width:420px;box-sizing:border-box';
+    box.onclick=function(e){ e.stopPropagation(); };
+    box.innerHTML='<div class="ic-restore-modal-title">'+(okLabel||(currentLang==='da'?'Bekr\u00e6ft':'Confirm'))+'</div>'
+      +'<div class="ic-restore-modal-sub" style="margin-bottom:20px">'+message+'</div>'
+      +'<div class="ic-restore-modal-actions">'
+      +'<button class="ic-restore-cancel">'+(currentLang==='da'?'Annuller':'Cancel')+'</button>'
+      +'<button class="ic-restore-confirm">'+(okLabel||'OK')+'</button>'
+      +'</div>';
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+    function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+    box.querySelector('.ic-restore-cancel').onclick=close;
+    box.querySelector('.ic-restore-confirm').onclick=function(){ close(); if(onOk) onOk(); };
+    ov.onclick=function(e){ if(e.target===ov) close(); };
+  }
+
   function icAddGroup(){
     icGroups.push({id:'grp'+(icNextGrpId++),name:(currentLang==='da'?'Ny gruppe':'New cluster'),expanded:true});
     icRenderTimeline();
@@ -7516,10 +7744,9 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
   function icDeleteGroup(grpId){
     if(!icGroups || icGroups.length<=1){ alert(currentLang==='da'?'Mindst \u00e9n klynge er p\u00e5kr\u00e6vet.':'At least one cluster is required.'); return; }
     var hasPhases=icPhases.some(function(p){return (p.groupId||'grp1')===grpId;});
-    if(hasPhases && !confirm(currentLang==='da'?'Slet denne klynge og alle dens faser?':'Delete this cluster and all of its phases?')) return;
-    icGroups=icGroups.filter(function(g){return g.id!==grpId;});
-    icPhases=icPhases.filter(function(p){return (p.groupId||'grp1')!==grpId;});
-    icRenderTimeline();
+    function _doDel(){ icGroups=icGroups.filter(function(g){return g.id!==grpId;}); icPhases=icPhases.filter(function(p){return (p.groupId||'grp1')!==grpId;}); icRenderTimeline(); }
+    if(hasPhases) icConfirm(currentLang==='da'?'Slet denne klynge og alle dens faser?':'Delete this cluster and all of its phases?', _doDel, currentLang==='da'?'Slet':'Delete');
+    else _doDel();
   }
 
   function icDeleteSubPhase(phId,spId){
@@ -7892,7 +8119,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
         var totalDays=totalHrs>0?_icDaysStr(totalHrs):'';
         rb+='<tr class="ic-res-row'+((icResSel[type]&&icResSel[type][res.id])?' ic-res-selected':'')+'" data-drag="resource" data-resid="'+res.id+'" data-restype="'+type+'" data-clusterid="'+(res.clusterId||'')+'">';
         rb+='<td class="ic-res-name-col ic-res-name-cell"><div class="ic-res-name-inner"><input type="checkbox" class="ic-res-selbox" data-action="sel-res" data-type="'+type+'" data-resid="'+res.id+'"'+((icResSel[type]&&icResSel[type][res.id])?' checked':'')+'><span class="ic-drag-hdl" title="Drag to reorder">&#10303;</span>';
-        rb+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
+        rb+='<input type="text" class="ic-name-input" value="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+res.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="res-name" data-type="'+type+'" data-resid="'+res.id+'">';
         rb+='<div class="ic-row-actions">'
           +'<button class="ic-row-btn ic-copy-btn" data-action="copy-res" data-type="'+type+'" data-resid="'+res.id+'" title="Copy this person (copies all selected if any)">&#10697;</button>'
           +'<button class="ic-row-btn ic-range-btn" data-action="open-res-range" data-type="'+type+'" data-resid="'+res.id+'" title="Bulk fill hours">⏱</button>'
@@ -7967,7 +8194,7 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
         b+='<tr class="ic-cluster-row" data-clusterid="'+cl.id+'">';
         b+='<td class="ic-res-name-col ic-cluster-name-cell" colspan="2"><div class="ic-name-inner">';
         b+='<button class="ic-toggle-btn" data-action="toggle-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">'+(cl.expanded?'&#9660;':'&#9658;')+'</button>';
-        b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
+        b+='<input type="text" class="ic-name-input" value="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="'+cl.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-action="rename-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'">';
         b+=(icResClipboard.length?'<span class="ic-paste-wrap"><button class="ic-paste-pill" data-action="paste-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Paste copied resources into this cluster">'+(currentLang==='da'?'Inds\u00e6t':'Paste')+' ('+icResClipboard.length+')</button><button class="ic-paste-x" data-action="clear-clip" title="'+(currentLang==='da'?'Ryd kopierede':'Clear copied items')+'">&#10005;</button></span>':'');
         b+='<div class="ic-row-actions"><button class="ic-row-btn ic-add-sub-btn" data-action="add-res-to-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Add person">&#65291; '+(currentLang==='da'?'Tilføj person':'Add person')+'</button><button class="ic-row-btn ic-del-btn" data-action="del-cluster" data-type="'+type+'" data-clusterid="'+cl.id+'" title="Delete cluster">&#10005;</button></div>';
         b+='</div></td>';
@@ -8189,12 +8416,9 @@ tr.ic-res-selected:hover > td{ background:#e0edff !important; }
     if(clusters.length<=1){ alert(currentLang==='da'?'Mindst \u00e9n gruppe er p\u00e5kr\u00e6vet.':'At least one cluster is required.'); return; }
     var arr=icGetResourceArr(type);
     var hasPeople=arr.some(function(r){return r.clusterId===id;});
-    if(hasPeople && !confirm(currentLang==='da'?'Slet denne gruppe og alle dens personer?':'Delete this cluster and all of its people?')) return;
-    var remaining=clusters.filter(function(c){return c.id!==id;});
-    if(type==='it'){ icITClusters=remaining; icITResources=icITResources.filter(function(r){return r.clusterId!==id;}); }
-    else { icBizClusters=remaining; icBizResources=icBizResources.filter(function(r){return r.clusterId!==id;}); }
-    icRenderResources(type);
-    icRenderCostChart();
+    function _doDel(){ var remaining=clusters.filter(function(c){return c.id!==id;}); if(type==='it'){ icITClusters=remaining; icITResources=icITResources.filter(function(r){return r.clusterId!==id;}); } else { icBizClusters=remaining; icBizResources=icBizResources.filter(function(r){return r.clusterId!==id;}); } icRenderResources(type); icRenderCostChart(); }
+    if(hasPeople) icConfirm(currentLang==='da'?'Slet denne gruppe og alle dens personer?':'Delete this cluster and all of its people?', _doDel, currentLang==='da'?'Slet':'Delete');
+    else _doDel();
   }
 
   function icAddResource(type, clusterId){
@@ -15926,16 +16150,36 @@ function pmDeleteParked(idx) {
 }
 function icShowRestorePicker(idx) {
   var item=icParked[idx]; if(!item)return;
-  var opts=item.kind==='phase'
-    ? (function(){var a=[{val:'pos:start',label:'At the beginning'}]; icPhases.forEach(function(ph){a.push({val:'pos:after:'+ph.id,label:'After '+_escHtml(ph.name)});}); return a;})()
-    : item.kind==='subphase'
-    ? icPhases.map(function(ph){return {val:'ph:'+ph.id,label:_escHtml(ph.name)+' (as sub-phase)'};})
-    : (function(){var a=[];icPhases.forEach(function(ph){ph.subPhases.forEach(function(sp){a.push({val:'sp:'+ph.id+':'+sp.id,label:_escHtml(ph.name)+' → '+_escHtml(sp.name)+' (as activity)'});});});return a;})();
-  var defaultVal=item.kind==='phase'?'pos:start':item.kind==='subphase'?('ph:'+(item.parentPhId||'')):('sp:'+(item.parentPhId||'')+':'+(item.parentSpId||''));
-  if(!opts.find(function(o){return o.val===defaultVal;})) defaultVal=opts.length?opts[0].val:'';
+  var _rgrps=(icGroups&&icGroups.length)?icGroups:[{id:'grp1',name:''}];
+  var opts=[];
+  if(item.kind==='phase'){
+    _rgrps.forEach(function(grp){
+      opts.push({divider:grp.name||'Phases'});
+      opts.push({val:'gstart:'+grp.id,label:'At the beginning'});
+      icPhases.filter(function(ph){return (ph.groupId||'grp1')===grp.id;}).forEach(function(ph){opts.push({val:'pos:after:'+ph.id,label:'After '+_escHtml(ph.name)});});
+    });
+  } else if(item.kind==='subphase'){
+    _rgrps.forEach(function(grp){
+      var phs=icPhases.filter(function(ph){return (ph.groupId||'grp1')===grp.id;});
+      if(!phs.length) return;
+      opts.push({divider:grp.name||'Phases'});
+      phs.forEach(function(ph){opts.push({val:'ph:'+ph.id,label:_escHtml(ph.name)+' (as sub-phase)'});});
+    });
+  } else {
+    _rgrps.forEach(function(grp){
+      var phs=icPhases.filter(function(ph){return (ph.groupId||'grp1')===grp.id;});
+      if(!phs.some(function(ph){return ph.subPhases&&ph.subPhases.length;})) return;
+      opts.push({divider:grp.name||'Phases'});
+      phs.forEach(function(ph){(ph.subPhases||[]).forEach(function(sp){opts.push({val:'sp:'+ph.id+':'+sp.id,label:_escHtml(ph.name)+' → '+_escHtml(sp.name)+' (as activity)'});});});
+    });
+  }
+  var _pref=item.kind==='subphase'?('ph:'+(item.parentPhId||'')):item.kind==='activity'?('sp:'+(item.parentPhId||'')+':'+(item.parentSpId||'')):null;
+  var defaultVal='';
+  if(_pref&&opts.find(function(o){return o.val===_pref;})) defaultVal=_pref;
+  else { var _fv=opts.find(function(o){return o.val;}); defaultVal=_fv?_fv.val:''; }
   _icRestoreVal=defaultVal;
   var defaultLabel=(opts.find(function(o){return o.val===defaultVal;})||{label:''}).label;
-  var menuItems=opts.map(function(o){var sel=o.val===defaultVal?' selected':''; return '<div class="ic-custom-select-opt'+sel+'" onclick="icRestorePickOpt(this,\''+o.val.replace(/'/g,"\\'")+'\')">'+o.label+'</div>';}).join('');
+  var menuItems=opts.map(function(o){ if(o.divider!==undefined) return '<div class="ic-grade-divider">'+_escHtml(o.divider)+'</div>'; var sel=o.val===defaultVal?' selected':''; return '<div class="ic-custom-select-opt'+sel+'" onclick="icRestorePickOpt(this,\''+o.val.replace(/'/g,"\\'")+'\')">'+o.label+'</div>';}).join('');
   var modal=document.getElementById('ic-restore-modal');
   modal.style.display='flex';
   modal.innerHTML=
@@ -15967,11 +16211,23 @@ function icCloseRestorePicker(){var modal=document.getElementById('ic-restore-mo
 function icDoRestore(idx) {
   var val=_icRestoreVal; if(!val)return;
   var item=icParked[idx]; if(!item)return;
-  if(item.kind==='phase'&&val.startsWith('pos:')){
-    var groupId=item.groupId||(icGroups&&icGroups.length?icGroups[0].id:'grp1');
-    var restored={id:item.id,name:item.name,color:item.color,groupId:groupId,painted:JSON.parse(JSON.stringify(item.painted||{})),expanded:true,subPhases:JSON.parse(JSON.stringify(item.subPhases||[]))};
-    if(val==='pos:start'){icPhases.unshift(restored);}
-    else{var afterId=val.split(':')[2];var pos=icPhases.findIndex(function(p){return p.id===afterId;});icPhases.splice(pos+1,0,restored);}
+  if(item.kind==='phase'&&(val.startsWith('pos:')||val.startsWith('gstart:'))){
+    var groupId, insertIdx;
+    if(val.startsWith('gstart:')){
+      groupId=val.slice(7);
+      insertIdx=icPhases.findIndex(function(p){return (p.groupId||'grp1')===groupId;});
+      if(insertIdx<0) insertIdx=icPhases.length;
+    } else if(val==='pos:start'){
+      groupId=item.groupId||(icGroups&&icGroups.length?icGroups[0].id:'grp1');
+      insertIdx=0;
+    } else {
+      var afterId=val.split(':')[2];
+      var afterPh=icPhases.find(function(p){return p.id===afterId;});
+      groupId=afterPh?(afterPh.groupId||'grp1'):(item.groupId||'grp1');
+      insertIdx=icPhases.findIndex(function(p){return p.id===afterId;})+1;
+    }
+    var restored={id:item.id,name:item.name,color:item.color,groupId:groupId,painted:JSON.parse(JSON.stringify(item.painted||{})),pdays:JSON.parse(JSON.stringify(item.pdays||{})),expanded:true,subPhases:JSON.parse(JSON.stringify(item.subPhases||[]))};
+    icPhases.splice(insertIdx,0,restored);
     icParked.splice(idx,1);
   } else if(item.kind==='subphase'&&val.startsWith('ph:')){
     var phId=val.slice(3); var ph=icPhases.find(function(p){return p.id===phId;});
