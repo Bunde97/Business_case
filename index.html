@@ -4750,7 +4750,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
 .ic-ms-chip-wk{ color:var(--text-secondary); font-size:11px; }
 .ic-ms-row td.ic-ms-cell{ height:46px; position:relative; overflow:visible; border-right:1px solid var(--border-light); background:#fff; }
 .ic-ms-namecell{ background:#fff; font-weight:700; font-size:11px; color:var(--navy); vertical-align:middle; }
-.ic-ms-mark{ position:absolute; left:50%; top:7px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; cursor:pointer; z-index:30; }
+.ic-ms-mark{ position:absolute; left:50%; top:7px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; cursor:pointer; z-index:2; }
 .ic-ms-diamond{ color:#e02424; font-size:13px; line-height:1; }
 .ic-ms-label{ margin-top:3px; font-size:9.5px; line-height:1.05; color:var(--navy); white-space:nowrap; text-align:center; }
 .ic-ms-mark:hover .ic-ms-diamond{ transform:scale(1.18); }
@@ -4780,6 +4780,9 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
 .ic-sum-ms.gate{ color:#1e3a5f; }
 .ic-sum-wk{ color:var(--text-secondary); font-weight:400; font-size:11px; }
 .ic-sum-gate-tag{ font-size:10px; background:#1e3a5f; color:#fff; border-radius:4px; padding:1px 6px; }
+.ic-summary-table tr.ic-sum-sub td{ background:#f8fafc; padding-top:3px; padding-bottom:3px; }
+.ic-sum-subname{ padding-left:28px !important; font-style:italic; font-weight:400; color:var(--text-secondary); white-space:nowrap; }
+.ic-summary-table tr.ic-sum-sub .ic-sum-period{ font-style:italic; color:var(--text-secondary); }
 </style>
 <!-- ── Plan summary ── -->
 <section class="ic-summary-section" id="ic-plan-summary" style="display:none">
@@ -5953,7 +5956,6 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     icDates.start = snap.dateStart ? new Date(snap.dateStart) : null;
     icDates.end   = snap.dateEnd   ? new Date(snap.dateEnd)   : null;
     icVacPeriods = JSON.parse(JSON.stringify(snap.vacPeriods||[])); icNextVacId=(icVacPeriods.reduce(function(_m,_p){return Math.max(_m,_p.id||0);},0))+1;
-  icMilestones = JSON.parse(JSON.stringify(snap.milestones||[])); icNextMsId=snap.nextMsId||((icMilestones.reduce(function(_m,_x){return Math.max(_m,_x.id||0);},0))+1);
     icMilestones = JSON.parse(JSON.stringify(snap.milestones||[])); icNextMsId=snap.nextMsId||((icMilestones.reduce(function(_m,_x){return Math.max(_m,_x.id||0);},0))+1);
 
     var _mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -6260,6 +6262,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     var lbl=wrap.querySelector('.ic-optsel-label'); if(lbl) lbl.textContent=el.textContent;
     wrap.querySelectorAll('.ic-custom-select-opt').forEach(function(o){o.classList.toggle('selected',o===el);});
     icCloseCustomSelects();
+    if(id==='ic-ms-phase' && typeof icMsRenderSubSelect==='function') icMsRenderSubSelect();
   }
   function icOptSelectVal(id){ var w=document.getElementById(id); return w?w.dataset.value:''; }
   function icShowPickBackdrop(closeFn){
@@ -6780,6 +6783,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     var _popts=[{value:'',label:(currentLang==='da'?'\u2014 ingen fase \u2014':'\u2014 no phase \u2014')}].concat((icPhases||[]).map(function(_p){return {value:_p.id, label:_p.name};}));
     h+='<label style="font-size:11px;color:#64748b;display:block;margin:10px 0 3px">'+(currentLang==='da'?'Lukker fase (valgfri)':'Closes phase (optional)')+'</label>';
     h+=icBuildOptSelect('ic-ms-phase', _popts, existing?(existing.phaseId||''):'');
+    h+='<div id="ic-ms-sub-wrap"></div>';
     h+='<div style="display:flex;gap:8px;justify-content:'+(existing?'space-between':'flex-end')+';align-items:center;margin-top:14px">';
     if(existing) h+='<button onclick="icDeleteMs(\''+existing.id+'\')" style="background:none;border:1px solid #e5e7eb;color:#dc2626;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">'+(currentLang==='da'?'Slet':'Delete')+'</button>';
     h+='<div style="display:flex;gap:8px"><button onclick="icCloseMsPop()" class="ic-vac-clear">'+(currentLang==='da'?'Annuller':'Cancel')+'</button><button onclick="icSaveMs('+(existing?'\''+existing.id+'\'':'null')+')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 16px;cursor:pointer;font-weight:600">'+(existing?(currentLang==='da'?'Gem':'Save'):(currentLang==='da'?'Tilf\u00f8j':'Add'))+'</button></div>';
@@ -6790,6 +6794,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     var vw=window.innerWidth, pr=pop.getBoundingClientRect();
     pop.style.top=(r.bottom+window.scrollY+6)+'px';
     pop.style.left=(Math.max(8, Math.min(r.left, vw-pr.width-12))+window.scrollX)+'px';
+    if(typeof icMsRenderSubSelect==='function') icMsRenderSubSelect(existing?(existing.subPhaseId||''):'');
     var nm=document.getElementById('ic-ms-name'); if(nm) nm.focus();
   }
   function icSaveMs(id){
@@ -6799,8 +6804,9 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     if(isNaN(md)) return;
     var isGate=!!(document.getElementById('ic-ms-gate')&&document.getElementById('ic-ms-gate').checked);
     var phaseId=icOptSelectVal('ic-ms-phase')||null; if(phaseId==='') phaseId=null;
-    if(id!=null && id!=='null'){ var m=icMilestones.find(function(x){return String(x.id)===String(id);}); if(m){ m.name=name; m.md=md; m.isGate=isGate; m.phaseId=phaseId; } }
-    else { icMilestones.push({ id:icNextMsId++, name:name, md:md, isGate:isGate, phaseId:phaseId }); }
+    var subPhaseId=phaseId?(icOptSelectVal('ic-ms-sub')||null):null; if(subPhaseId==='') subPhaseId=null;
+    if(id!=null && id!=='null'){ var m=icMilestones.find(function(x){return String(x.id)===String(id);}); if(m){ m.name=name; m.md=md; m.isGate=isGate; m.phaseId=phaseId; m.subPhaseId=subPhaseId; } }
+    else { icMilestones.push({ id:icNextMsId++, name:name, md:md, isGate:isGate, phaseId:phaseId, subPhaseId:subPhaseId }); }
     icCloseMsPop(); icRenderTimeline();
   }
   function icDeleteMs(id){ icMilestones=icMilestones.filter(function(m){return String(m.id)!==String(id);}); icCloseMsPop(); icRenderTimeline(); }
@@ -6844,6 +6850,16 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     pop.style.left=(Math.max(8, Math.min(r.left, vw-pr.width-12))+window.scrollX)+'px';
     var ta=document.getElementById('ic-deliv-text'); if(ta) ta.focus();
   }
+  function icMsRenderSubSelect(keepSub){
+    var wrap=document.getElementById('ic-ms-sub-wrap'); if(!wrap) return;
+    var phId=icOptSelectVal('ic-ms-phase')||'';
+    var ph=phId?icPhases.find(function(p){return p.id===phId;}):null;
+    if(!ph || !(ph.subPhases&&ph.subPhases.length)){ wrap.innerHTML=''; return; }
+    var cur = (keepSub!==undefined) ? keepSub : (function(){ var w=document.getElementById('ic-ms-sub'); return w?w.dataset.value:''; })();
+    if(cur && !ph.subPhases.some(function(sp){return sp.id===cur;})) cur='';
+    var opts=[{value:'',label:(currentLang==='da'?'\u2014 hele fasen \u2014':'\u2014 whole phase \u2014')}].concat(ph.subPhases.map(function(sp){return {value:sp.id,label:sp.name};}));
+    wrap.innerHTML='<label style="font-size:11px;color:#64748b;display:block;margin:10px 0 3px">'+(currentLang==='da'?'Lukker underfase (valgfri)':'Closes sub-phase (optional)')+'</label>'+icBuildOptSelect('ic-ms-sub', opts, cur);
+  }
   function icSaveDeliverables(phId){
     var ph=icPhases.find(function(p){return p.id===phId;}); if(!ph){ icCloseDelivPop(); return; }
     var ta=document.getElementById('ic-deliv-text');
@@ -6852,8 +6868,8 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
   }
   function _icPhasePeriodLabel(ph){
     var days=[];
-    function _add(n){ if(n&&n.pdays){ for(var k in n.pdays){ if(n.pdays[k]) days.push(Number(k)); } } }
-    _add(ph); (ph.subPhases||[]).forEach(function(sp){ _add(sp); (sp.subSubPhases||[]).forEach(_add); });
+    function _add(n){ if(!n) return; if(n.pdays){ for(var k in n.pdays){ if(n.pdays[k]) days.push(Number(k)); } } (n.subPhases||[]).forEach(_add); (n.subSubPhases||[]).forEach(_add); }
+    _add(ph);
     if(!days.length) return '';
     var mn=Math.min.apply(null,days), mx=Math.max.apply(null,days);
     var mnames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -6865,6 +6881,23 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     var lines=tbl.querySelectorAll('.ic-gate-line'); if(!lines.length) return;
     var b=tbl.getBoundingClientRect().bottom;
     lines.forEach(function(ln){ var t=ln.getBoundingClientRect().top; ln.style.height=Math.max(0,(b-t-1))+'px'; });
+  }
+  // Plain (non-gate) milestones linked to a phase/sub-phase drop onto that row; gates
+  // and unlinked milestones stay in the milestone lane at the top.
+  function _icPositionMilestones(){
+    var tbl=document.getElementById('ic-timeline-table'); if(!tbl) return;
+    var marks=tbl.querySelectorAll('.ic-ms-mark'); if(!marks.length) return;
+    marks.forEach(function(mk){
+      var m=icMilestones.find(function(x){return String(x.id)===String(mk.getAttribute('data-msid'));}); if(!m) return;
+      if(m.isGate || !m.phaseId) return;
+      var row = m.subPhaseId ? tbl.querySelector('tr.ic-subphase-row[data-phid="'+m.phaseId+'"][data-spid="'+m.subPhaseId+'"]') : null;
+      if(!row || !row.offsetHeight) row = tbl.querySelector('tr.ic-phase-row[data-phid="'+m.phaseId+'"]');
+      if(!row || !row.offsetHeight) return;
+      var laneCell=mk.parentNode; if(!laneCell) return;
+      var rr=row.getBoundingClientRect(), lc=laneCell.getBoundingClientRect();
+      mk.style.top = ((rr.top - lc.top) + Math.max(0,(rr.height-22)/2)) + 'px';
+      mk.classList.add('ic-ms-onrow');
+    });
   }
   function icRenderPlanSummary(){
     var wrap=document.getElementById('ic-plan-summary'); var body=document.getElementById('ic-plan-summary-body'); if(!wrap||!body) return;
@@ -6882,9 +6915,15 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         var period=_icPhasePeriodLabel(ph);
         var dv=(ph.deliverables||[]);
         var dvH = dv.length ? '<ul class="ic-sum-deliv">'+dv.map(function(d){return '<li>'+_s(d)+'</li>';}).join('')+'</ul>' : '<span class="ic-sum-empty">—</span>';
-        var ms=icMilestones.filter(function(m){return m.phaseId===ph.id;}).sort(function(a,b){return a.md-b.md;});
+        var ms=icMilestones.filter(function(m){return m.phaseId===ph.id && !m.subPhaseId;}).sort(function(a,b){return a.md-b.md;});
         var msH = ms.length ? ms.map(function(m){ return '<span class="ic-sum-ms'+(m.isGate?' gate':'')+'">&#9670; '+_s(m.name)+(m.isGate?' <span class="ic-sum-gate-tag">gate</span>':'')+' <span class="ic-sum-wk">'+_wk(m.md)+'</span></span>'; }).join('<br>') : '<span class="ic-sum-empty">—</span>';
         rows+='<tr><td class="ic-sum-phase"><span class="ic-sum-dot" style="background:'+(ph.color||'#999')+'"></span>'+_s(ph.name)+'</td><td class="ic-sum-period">'+(period?_s(period):'<span class="ic-sum-empty">—</span>')+'</td><td>'+dvH+'</td><td>'+msH+'</td></tr>';
+        (ph.subPhases||[]).forEach(function(sp){
+          var spP=_icPhasePeriodLabel(sp);
+          var _sms=icMilestones.filter(function(m){return m.subPhaseId===sp.id;}).sort(function(a,b){return a.md-b.md;});
+          var _smsH=_sms.length?_sms.map(function(m){ return '<span class="ic-sum-ms'+(m.isGate?' gate':'')+'">&#9670; '+_s(m.name)+(m.isGate?' <span class="ic-sum-gate-tag">gate</span>':'')+' <span class="ic-sum-wk">'+_wk(m.md)+'</span></span>'; }).join('<br>'):'';
+          rows+='<tr class="ic-sum-sub"><td class="ic-sum-subname">↳ '+_s(sp.name)+'</td><td class="ic-sum-period">'+(spP?_s(spP):'<span class="ic-sum-empty">—</span>')+'</td><td></td><td>'+_smsH+'</td></tr>';
+        });
       });
     });
     var free=icMilestones.filter(function(m){return !m.phaseId;}).sort(function(a,b){return a.md-b.md;});
@@ -6903,7 +6942,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     var wl=_icWeekList();
     function wlabel(md){ for(var i=0;i<wl.length;i++){ if(wl[i].md===md) return wl[i].label; } return ''; }
     var sorted=icMilestones.slice().sort(function(a,b){return a.md-b.md;});
-    el.innerHTML=sorted.map(function(m){ var nm=(m.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); var nmq=(m.name||'').replace(/"/g,'&quot;'); var isG=!!m.isGate; var dcol=isG?'#1e3a5f':'#e02424'; var phN=m.phaseId?((icPhases.find(function(p){return p.id===m.phaseId;})||{}).name||''):''; var gtag=isG?' <span class="ic-ms-gate-tag">'+(currentLang==='da'?'gate':'gate')+(phN?' \u00b7 '+phN.replace(/&/g,'&amp;').replace(/</g,'&lt;'):'')+'</span>':''; return '<button class="ic-ms-chip'+(isG?' ic-ms-chip-gate':'')+'" onclick="icOpenMsPopup(\''+m.id+'\',this)" title="'+nmq+'"><span style="color:'+dcol+'">&#9670;</span> '+nm+gtag+' <span class="ic-ms-chip-wk">'+wlabel(m.md)+'</span></button>'; }).join('');
+    el.innerHTML=sorted.map(function(m){ var nm=(m.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); var nmq=(m.name||'').replace(/"/g,'&quot;'); var isG=!!m.isGate; var dcol=isG?'#1e3a5f':'#e02424'; var _mph=m.phaseId?icPhases.find(function(p){return p.id===m.phaseId;}):null; var phN=_mph?(_mph.name||''):''; var subN=(m.subPhaseId&&_mph)?(((_mph.subPhases||[]).find(function(s){return s.id===m.subPhaseId;})||{}).name||''):''; if(subN) phN=phN+' / '+subN; var gtag=isG?' <span class="ic-ms-gate-tag">'+(currentLang==='da'?'gate':'gate')+(phN?' \u00b7 '+phN.replace(/&/g,'&amp;').replace(/</g,'&lt;'):'')+'</span>':''; return '<button class="ic-ms-chip'+(isG?' ic-ms-chip-gate':'')+'" onclick="icOpenMsPopup(\''+m.id+'\',this)" title="'+nmq+'"><span style="color:'+dcol+'">&#9670;</span> '+nm+gtag+' <span class="ic-ms-chip-wk">'+wlabel(m.md)+'</span></button>'; }).join('');
   }
   function _icPaintWrite(node, i, on){
     var days=_icColDays(i); if(!days) return; // no date context -> legacy index mode
@@ -7398,6 +7437,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     if(typeof icRenderMsChips==='function') icRenderMsChips();
     if(typeof icRenderPlanSummary==='function') icRenderPlanSummary();
     if(typeof _icSizeGateLines==='function') _icSizeGateLines();
+    if(typeof _icPositionMilestones==='function') _icPositionMilestones();
     // Attach all handlers after innerHTML is set
     tbl.querySelectorAll('[data-action="toggle-group"]').forEach(function(el){
       el.onclick=function(){ icToggleGroup(this.getAttribute('data-grpid')); };
@@ -16300,6 +16340,7 @@ function pmApplySnapshot(snap) {
   icDates.start = snap.dateStart ? new Date(snap.dateStart) : null;
   icDates.end   = snap.dateEnd   ? new Date(snap.dateEnd)   : null;
   icVacPeriods = JSON.parse(JSON.stringify(snap.vacPeriods||[])); icNextVacId=(icVacPeriods.reduce(function(_m,_p){return Math.max(_m,_p.id||0);},0))+1;
+  icMilestones = JSON.parse(JSON.stringify(snap.milestones||[])); icNextMsId=snap.nextMsId||((icMilestones.reduce(function(_m,_x){return Math.max(_m,_x.id||0);},0))+1);
   // Restore date button labels + has-date class
   var _mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var _sBtn=document.getElementById('ic-start-btn'), _sLbl=document.getElementById('ic-start-label');
