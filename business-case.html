@@ -4690,6 +4690,7 @@
       <span id="ic-tl-clip" class="ic-clip-status" style="display:none"></span>
       <button class="ic-add-phase-btn" onclick="icAddGroup()">+ Add cluster</button>
       <button class="ic-add-phase-btn" onclick="icOpenMsPopup(null,this)">&#9670; Add milestone</button>
+      <button class="ic-add-phase-btn" id="ic-ms-toggle" onclick="icToggleMilestones()" style="display:none"></button>
       <button class="ic-parked-btn" id="ic-parked-btn" onclick="icOpenDrawer()" style="margin-left:auto;opacity:0.65">
         📦 Parked items <span class="ic-parked-badge" id="ic-parked-count">0</span>
       </button>
@@ -5486,6 +5487,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
   var icNextVacId = 1;
   var icMilestones = [];   // [{id, md:MondayDayNum, name}] — planned timeline milestones
   var icNextMsId = 1;
+  var icMsHidden = false; try{ icMsHidden = (localStorage.getItem('icHideMilestones')==='1'); }catch(_e){}
   var icGroups = [
     {id:'grp1', name:'Implementation project', expanded:true},
     {id:'grp2', name:'Roll out', expanded:true}
@@ -6766,13 +6768,15 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
   }
   function icCloseMsPop(){ var p=document.getElementById('ic-ms-pop'); if(p&&p.parentNode) p.parentNode.removeChild(p); }
   function icOpenMsPopup(msid, trigger){
+    var _cur=document.getElementById('ic-ms-pop');
+    if(_cur && _cur.getAttribute('data-forid')===String(msid==null?'':msid)){ icCloseMsPop(); return; }
     icCloseAllPickers();
     var wl=_icWeekList();
     if(!wl.length){ alert(currentLang==='da'?'S\u00e6t en projektstartdato f\u00f8rst for at tilf\u00f8je milep\u00e6le.':'Set a project start date first to add milestones.'); return; }
     var existing = (msid!=null && msid!=='null') ? icMilestones.find(function(m){return String(m.id)===String(msid);}) : null;
     var wopts=wl.map(function(w){return {value:w.md,label:w.label};});
     var defMd = existing ? existing.md : wl[0].md;
-    var pop=document.createElement('div'); pop.id='ic-ms-pop';
+    var pop=document.createElement('div'); pop.id='ic-ms-pop'; pop.setAttribute('data-forid', String(msid==null?'':msid));
     pop.style.cssText='position:absolute;z-index:10001;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:300px;padding:14px 16px;font-family:inherit';
     var h='<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">'+(existing?(currentLang==='da'?'Rediger milep\u00e6l':'Edit milestone'):(currentLang==='da'?'Tilf\u00f8j milep\u00e6l':'Add milestone'))+'<button onclick="icCloseMsPop()" style="float:right;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px">&#10005;</button></div>';
     h+='<label style="font-size:11px;color:#64748b;display:block;margin-bottom:3px">'+(currentLang==='da'?'Navn':'Name')+'</label>';
@@ -6935,9 +6939,20 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     }
     body.innerHTML=rows;
   }
+  function icToggleMilestones(){
+    icMsHidden=!icMsHidden;
+    try{ localStorage.setItem('icHideMilestones', icMsHidden?'1':'0'); }catch(_e){}
+    icRenderTimeline();
+  }
   function icRenderMsChips(){
+    var has=icMilestones && icMilestones.length;
+    var tog=document.getElementById('ic-ms-toggle');
+    if(tog){
+      if(has){ tog.style.display=''; tog.innerHTML=icMsHidden?('\u25c6 '+(currentLang==='da'?'Vis liste':'Show list')+' ('+icMilestones.length+')'):('\u25c6 '+(currentLang==='da'?'Skjul liste':'Hide list')); }
+      else tog.style.display='none';
+    }
     var el=document.getElementById('ic-ms-chips'); if(!el) return;
-    if(!icMilestones || !icMilestones.length){ el.style.display='none'; el.innerHTML=''; return; }
+    if(!has || icMsHidden){ el.style.display='none'; el.innerHTML=''; return; }
     el.style.display='flex';
     var wl=_icWeekList();
     function wlabel(md){ for(var i=0;i<wl.length;i++){ if(wl[i].md===md) return wl[i].label; } return ''; }
