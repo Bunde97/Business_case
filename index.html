@@ -2131,9 +2131,9 @@
       position: sticky;
       left: 0;
       z-index: 3;
-      width: 326px;
-      min-width: 326px;
-      max-width: 326px;
+      width: 386px;
+      min-width: 386px;
+      max-width: 386px;
       background: #fff;
       border-right: 2px solid #cbd5e1;
     }
@@ -2332,14 +2332,14 @@
       position: sticky;
       left: 0;
       z-index: 3;
-      min-width: 200px;
-      max-width: 200px;
+      min-width: 260px;
+      max-width: 260px;
       background: #fff;
       border-right: 1px solid var(--border-light);
     }
     .ic-res-rate-col {
       position: sticky;
-      left: 200px;
+      left: 260px;
       z-index: 3;
       min-width: 126px;
       max-width: 126px;
@@ -2375,6 +2375,17 @@
       padding: 4px 8px;
       border-bottom: 1px solid var(--border-light);
     }
+    /* Row action buttons overlay the right edge of the name cell so they cost
+       no horizontal space; the name input gets the full column width. */
+    /* NB: no position:relative here - the cell is already position:sticky
+       (.ic-res-name-col), which is itself a containing block for the absolutely
+       positioned buttons. Setting relative would unfreeze the column. */
+    .ic-res-name-cell .ic-row-actions {
+      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      padding-left: 14px; border-radius: 4px;
+      background: linear-gradient(to right, rgba(255,255,255,0), #fff 14px);
+    }
+    .ic-res-row:hover .ic-res-name-cell .ic-row-actions { background: linear-gradient(to right, rgba(250,252,255,0), #fafcff 14px); }
     .ic-res-name-inner {
       display: flex;
       align-items: center;
@@ -6297,7 +6308,9 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
   function icCloseAllPickers(){
     icCloseCustomSelects();
     if(typeof icRangeOpen!=='undefined' && icRangeOpen) icCloseRangePopup();
-    if(typeof icResRangeOpen!=='undefined' && icResRangeOpen) icCloseResRange();
+    // The resource "Bulk fill" popup is deliberately NOT closed here. It stays
+    // open until the user dismisses it with the close button, Apply, Clear range,
+    // or by clicking its own trigger icon again.
     icCloseVacPop();
     icCloseColorPop();
     icCloseMsPop();
