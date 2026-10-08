@@ -8248,8 +8248,9 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
 
   function icGetResourceArr(type){ return type==='it'?icITResources:icBizResources; }
 
-  function icFmtDKK(v){
-    var d = dkkToDisplay(v);
+  function icFmtDKK(v){ return icFmtDisp(dkkToDisplay(v)); }
+  // Format an amount that is ALREADY in display currency (no second conversion).
+  function icFmtDisp(d){
     if (currentCurrency==='DKK') return Math.round(d).toLocaleString('da-DK')+' kr';
     return CURRENCY_SYMBOLS[currentCurrency]+' '+Math.round(d).toLocaleString(CURRENCY_LOCALES[currentCurrency]);
   }
@@ -9021,7 +9022,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       +'</span></div>';
 
     // Group / Phase / sub-phase / activity tree (only nodes with painted content shown)
-    tree.groups.forEach(function(node){ bh+=icRenderCostNodeHtml(node, grand); });
+    tree.groups.forEach(function(node){ _icRollupDisplay(node); bh+=icRenderCostNodeHtml(node, grand); });
 
     // Resource hours that fall in months not painted anywhere on the timeline
     if(tree.unassigned>0.5){
@@ -9035,6 +9036,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         fte:tree.unassignedFte||0, itFte:tree.unassignedItFte||0, bizFte:tree.unassignedBizFte||0,
         children:tree.unassignedChildren
       };
+      _icRollupDisplay(unassignedNode);
       bh+=icRenderCostNodeHtml(unassignedNode, grand);
     }
 
@@ -9339,6 +9341,41 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
     return {groups:groupNodes, unassigned:unassignedAgg.cost, unassignedAgg:unassignedAgg, unassignedW:unassignedW, unassignedChildren:unassignedChildren, unassignedFte:_uT.fte, unassignedItFte:_uT.itFte, unassignedBizFte:_uT.bizFte};
   }
 
+  // ── Bottom-up display rounding ────────────────────────────────────────
+  // Every line in the cost breakdown is shown as a whole number (hours and
+  // money) or 2 decimals (FTE). Rounding each line on its own meant the
+  // children of a line did not add up to the line itself. Here each parent is
+  // instead shown as the SUM OF ITS CHILDREN'S DISPLAYED VALUES, so the column
+  // always adds up on screen.
+  //
+  // A parent can also hold hours of its own that no child line represents (a
+  // phase painted in a period where none of its sub-phases are painted). That
+  // "direct" share is rounded once and added on top, so it is never lost.
+  //
+  // The exact values (node.hours, node.cost, ...) are left untouched - the
+  // summary cards, year breakdown and Excel export all keep reading those.
+  function _icRollupDisplay(node){
+    if(!node) return;
+    var kids = node.children || [];
+    for(var i=0;i<kids.length;i++) _icRollupDisplay(kids[i]);
+    function roll(field, dfield, dec, conv){
+      var f = Math.pow(10, dec||0);
+      var cv = conv || function(x){ return x; };
+      var own = cv(node[field]||0), sum = 0, dsum = 0;
+      for(var k=0;k<kids.length;k++){ sum += cv(kids[k][field]||0); dsum += (kids[k][dfield]||0); }
+      var direct = own - sum;                       // not covered by any child line
+      if(Math.abs(direct) < 1e-9) direct = 0;
+      node[dfield] = dsum + Math.round(direct*f)/f;
+    }
+    // Hours (and FTE, which is the same column in FTE view) are rolled up so the
+    // column adds on screen. The MONEY columns are deliberately NOT rolled up -
+    // they always show the real amount, rounded once from the exact value.
+    roll('hours','_dHours',0);
+    roll('itHours','_dItHours',0);
+    roll('bizHours','_dBizHours',0);
+    roll('fte','_dFte',2);  roll('itFte','_dItFte',2);  roll('bizFte','_dBizFte',2);
+  }
+
   function icRenderCostNodeHtml(node, grand){
     var w=grand>0?(node.cost/grand*100).toFixed(1):0;
     var hasChildren=node.children && node.children.length>0;
@@ -9351,15 +9388,21 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       h+='<span class="ic-toggle-spacer"></span>';
     }
     h+='<span class="saving-bar-name">'+node.name.replace(/&/g,'&amp;')+'</span></div>';
-    var _fh=function(hrs, fte){ if(typeof cbFteMode!=='undefined'&&cbFteMode){ var v=(fte!=null)?fte:((hrs>0&&typeof bcFteDivisor==='function')?hrs/bcFteDivisor():0); return v>0?_icComma(Math.round(v*100)/100):'—'; } return hrs>0?_icComma(Math.round(hrs)):'—'; };
-    var _fc=function(x){return x>0?icFmtDKK(x):'—';};
+    var _fh=function(hrs, fte, dh, df){
+      if(typeof cbFteMode!=='undefined'&&cbFteMode){
+        var v=(df!=null)?df:((fte!=null)?fte:((hrs>0&&typeof bcFteDivisor==='function')?hrs/bcFteDivisor():0));
+        return v>0?_icComma(Math.round(v*100)/100):'—';
+      }
+      return hrs>0?_icComma((dh!=null)?dh:Math.round(hrs)):'—';
+    };
+    var _fc=function(x, dc){ return x>0 ? ((dc!=null)?icFmtDisp(dc):icFmtDKK(x)) : '—'; };
     h+='<span class="ic-cost-cells">'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.hours, node.fte)+'</span>'
-      +'<span class="ic-cc ic-cc-c ic-cc-sum">'+_fc(node.cost)+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.itHours, node.itFte)+'</span>'
-      +'<span class="ic-cc ic-cc-c">'+_fc(node.itCost)+'</span>'
-      +'<span class="ic-cc ic-cc-h">'+_fh(node.bizHours, node.bizFte)+'</span>'
-      +'<span class="ic-cc ic-cc-c">'+_fc(node.bizCost)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.hours, node.fte, node._dHours, node._dFte)+'</span>'
+      +'<span class="ic-cc ic-cc-c ic-cc-sum">'+_fc(node.cost, node._dCost)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.itHours, node.itFte, node._dItHours, node._dItFte)+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+_fc(node.itCost, node._dItCost)+'</span>'
+      +'<span class="ic-cc ic-cc-h">'+_fh(node.bizHours, node.bizFte, node._dBizHours, node._dBizFte)+'</span>'
+      +'<span class="ic-cc ic-cc-c">'+_fc(node.bizCost, node._dBizCost)+'</span>'
       +'</span></div>';
     h+='<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+(node.color||'#999')+'"></div></div></div>';
     if(hasChildren && expanded){
@@ -9690,7 +9733,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         var tHrs=0, rowData=[res.name, gradeNameFor(res,type)];
         var actM=0; for (var i=0; i<p.count; i++) { var h=res.hours[i]||0; if(h>0)actM++; tHrs+=h; colTots[i]+=h; rowData.push(_hvAt(h,i)); }
         totHrs += tHrs;
-        var ad = tHrs ? parseFloat((tHrs/7.5).toFixed(1)) : null;
+        var ad = tHrs ? (tHrs/7.5) : null;   // exact; the column is formatted to 1 decimal
         rowData.push(_avgvCol(function(i){return res.hours[i]||0;}), ad);
         var grand=0, ycVals=[];
         calRanges.forEach(function(rng,y){ var yt=0; for(var m=rng.start;m<=rng.end;m++) yt+=(res.hours[m]||0)*resRate; grand+=yt; yrTots[y]+=yt; var dv=toDisp(yt); ycVals.push(dv); rowData.push(dv||null); });
@@ -9704,15 +9747,16 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         row.getCell(1).alignment={horizontal:'left',indent:1};
         row.getCell(3+p.count).alignment={horizontal:'right'};
         row.getCell(4+p.count).alignment={horizontal:'right'};
+        row.getCell(4+p.count).numFmt='#,##0.0'; /* Alloc. Days: exact value, shown with one decimal */
         row.getCell(1).note='res:'+res.id;
-        meta.members.push({ rowNum:row.number, res:res, rate:toDisp(resRate), grade:gradeNameFor(res,type), tHrs:tHrs, actM:actM, ad:ad, ycVals:ycVals, grand:toDisp(grand) });
+        meta.members.push({ rowNum:row.number, res:res, rate:dkkToDisplay(resRate), grade:gradeNameFor(res,type), tHrs:tHrs, actM:actM, ad:ad, ycVals:ycVals, grand:toDisp(grand) });
       }
       function addClusterHeaderRow(cl, clRes){
         var clHrs=0, clGrand=0; var clCol=new Array(p.count).fill(0); var clYr=new Array(calRanges.length).fill(0);
         clRes.forEach(function(res){ var rate=icGetResRate(res,type); for(var i=0;i<p.count;i++){ clCol[i]+=(res.hours[i]||0); clHrs+=(res.hours[i]||0); } calRanges.forEach(function(rng,y){ for(var m=rng.start;m<=rng.end;m++) clYr[y]+=(res.hours[m]||0)*rate; }); });
         clYr.forEach(function(v){ clGrand+=v; });
         var clActM=0; for(var _ci=0;_ci<p.count;_ci++){ if(clCol[_ci]>0) clActM++; }
-        var clDays = clHrs?parseFloat((clHrs/7.5).toFixed(1)):null;
+        var clDays = clHrs?(clHrs/7.5):null;
         var rd=[cl.name,''];
         for (var i=0;i<p.count;i++) rd.push(_hvAt(clCol[i],i));
         rd.push(_avgvCol(function(i){return clCol[i]||0;}), clDays);
@@ -9722,6 +9766,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         for (var c=1;c<=totalCols;c++){ r.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDDE3EC'}}; r.getCell(c).font={bold:true,size:10}; }
         for (var c=3;c<=totalCols;c++) r.getCell(c).alignment={horizontal:'right'};
         for (var c=3+p.count+2;c<=totalCols;c++) r.getCell(c).numFmt='#,##0';
+        r.getCell(4+p.count).numFmt='#,##0.0'; /* Alloc. Days: exact value, shown with one decimal */
         _vacGrey(r);
         r.getCell(1).alignment={horizontal:'left'};
         rowParity=0;
@@ -9757,9 +9802,10 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       tRow.getCell(totalCols).font={bold:true,size:11,color:{argb:WHITE}};
       for(var c=3;c<=totalCols;c++) tRow.getCell(c).alignment={horizontal:'right'};
       for(var c=3+p.count+2;c<=totalCols;c++) tRow.getCell(c).numFmt='#,##0';
+      tRow.getCell(4+p.count).numFmt='#,##0.0'; /* Alloc. Days: exact value, shown with one decimal */
       _vacGrey(tRow);
       meta.totalRow=tRow.number;
-      meta.totals={ colTots:colTots.slice(), totHrs:totHrs, actM:totActM, totDays:(totHrs?parseFloat((totHrs/7.5).toFixed(1)):0), yrDisp:yrTots.map(function(v){return toDisp(v);}), grand:toDisp(totGrand) };
+      meta.totals={ colTots:colTots.slice(), totHrs:totHrs, actM:totActM, totDays:(totHrs?(totHrs/7.5):0), yrDisp:yrTots.map(function(v){return toDisp(v);}), grand:toDisp(totGrand) };
       _icSectionsMeta.push(meta);
     }
 
@@ -9786,11 +9832,11 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
       var _gradeCell={}, _mapGrades=[];
       function _addGradeRows(list, gtype){
         (list||[]).forEach(function(g){
-          var gr=wsData.addRow([(gtype==='it'?'IT':'Biz')+' - '+g.name, toDisp(g.rate)]);
-          gr.getCell(2).numFmt='#,##0';
+          var gr=wsData.addRow([(gtype==='it'?'IT':'Biz')+' - '+g.name, dkkToDisplay(g.rate)]);
+          gr.getCell(2).numFmt='#,##0.00';
           gr.getCell(1).note='g:'+g.id;
           _gradeCell[g.id]='$B$'+gr.number;
-          _mapGrades.push({id:g.id, type:gtype, cell:'B'+gr.number, disp:toDisp(g.rate)});
+          _mapGrades.push({id:g.id, type:gtype, cell:'B'+gr.number, disp:dkkToDisplay(g.rate)});
         });
       }
       _addGradeRows(icRateCards.it,'it');
@@ -9806,7 +9852,7 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         meta.members.forEach(function(mem){
           var gc=_gradeCell[mem.res.grade];
           var dr=wsData.addRow([mem.res.name, mem.grade, gc?{formula:gc, result:mem.rate}:mem.rate]);
-          dr.getCell(3).numFmt='#,##0';
+          dr.getCell(3).numFmt='#,##0.00';
           mem.rateRow=dr.number;
         });
       });
