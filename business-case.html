@@ -9942,9 +9942,12 @@ html.ic-scroll-lock, html.ic-scroll-lock body{ overflow:hidden !important; }
         styleHeader(hr, 2, NROW);
         hr.getCell(2).alignment = { horizontal:'right', vertical:'middle' };
         grades.forEach(function(g, gi) {
-          var row = ws.addRow([g.name, toDisp(g.rate)]);
+          // Hourly rate must keep its decimals: every cost formula in the workbook
+          // reads this cell (the hidden Data rate card is linked to it), so rounding
+          // here is multiplied by thousands of hours.
+          var row = ws.addRow([g.name, dkkToDisplay(g.rate)]);
           if (gi % 2 === 0) { for (var c = 1; c <= 2; c++) row.getCell(c).fill = { type:'pattern', pattern:'solid', fgColor:{argb:LIGHT} }; }
-          row.getCell(2).numFmt = '#,##0';
+          row.getCell(2).numFmt = '#,##0.00';
           row.getCell(2).alignment = { horizontal:'right' };
           row.getCell(1).note = 'g:'+g.id;
           _icMainRateCell[g.id] = 'B'+row.number;
